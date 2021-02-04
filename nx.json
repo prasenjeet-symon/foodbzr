@@ -1,47 +1,32 @@
 {
-  "npmScope": "foodbzr",
-  "affected": { "defaultBase": "master" },
-  "implicitDependencies": {
-    "workspace.json": "*",
-    "package.json": { "dependencies": "*", "devDependencies": "*" },
-    "tsconfig.base.json": "*",
-    "tslint.json": "*",
-    ".eslintrc.json": "*",
-    "nx.json": "*"
-  },
-  "tasksRunnerOptions": {
-    "default": {
-      "runner": "@nrwl/workspace/tasks-runners/default",
-      "options": { "cacheableOperations": ["build", "lint", "test", "e2e"] }
+    "npmScope": "foodbzr",
+    "affected": { "defaultBase": "master" },
+    "implicitDependencies": {
+        "workspace.json": "*",
+        "package.json": { "dependencies": "*", "devDependencies": "*" },
+        "tsconfig.base.json": "*",
+        "tslint.json": "*",
+        ".eslintrc.json": "*",
+        "nx.json": "*"
+    },
+    "tasksRunnerOptions": { "default": { "runner": "@nrwl/workspace/tasks-runners/default", "options": { "cacheableOperations": ["build", "lint", "test", "e2e"] } } },
+    "projects": {
+        "frontend-foodbzr-owner": { "tags": [] },
+        "frontend-foodbzr-owner-e2e": { "tags": [], "implicitDependencies": ["frontend-foodbzr-owner"] },
+        "frontend-foodbzr-partner": { "tags": [] },
+        "frontend-foodbzr-partner-e2e": { "tags": [], "implicitDependencies": ["frontend-foodbzr-partner"] },
+        "frontend-foodbzr-user": { "tags": [] },
+        "frontend-foodbzr-user-e2e": { "tags": [], "implicitDependencies": ["frontend-foodbzr-user"] },
+        "frontend-foodbzr-dboy": { "tags": [] },
+        "frontend-foodbzr-dboy-e2e": { "tags": [], "implicitDependencies": ["frontend-foodbzr-dboy"] },
+        "backend-foodbzr-server": { "tags": [] },
+        "shared-util": { "tags": [] },
+        "shared-types": { "tags": [] },
+        "shared-live-data": { "tags": [] },
+        "frontend-indexed-sql": { "tags": [] },
+        "frontend-node-room-client": { "tags": [] },
+        "backend-node-room": { "tags": [] },
+        "backend-test-datasource": { "tags": [] },
+        "shared-datasource": { "tags": [] }
     }
-  },
-  "projects": {
-    "frontend-foodbzr-owner": { "tags": [] },
-    "frontend-foodbzr-owner-e2e": {
-      "tags": [],
-      "implicitDependencies": ["frontend-foodbzr-owner"]
-    },
-    "frontend-foodbzr-partner": { "tags": [] },
-    "frontend-foodbzr-partner-e2e": {
-      "tags": [],
-      "implicitDependencies": ["frontend-foodbzr-partner"]
-    },
-    "frontend-foodbzr-user": { "tags": [] },
-    "frontend-foodbzr-user-e2e": {
-      "tags": [],
-      "implicitDependencies": ["frontend-foodbzr-user"]
-    },
-    "frontend-foodbzr-dboy": { "tags": [] },
-    "frontend-foodbzr-dboy-e2e": {
-      "tags": [],
-      "implicitDependencies": ["frontend-foodbzr-dboy"]
-    },
-    "backend-foodbzr-server": { "tags": [] },
-    "shared-util": { "tags": [] },
-    "shared-types": { "tags": [] },
-    "shared-live-data": { "tags": [] },
-    "frontend-indexed-sql": { "tags": [] },
-    "frontend-node-room-client": { "tags": [] },
-    "backend-node-room": { "tags": [] }
-  }
 }

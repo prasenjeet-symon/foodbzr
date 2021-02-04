@@ -1,29 +1,29 @@
 {
-  "compileOnSave": false,
-  "compilerOptions": {
-    "rootDir": ".",
-    "sourceMap": true,
-    "declaration": false,
-    "moduleResolution": "node",
-    "emitDecoratorMetadata": true,
-    "experimentalDecorators": true,
-    "importHelpers": true,
-    "target": "es2015",
-    "module": "esnext",
-    "lib": ["es2017", "dom"],
-    "skipLibCheck": true,
-    "skipDefaultLibCheck": true,
-    "baseUrl": ".",
-    "paths": {
-      "@foodbzr/shared/util": ["libs/shared/util/src/index.ts"],
-      "@foodbzr/shared/types": ["libs/shared/types/src/index.ts"],
-      "@sculify/live-data": ["libs/shared/live-data/src/index.ts"],
-      "@sculify/indexed-sql": ["libs/frontend/indexed-sql/src/index.ts"],
-      "@sculify/node-room-client": [
-        "libs/frontend/node-room-client/src/index.ts"
-      ],
-      "@sculify/node-room": ["libs/backend/node-room/src/index.ts"]
-    }
-  },
-  "exclude": ["node_modules", "tmp"]
+    "compileOnSave": false,
+    "compilerOptions": {
+        "rootDir": ".",
+        "sourceMap": true,
+        "declaration": false,
+        "moduleResolution": "node",
+        "emitDecoratorMetadata": true,
+        "experimentalDecorators": true,
+        "importHelpers": true,
+        "target": "es2015",
+        "module": "esnext",
+        "lib": ["es2017", "dom"],
+        "skipLibCheck": true,
+        "skipDefaultLibCheck": true,
+        "baseUrl": ".",
+        "paths": {
+            "@foodbzr/shared/util": ["libs/shared/util/src/index.ts"],
+            "@foodbzr/shared/types": ["libs/shared/types/src/index.ts"],
+            "@sculify/live-data": ["libs/shared/live-data/src/index.ts"],
+            "@sculify/indexed-sql": ["libs/frontend/indexed-sql/src/index.ts"],
+            "@sculify/node-room-client": ["libs/frontend/node-room-client/src/index.ts"],
+            "@sculify/node-room": ["libs/backend/node-room/src/index.ts"],
+            "@foodbzr/test-datasource": ["libs/backend/test-datasource/src/index.ts"],
+            "@foodbzr/datasource": ["libs/shared/datasource/src/index.ts"]
+        }
+    },
+    "exclude": ["node_modules", "tmp"]
 }

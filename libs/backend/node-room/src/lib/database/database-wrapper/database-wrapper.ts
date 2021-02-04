@@ -5,7 +5,7 @@ import { InstanceClientManager } from './instance-client-manager';
 import { OfflineSync } from '../sync/sync';
 import { dao_execute_type, IDatabaseWrapper, inited_instances, init_waiting_list, MYSQLConnectionConfig, rootDatabase } from '../../main-interface';
 import { DatabaseConnection } from './database_connection';
-import { UUIDManager } from './uuid_manager';
+import { v4 as uuid } from 'uuid';
 import { Connection } from 'mysql';
 
 export class DatabaseWrapper implements IDatabaseWrapper {
@@ -247,7 +247,7 @@ export class DatabaseWrapper implements IDatabaseWrapper {
     };
 
     private create_new_instance_to_config_db = async (instance_name: string, label: string) => {
-        const instance_uuid = UUIDManager.getInstance()?.uuid() as string;
+        const instance_uuid = uuid();
         await this.insert_new_instance_to_manager_table(instance_uuid, instance_name, label);
         // retrive all instance
         await this.retrive_all_prev_instances();

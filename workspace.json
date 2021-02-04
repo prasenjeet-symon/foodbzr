@@ -1145,6 +1145,86 @@
           }
         }
       }
+    },
+    "backend-test-datasource": {
+      "root": "libs/backend/test-datasource",
+      "sourceRoot": "libs/backend/test-datasource/src",
+      "projectType": "library",
+      "targets": {
+        "lint": {
+          "executor": "@nrwl/linter:eslint",
+          "options": {
+            "lintFilePatterns": [
+              "libs/backend/test-datasource/**/*.ts"
+            ]
+          }
+        },
+        "test": {
+          "executor": "@nrwl/jest:jest",
+          "outputs": [
+            "coverage/libs/backend/test-datasource"
+          ],
+          "options": {
+            "jestConfig": "libs/backend/test-datasource/jest.config.js",
+            "passWithNoTests": true
+          }
+        },
+        "build": {
+          "executor": "@nrwl/node:package",
+          "outputs": [
+            "{options.outputPath}"
+          ],
+          "options": {
+            "outputPath": "dist/libs/backend/test-datasource",
+            "tsConfig": "libs/backend/test-datasource/tsconfig.lib.json",
+            "packageJson": "libs/backend/test-datasource/package.json",
+            "main": "libs/backend/test-datasource/src/index.ts",
+            "assets": [
+              "libs/backend/test-datasource/*.md"
+            ]
+          }
+        }
+      }
+    },
+    "shared-datasource": {
+      "root": "libs/shared/datasource",
+      "sourceRoot": "libs/shared/datasource/src",
+      "projectType": "library",
+      "targets": {
+        "lint": {
+          "executor": "@nrwl/linter:eslint",
+          "options": {
+            "lintFilePatterns": [
+              "libs/shared/datasource/**/*.ts"
+            ]
+          }
+        },
+        "test": {
+          "executor": "@nrwl/jest:jest",
+          "outputs": [
+            "coverage/libs/shared/datasource"
+          ],
+          "options": {
+            "jestConfig": "libs/shared/datasource/jest.config.js",
+            "passWithNoTests": true
+          }
+        },
+        "build": {
+          "executor": "@nrwl/node:package",
+          "outputs": [
+            "{options.outputPath}"
+          ],
+          "options": {
+            "outputPath": "dist/libs/shared/datasource",
+            "tsConfig": "libs/shared/datasource/tsconfig.lib.json",
+            "packageJson": "libs/shared/datasource/package.json",
+            "main": "libs/shared/datasource/src/index.ts",
+            "assets": [
+              "libs/shared/datasource/*.md"
+            ]
+          }
+        }
+      }
     }
   },
   "cli": {

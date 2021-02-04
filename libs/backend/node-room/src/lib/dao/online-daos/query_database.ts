@@ -1,8 +1,8 @@
 import { Connection } from 'mysql';
 import { DatabaseConnection } from '../../database/database-wrapper/database_connection';
-import { UUIDManager } from '../../database/database-wrapper/uuid_manager';
 import { MYSQLConnectionConfig, query_type } from '../../main-interface';
 import { parse_sql_string } from '../../utils';
+import { v4 as uuid } from 'uuid';
 
 /**
  * Query the database and return the result in promise
@@ -93,7 +93,7 @@ export class QueryServerDatabase {
     };
 
     private handle_delete_query = async (query: string, dao_name: string, dao_inputs: any, query_type: query_type, target_table: string) => {
-        const row_uuid = UUIDManager.getInstance().uuid();
+        const row_uuid = uuid();
 
         const SQL_query = `
         START TRANSACTION;
@@ -142,7 +142,7 @@ export class QueryServerDatabase {
     };
 
     private handle_update_query = async (query: string, dao_name: string, dao_inputs: any, query_type: query_type, target_table: string) => {
-        const row_uuid = UUIDManager.getInstance().uuid();
+        const row_uuid = uuid();
 
         const SQL_query = `
         START TRANSACTION;
