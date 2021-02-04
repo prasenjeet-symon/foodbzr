@@ -1,0 +1,6 @@
+{
+  "name": "frontend-foodbzr-user",
+  "devDependencies": {
+    "@capacitor/cli": "^2.4.5"
+  }
+}

@@ -1,8 +1,1170 @@
 {
   "version": 2,
-
-  "projects": {},
+  "projects": {
+    "frontend-foodbzr-owner": {
+      "projectType": "application",
+      "root": "apps/frontend/foodbzr-owner",
+      "sourceRoot": "apps/frontend/foodbzr-owner/src",
+      "prefix": "foodbzr",
+      "targets": {
+        "build": {
+          "executor": "@angular-devkit/build-angular:browser",
+          "options": {
+            "outputPath": "dist/apps/frontend/foodbzr-owner",
+            "index": "apps/frontend/foodbzr-owner/src/index.html",
+            "main": "apps/frontend/foodbzr-owner/src/main.ts",
+            "polyfills": "apps/frontend/foodbzr-owner/src/polyfills.ts",
+            "tsConfig": "apps/frontend/foodbzr-owner/tsconfig.app.json",
+            "aot": true,
+            "assets": [
+              "apps/frontend/foodbzr-owner/src/assets",
+              {
+                "glob": "**/*.svg",
+                "input": "node_modules/ionicons/dist/ionicons/svg",
+                "output": "./svg"
+              }
+            ],
+            "styles": [
+              "apps/frontend/foodbzr-owner/src/styles.scss",
+              {
+                "input": "apps\\frontend\\foodbzr-owner/src/theme/variables.scss"
+              }
+            ],
+            "scripts": []
+          },
+          "configurations": {
+            "production": {
+              "fileReplacements": [
+                {
+                  "replace": "apps/frontend/foodbzr-owner/src/environments/environment.ts",
+                  "with": "apps/frontend/foodbzr-owner/src/environments/environment.prod.ts"
+                }
+              ],
+              "optimization": true,
+              "outputHashing": "all",
+              "sourceMap": false,
+              "namedChunks": false,
+              "extractLicenses": true,
+              "vendorChunk": false,
+              "buildOptimizer": true,
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "2mb",
+                  "maximumError": "5mb"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "6kb",
+                  "maximumError": "10kb"
+                }
+              ]
+            }
+          }
+        },
+        "serve": {
+          "executor": "@angular-devkit/build-angular:dev-server",
+          "options": {
+            "browserTarget": "frontend-foodbzr-owner:build"
+          },
+          "configurations": {
+            "production": {
+              "browserTarget": "frontend-foodbzr-owner:build:production"
+            }
+          }
+        },
+        "extract-i18n": {
+          "executor": "@angular-devkit/build-angular:extract-i18n",
+          "options": {
+            "browserTarget": "frontend-foodbzr-owner:build"
+          }
+        },
+        "lint": {
+          "executor": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": [
+              "apps/frontend/foodbzr-owner/tsconfig.app.json",
+              "apps/frontend/foodbzr-owner/tsconfig.spec.json",
+              "apps/frontend/foodbzr-owner/tsconfig.editor.json"
+            ],
+            "exclude": [
+              "**/node_modules/**",
+              "!apps/frontend/foodbzr-owner/**/*"
+            ]
+          }
+        },
+        "test": {
+          "executor": "@angular-devkit/build-angular:karma",
+          "options": {
+            "main": "apps/frontend/foodbzr-owner/src/test.ts",
+            "tsConfig": "apps/frontend/foodbzr-owner/tsconfig.spec.json",
+            "karmaConfig": "apps/frontend/foodbzr-owner/karma.conf.js",
+            "polyfills": "apps/frontend/foodbzr-owner/src/polyfills.ts",
+            "styles": [],
+            "scripts": [],
+            "assets": []
+          }
+        },
+        "cap": {
+          "executor": "@nxtend/capacitor:cap",
+          "options": {
+            "cmd": "--help"
+          }
+        },
+        "add": {
+          "executor": "@nxtend/capacitor:cap",
+          "options": {
+            "cmd": "add",
+            "packageInstall": true
+          },
+          "configurations": {
+            "ios": {
+              "cmd": "add ios"
+            },
+            "android": {
+              "cmd": "add android"
+            }
+          }
+        },
+        "copy": {
+          "executor": "@nxtend/capacitor:cap",
+          "options": {
+            "cmd": "copy",
+            "packageInstall": false
+          },
+          "configurations": {
+            "ios": {
+              "cmd": "copy ios"
+            },
+            "android": {
+              "cmd": "copy android"
+            }
+          }
+        },
+        "open": {
+          "executor": "@nxtend/capacitor:cap",
+          "options": {
+            "cmd": "open",
+            "packageInstall": false
+          },
+          "configurations": {
+            "ios": {
+              "cmd": "open ios"
+            },
+            "android": {
+              "cmd": "open android"
+            }
+          }
+        },
+        "sync": {
+          "executor": "@nxtend/capacitor:cap",
+          "options": {
+            "cmd": "sync",
+            "packageInstall": true
+          },
+          "configurations": {
+            "ios": {
+              "cmd": "sync ios"
+            },
+            "android": {
+              "cmd": "sync android"
+            }
+          }
+        },
+        "update": {
+          "executor": "@nxtend/capacitor:cap",
+          "options": {
+            "cmd": "update",
+            "packageInstall": true
+          },
+          "configurations": {
+            "ios": {
+              "cmd": "update ios"
+            },
+            "android": {
+              "cmd": "update android"
+            }
+          }
+        }
+      }
+    },
+    "frontend-foodbzr-owner-e2e": {
+      "root": "apps/frontend/foodbzr-owner-e2e",
+      "sourceRoot": "apps/frontend/foodbzr-owner-e2e/src",
+      "projectType": "application",
+      "targets": {
+        "e2e": {
+          "executor": "@nrwl/cypress:cypress",
+          "options": {
+            "cypressConfig": "apps/frontend/foodbzr-owner-e2e/cypress.json",
+            "tsConfig": "apps/frontend/foodbzr-owner-e2e/tsconfig.e2e.json",
+            "devServerTarget": "frontend-foodbzr-owner:serve"
+          },
+          "configurations": {
+            "production": {
+              "devServerTarget": "frontend-foodbzr-owner:serve:production"
+            }
+          }
+        },
+        "lint": {
+          "executor": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": [
+              "apps/frontend/foodbzr-owner-e2e/tsconfig.e2e.json"
+            ],
+            "exclude": [
+              "**/node_modules/**",
+              "!apps/frontend/foodbzr-owner-e2e/**/*"
+            ]
+          }
+        }
+      }
+    },
+    "frontend-foodbzr-partner": {
+      "projectType": "application",
+      "root": "apps/frontend/foodbzr-partner",
+      "sourceRoot": "apps/frontend/foodbzr-partner/src",
+      "prefix": "foodbzr",
+      "targets": {
+        "build": {
+          "executor": "@angular-devkit/build-angular:browser",
+          "options": {
+            "outputPath": "dist/apps/frontend/foodbzr-partner",
+            "index": "apps/frontend/foodbzr-partner/src/index.html",
+            "main": "apps/frontend/foodbzr-partner/src/main.ts",
+            "polyfills": "apps/frontend/foodbzr-partner/src/polyfills.ts",
+            "tsConfig": "apps/frontend/foodbzr-partner/tsconfig.app.json",
+            "aot": true,
+            "assets": [
+              "apps/frontend/foodbzr-partner/src/assets",
+              {
+                "glob": "**/*.svg",
+                "input": "node_modules/ionicons/dist/ionicons/svg",
+                "output": "./svg"
+              }
+            ],
+            "styles": [
+              "apps/frontend/foodbzr-partner/src/styles.scss",
+              {
+                "input": "apps\\frontend\\foodbzr-partner/src/theme/variables.scss"
+              }
+            ],
+            "scripts": []
+          },
+          "configurations": {
+            "production": {
+              "fileReplacements": [
+                {
+                  "replace": "apps/frontend/foodbzr-partner/src/environments/environment.ts",
+                  "with": "apps/frontend/foodbzr-partner/src/environments/environment.prod.ts"
+                }
+              ],
+              "optimization": true,
+              "outputHashing": "all",
+              "sourceMap": false,
+              "namedChunks": false,
+              "extractLicenses": true,
+              "vendorChunk": false,
+              "buildOptimizer": true,
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "2mb",
+                  "maximumError": "5mb"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "6kb",
+                  "maximumError": "10kb"
+                }
+              ]
+            }
+          }
+        },
+        "serve": {
+          "executor": "@angular-devkit/build-angular:dev-server",
+          "options": {
+            "browserTarget": "frontend-foodbzr-partner:build"
+          },
+          "configurations": {
+            "production": {
+              "browserTarget": "frontend-foodbzr-partner:build:production"
+            }
+          }
+        },
+        "extract-i18n": {
+          "executor": "@angular-devkit/build-angular:extract-i18n",
+          "options": {
+            "browserTarget": "frontend-foodbzr-partner:build"
+          }
+        },
+        "lint": {
+          "executor": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": [
+              "apps/frontend/foodbzr-partner/tsconfig.app.json",
+              "apps/frontend/foodbzr-partner/tsconfig.spec.json",
+              "apps/frontend/foodbzr-partner/tsconfig.editor.json"
+            ],
+            "exclude": [
+              "**/node_modules/**",
+              "!apps/frontend/foodbzr-partner/**/*"
+            ]
+          }
+        },
+        "test": {
+          "executor": "@angular-devkit/build-angular:karma",
+          "options": {
+            "main": "apps/frontend/foodbzr-partner/src/test.ts",
+            "tsConfig": "apps/frontend/foodbzr-partner/tsconfig.spec.json",
+            "karmaConfig": "apps/frontend/foodbzr-partner/karma.conf.js",
+            "polyfills": "apps/frontend/foodbzr-partner/src/polyfills.ts",
+            "styles": [],
+            "scripts": [],
+            "assets": []
+          }
+        },
+        "cap": {
+          "executor": "@nxtend/capacitor:cap",
+          "options": {
+            "cmd": "--help"
+          }
+        },
+        "add": {
+          "executor": "@nxtend/capacitor:cap",
+          "options": {
+            "cmd": "add",
+            "packageInstall": true
+          },
+          "configurations": {
+            "ios": {
+              "cmd": "add ios"
+            },
+            "android": {
+              "cmd": "add android"
+            }
+          }
+        },
+        "copy": {
+          "executor": "@nxtend/capacitor:cap",
+          "options": {
+            "cmd": "copy",
+            "packageInstall": false
+          },
+          "configurations": {
+            "ios": {
+              "cmd": "copy ios"
+            },
+            "android": {
+              "cmd": "copy android"
+            }
+          }
+        },
+        "open": {
+          "executor": "@nxtend/capacitor:cap",
+          "options": {
+            "cmd": "open",
+            "packageInstall": false
+          },
+          "configurations": {
+            "ios": {
+              "cmd": "open ios"
+            },
+            "android": {
+              "cmd": "open android"
+            }
+          }
+        },
+        "sync": {
+          "executor": "@nxtend/capacitor:cap",
+          "options": {
+            "cmd": "sync",
+            "packageInstall": true
+          },
+          "configurations": {
+            "ios": {
+              "cmd": "sync ios"
+            },
+            "android": {
+              "cmd": "sync android"
+            }
+          }
+        },
+        "update": {
+          "executor": "@nxtend/capacitor:cap",
+          "options": {
+            "cmd": "update",
+            "packageInstall": true
+          },
+          "configurations": {
+            "ios": {
+              "cmd": "update ios"
+            },
+            "android": {
+              "cmd": "update android"
+            }
+          }
+        }
+      }
+    },
+    "frontend-foodbzr-partner-e2e": {
+      "root": "apps/frontend/foodbzr-partner-e2e",
+      "sourceRoot": "apps/frontend/foodbzr-partner-e2e/src",
+      "projectType": "application",
+      "targets": {
+        "e2e": {
+          "executor": "@nrwl/cypress:cypress",
+          "options": {
+            "cypressConfig": "apps/frontend/foodbzr-partner-e2e/cypress.json",
+            "tsConfig": "apps/frontend/foodbzr-partner-e2e/tsconfig.e2e.json",
+            "devServerTarget": "frontend-foodbzr-partner:serve"
+          },
+          "configurations": {
+            "production": {
+              "devServerTarget": "frontend-foodbzr-partner:serve:production"
+            }
+          }
+        },
+        "lint": {
+          "executor": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": [
+              "apps/frontend/foodbzr-partner-e2e/tsconfig.e2e.json"
+            ],
+            "exclude": [
+              "**/node_modules/**",
+              "!apps/frontend/foodbzr-partner-e2e/**/*"
+            ]
+          }
+        }
+      }
+    },
+    "frontend-foodbzr-user": {
+      "projectType": "application",
+      "root": "apps/frontend/foodbzr-user",
+      "sourceRoot": "apps/frontend/foodbzr-user/src",
+      "prefix": "foodbzr",
+      "targets": {
+        "build": {
+          "executor": "@angular-devkit/build-angular:browser",
+          "options": {
+            "outputPath": "dist/apps/frontend/foodbzr-user",
+            "index": "apps/frontend/foodbzr-user/src/index.html",
+            "main": "apps/frontend/foodbzr-user/src/main.ts",
+            "polyfills": "apps/frontend/foodbzr-user/src/polyfills.ts",
+            "tsConfig": "apps/frontend/foodbzr-user/tsconfig.app.json",
+            "aot": true,
+            "assets": [
+              "apps/frontend/foodbzr-user/src/assets",
+              {
+                "glob": "**/*.svg",
+                "input": "node_modules/ionicons/dist/ionicons/svg",
+                "output": "./svg"
+              }
+            ],
+            "styles": [
+              "apps/frontend/foodbzr-user/src/styles.scss",
+              {
+                "input": "apps\\frontend\\foodbzr-user/src/theme/variables.scss"
+              }
+            ],
+            "scripts": []
+          },
+          "configurations": {
+            "production": {
+              "fileReplacements": [
+                {
+                  "replace": "apps/frontend/foodbzr-user/src/environments/environment.ts",
+                  "with": "apps/frontend/foodbzr-user/src/environments/environment.prod.ts"
+                }
+              ],
+              "optimization": true,
+              "outputHashing": "all",
+              "sourceMap": false,
+              "namedChunks": false,
+              "extractLicenses": true,
+              "vendorChunk": false,
+              "buildOptimizer": true,
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "2mb",
+                  "maximumError": "5mb"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "6kb",
+                  "maximumError": "10kb"
+                }
+              ]
+            }
+          }
+        },
+        "serve": {
+          "executor": "@angular-devkit/build-angular:dev-server",
+          "options": {
+            "browserTarget": "frontend-foodbzr-user:build"
+          },
+          "configurations": {
+            "production": {
+              "browserTarget": "frontend-foodbzr-user:build:production"
+            }
+          }
+        },
+        "extract-i18n": {
+          "executor": "@angular-devkit/build-angular:extract-i18n",
+          "options": {
+            "browserTarget": "frontend-foodbzr-user:build"
+          }
+        },
+        "lint": {
+          "executor": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": [
+              "apps/frontend/foodbzr-user/tsconfig.app.json",
+              "apps/frontend/foodbzr-user/tsconfig.spec.json",
+              "apps/frontend/foodbzr-user/tsconfig.editor.json"
+            ],
+            "exclude": [
+              "**/node_modules/**",
+              "!apps/frontend/foodbzr-user/**/*"
+            ]
+          }
+        },
+        "test": {
+          "executor": "@angular-devkit/build-angular:karma",
+          "options": {
+            "main": "apps/frontend/foodbzr-user/src/test.ts",
+            "tsConfig": "apps/frontend/foodbzr-user/tsconfig.spec.json",
+            "karmaConfig": "apps/frontend/foodbzr-user/karma.conf.js",
+            "polyfills": "apps/frontend/foodbzr-user/src/polyfills.ts",
+            "styles": [],
+            "scripts": [],
+            "assets": []
+          }
+        },
+        "cap": {
+          "executor": "@nxtend/capacitor:cap",
+          "options": {
+            "cmd": "--help"
+          }
+        },
+        "add": {
+          "executor": "@nxtend/capacitor:cap",
+          "options": {
+            "cmd": "add",
+            "packageInstall": true
+          },
+          "configurations": {
+            "ios": {
+              "cmd": "add ios"
+            },
+            "android": {
+              "cmd": "add android"
+            }
+          }
+        },
+        "copy": {
+          "executor": "@nxtend/capacitor:cap",
+          "options": {
+            "cmd": "copy",
+            "packageInstall": false
+          },
+          "configurations": {
+            "ios": {
+              "cmd": "copy ios"
+            },
+            "android": {
+              "cmd": "copy android"
+            }
+          }
+        },
+        "open": {
+          "executor": "@nxtend/capacitor:cap",
+          "options": {
+            "cmd": "open",
+            "packageInstall": false
+          },
+          "configurations": {
+            "ios": {
+              "cmd": "open ios"
+            },
+            "android": {
+              "cmd": "open android"
+            }
+          }
+        },
+        "sync": {
+          "executor": "@nxtend/capacitor:cap",
+          "options": {
+            "cmd": "sync",
+            "packageInstall": true
+          },
+          "configurations": {
+            "ios": {
+              "cmd": "sync ios"
+            },
+            "android": {
+              "cmd": "sync android"
+            }
+          }
+        },
+        "update": {
+          "executor": "@nxtend/capacitor:cap",
+          "options": {
+            "cmd": "update",
+            "packageInstall": true
+          },
+          "configurations": {
+            "ios": {
+              "cmd": "update ios"
+            },
+            "android": {
+              "cmd": "update android"
+            }
+          }
+        }
+      }
+    },
+    "frontend-foodbzr-user-e2e": {
+      "root": "apps/frontend/foodbzr-user-e2e",
+      "sourceRoot": "apps/frontend/foodbzr-user-e2e/src",
+      "projectType": "application",
+      "targets": {
+        "e2e": {
+          "executor": "@nrwl/cypress:cypress",
+          "options": {
+            "cypressConfig": "apps/frontend/foodbzr-user-e2e/cypress.json",
+            "tsConfig": "apps/frontend/foodbzr-user-e2e/tsconfig.e2e.json",
+            "devServerTarget": "frontend-foodbzr-user:serve"
+          },
+          "configurations": {
+            "production": {
+              "devServerTarget": "frontend-foodbzr-user:serve:production"
+            }
+          }
+        },
+        "lint": {
+          "executor": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": [
+              "apps/frontend/foodbzr-user-e2e/tsconfig.e2e.json"
+            ],
+            "exclude": [
+              "**/node_modules/**",
+              "!apps/frontend/foodbzr-user-e2e/**/*"
+            ]
+          }
+        }
+      }
+    },
+    "frontend-foodbzr-dboy": {
+      "projectType": "application",
+      "root": "apps/frontend/foodbzr-dboy",
+      "sourceRoot": "apps/frontend/foodbzr-dboy/src",
+      "prefix": "foodbzr",
+      "targets": {
+        "build": {
+          "executor": "@angular-devkit/build-angular:browser",
+          "options": {
+            "outputPath": "dist/apps/frontend/foodbzr-dboy",
+            "index": "apps/frontend/foodbzr-dboy/src/index.html",
+            "main": "apps/frontend/foodbzr-dboy/src/main.ts",
+            "polyfills": "apps/frontend/foodbzr-dboy/src/polyfills.ts",
+            "tsConfig": "apps/frontend/foodbzr-dboy/tsconfig.app.json",
+            "aot": true,
+            "assets": [
+              "apps/frontend/foodbzr-dboy/src/assets",
+              {
+                "glob": "**/*.svg",
+                "input": "node_modules/ionicons/dist/ionicons/svg",
+                "output": "./svg"
+              }
+            ],
+            "styles": [
+              "apps/frontend/foodbzr-dboy/src/styles.scss",
+              {
+                "input": "apps\\frontend\\foodbzr-dboy/src/theme/variables.scss"
+              }
+            ],
+            "scripts": []
+          },
+          "configurations": {
+            "production": {
+              "fileReplacements": [
+                {
+                  "replace": "apps/frontend/foodbzr-dboy/src/environments/environment.ts",
+                  "with": "apps/frontend/foodbzr-dboy/src/environments/environment.prod.ts"
+                }
+              ],
+              "optimization": true,
+              "outputHashing": "all",
+              "sourceMap": false,
+              "namedChunks": false,
+              "extractLicenses": true,
+              "vendorChunk": false,
+              "buildOptimizer": true,
+              "budgets": [
+                {
+                  "type": "initial",
+                  "maximumWarning": "2mb",
+                  "maximumError": "5mb"
+                },
+                {
+                  "type": "anyComponentStyle",
+                  "maximumWarning": "6kb",
+                  "maximumError": "10kb"
+                }
+              ]
+            }
+          }
+        },
+        "serve": {
+          "executor": "@angular-devkit/build-angular:dev-server",
+          "options": {
+            "browserTarget": "frontend-foodbzr-dboy:build"
+          },
+          "configurations": {
+            "production": {
+              "browserTarget": "frontend-foodbzr-dboy:build:production"
+            }
+          }
+        },
+        "extract-i18n": {
+          "executor": "@angular-devkit/build-angular:extract-i18n",
+          "options": {
+            "browserTarget": "frontend-foodbzr-dboy:build"
+          }
+        },
+        "lint": {
+          "executor": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": [
+              "apps/frontend/foodbzr-dboy/tsconfig.app.json",
+              "apps/frontend/foodbzr-dboy/tsconfig.spec.json",
+              "apps/frontend/foodbzr-dboy/tsconfig.editor.json"
+            ],
+            "exclude": [
+              "**/node_modules/**",
+              "!apps/frontend/foodbzr-dboy/**/*"
+            ]
+          }
+        },
+        "test": {
+          "executor": "@angular-devkit/build-angular:karma",
+          "options": {
+            "main": "apps/frontend/foodbzr-dboy/src/test.ts",
+            "tsConfig": "apps/frontend/foodbzr-dboy/tsconfig.spec.json",
+            "karmaConfig": "apps/frontend/foodbzr-dboy/karma.conf.js",
+            "polyfills": "apps/frontend/foodbzr-dboy/src/polyfills.ts",
+            "styles": [],
+            "scripts": [],
+            "assets": []
+          }
+        },
+        "cap": {
+          "executor": "@nxtend/capacitor:cap",
+          "options": {
+            "cmd": "--help"
+          }
+        },
+        "add": {
+          "executor": "@nxtend/capacitor:cap",
+          "options": {
+            "cmd": "add",
+            "packageInstall": true
+          },
+          "configurations": {
+            "ios": {
+              "cmd": "add ios"
+            },
+            "android": {
+              "cmd": "add android"
+            }
+          }
+        },
+        "copy": {
+          "executor": "@nxtend/capacitor:cap",
+          "options": {
+            "cmd": "copy",
+            "packageInstall": false
+          },
+          "configurations": {
+            "ios": {
+              "cmd": "copy ios"
+            },
+            "android": {
+              "cmd": "copy android"
+            }
+          }
+        },
+        "open": {
+          "executor": "@nxtend/capacitor:cap",
+          "options": {
+            "cmd": "open",
+            "packageInstall": false
+          },
+          "configurations": {
+            "ios": {
+              "cmd": "open ios"
+            },
+            "android": {
+              "cmd": "open android"
+            }
+          }
+        },
+        "sync": {
+          "executor": "@nxtend/capacitor:cap",
+          "options": {
+            "cmd": "sync",
+            "packageInstall": true
+          },
+          "configurations": {
+            "ios": {
+              "cmd": "sync ios"
+            },
+            "android": {
+              "cmd": "sync android"
+            }
+          }
+        },
+        "update": {
+          "executor": "@nxtend/capacitor:cap",
+          "options": {
+            "cmd": "update",
+            "packageInstall": true
+          },
+          "configurations": {
+            "ios": {
+              "cmd": "update ios"
+            },
+            "android": {
+              "cmd": "update android"
+            }
+          }
+        }
+      }
+    },
+    "frontend-foodbzr-dboy-e2e": {
+      "root": "apps/frontend/foodbzr-dboy-e2e",
+      "sourceRoot": "apps/frontend/foodbzr-dboy-e2e/src",
+      "projectType": "application",
+      "targets": {
+        "e2e": {
+          "executor": "@nrwl/cypress:cypress",
+          "options": {
+            "cypressConfig": "apps/frontend/foodbzr-dboy-e2e/cypress.json",
+            "tsConfig": "apps/frontend/foodbzr-dboy-e2e/tsconfig.e2e.json",
+            "devServerTarget": "frontend-foodbzr-dboy:serve"
+          },
+          "configurations": {
+            "production": {
+              "devServerTarget": "frontend-foodbzr-dboy:serve:production"
+            }
+          }
+        },
+        "lint": {
+          "executor": "@angular-devkit/build-angular:tslint",
+          "options": {
+            "tsConfig": [
+              "apps/frontend/foodbzr-dboy-e2e/tsconfig.e2e.json"
+            ],
+            "exclude": [
+              "**/node_modules/**",
+              "!apps/frontend/foodbzr-dboy-e2e/**/*"
+            ]
+          }
+        }
+      }
+    },
+    "backend-foodbzr-server": {
+      "root": "apps/backend/foodbzr-server",
+      "sourceRoot": "apps/backend/foodbzr-server/src",
+      "projectType": "application",
+      "prefix": "backend-foodbzr-server",
+      "targets": {
+        "build": {
+          "executor": "@nrwl/node:build",
+          "outputs": [
+            "{options.outputPath}"
+          ],
+          "options": {
+            "outputPath": "dist/apps/backend/foodbzr-server",
+            "main": "apps/backend/foodbzr-server/src/main.ts",
+            "tsConfig": "apps/backend/foodbzr-server/tsconfig.app.json",
+            "assets": [
+              "apps/backend/foodbzr-server/src/assets"
+            ]
+          },
+          "configurations": {
+            "production": {
+              "optimization": true,
+              "extractLicenses": true,
+              "inspect": false,
+              "fileReplacements": [
+                {
+                  "replace": "apps/backend/foodbzr-server/src/environments/environment.ts",
+                  "with": "apps/backend/foodbzr-server/src/environments/environment.prod.ts"
+                }
+              ]
+            }
+          }
+        },
+        "serve": {
+          "executor": "@nrwl/node:execute",
+          "options": {
+            "buildTarget": "backend-foodbzr-server:build"
+          }
+        },
+        "lint": {
+          "executor": "@nrwl/linter:eslint",
+          "options": {
+            "lintFilePatterns": [
+              "apps/backend/foodbzr-server/**/*.ts"
+            ]
+          }
+        },
+        "test": {
+          "executor": "@nrwl/jest:jest",
+          "outputs": [
+            "coverage/apps/backend/foodbzr-server"
+          ],
+          "options": {
+            "jestConfig": "apps/backend/foodbzr-server/jest.config.js",
+            "passWithNoTests": true
+          }
+        }
+      }
+    },
+    "shared-util": {
+      "root": "libs/shared/util",
+      "sourceRoot": "libs/shared/util/src",
+      "projectType": "library",
+      "targets": {
+        "lint": {
+          "executor": "@nrwl/linter:eslint",
+          "options": {
+            "lintFilePatterns": [
+              "libs/shared/util/**/*.ts"
+            ]
+          }
+        },
+        "test": {
+          "executor": "@nrwl/jest:jest",
+          "outputs": [
+            "coverage/libs/shared/util"
+          ],
+          "options": {
+            "jestConfig": "libs/shared/util/jest.config.js",
+            "passWithNoTests": true
+          }
+        }
+      }
+    },
+    "shared-types": {
+      "root": "libs/shared/types",
+      "sourceRoot": "libs/shared/types/src",
+      "projectType": "library",
+      "targets": {
+        "lint": {
+          "executor": "@nrwl/linter:eslint",
+          "options": {
+            "lintFilePatterns": [
+              "libs/shared/types/**/*.ts"
+            ]
+          }
+        },
+        "test": {
+          "executor": "@nrwl/jest:jest",
+          "outputs": [
+            "coverage/libs/shared/types"
+          ],
+          "options": {
+            "jestConfig": "libs/shared/types/jest.config.js",
+            "passWithNoTests": true
+          }
+        }
+      }
+    },
+    "shared-live-data": {
+      "root": "libs/shared/live-data",
+      "sourceRoot": "libs/shared/live-data/src",
+      "projectType": "library",
+      "targets": {
+        "lint": {
+          "executor": "@nrwl/linter:eslint",
+          "options": {
+            "lintFilePatterns": [
+              "libs/shared/live-data/**/*.ts"
+            ]
+          }
+        },
+        "test": {
+          "executor": "@nrwl/jest:jest",
+          "outputs": [
+            "coverage/libs/shared/live-data"
+          ],
+          "options": {
+            "jestConfig": "libs/shared/live-data/jest.config.js",
+            "passWithNoTests": true
+          }
+        },
+        "build": {
+          "executor": "@nrwl/node:package",
+          "outputs": [
+            "{options.outputPath}"
+          ],
+          "options": {
+            "outputPath": "dist/libs/shared/live-data",
+            "tsConfig": "libs/shared/live-data/tsconfig.lib.json",
+            "packageJson": "libs/shared/live-data/package.json",
+            "main": "libs/shared/live-data/src/index.ts",
+            "assets": [
+              "libs/shared/live-data/*.md"
+            ]
+          }
+        }
+      }
+    },
+    "frontend-indexed-sql": {
+      "root": "libs/frontend/indexed-sql",
+      "sourceRoot": "libs/frontend/indexed-sql/src",
+      "projectType": "library",
+      "targets": {
+        "lint": {
+          "executor": "@nrwl/linter:eslint",
+          "options": {
+            "lintFilePatterns": [
+              "libs/frontend/indexed-sql/**/*.ts"
+            ]
+          }
+        },
+        "test": {
+          "executor": "@nrwl/jest:jest",
+          "outputs": [
+            "coverage/libs/frontend/indexed-sql"
+          ],
+          "options": {
+            "jestConfig": "libs/frontend/indexed-sql/jest.config.js",
+            "passWithNoTests": true
+          }
+        },
+        "build": {
+          "executor": "@nrwl/node:package",
+          "outputs": [
+            "{options.outputPath}"
+          ],
+          "options": {
+            "outputPath": "dist/libs/frontend/indexed-sql",
+            "tsConfig": "libs/frontend/indexed-sql/tsconfig.lib.json",
+            "packageJson": "libs/frontend/indexed-sql/package.json",
+            "main": "libs/frontend/indexed-sql/src/index.ts",
+            "assets": [
+              "libs/frontend/indexed-sql/*.md"
+            ]
+          }
+        }
+      }
+    },
+    "frontend-node-room-client": {
+      "root": "libs/frontend/node-room-client",
+      "sourceRoot": "libs/frontend/node-room-client/src",
+      "projectType": "library",
+      "targets": {
+        "lint": {
+          "executor": "@nrwl/linter:eslint",
+          "options": {
+            "lintFilePatterns": [
+              "libs/frontend/node-room-client/**/*.ts"
+            ]
+          }
+        },
+        "test": {
+          "executor": "@nrwl/jest:jest",
+          "outputs": [
+            "coverage/libs/frontend/node-room-client"
+          ],
+          "options": {
+            "jestConfig": "libs/frontend/node-room-client/jest.config.js",
+            "passWithNoTests": true
+          }
+        },
+        "build": {
+          "executor": "@nrwl/node:package",
+          "outputs": [
+            "{options.outputPath}"
+          ],
+          "options": {
+            "outputPath": "dist/libs/frontend/node-room-client",
+            "tsConfig": "libs/frontend/node-room-client/tsconfig.lib.json",
+            "packageJson": "libs/frontend/node-room-client/package.json",
+            "main": "libs/frontend/node-room-client/src/index.ts",
+            "assets": [
+              "libs/frontend/node-room-client/*.md"
+            ]
+          }
+        }
+      }
+    },
+    "backend-node-room": {
+      "root": "libs/backend/node-room",
+      "sourceRoot": "libs/backend/node-room/src",
+      "projectType": "library",
+      "targets": {
+        "lint": {
+          "executor": "@nrwl/linter:eslint",
+          "options": {
+            "lintFilePatterns": [
+              "libs/backend/node-room/**/*.ts"
+            ]
+          }
+        },
+        "test": {
+          "executor": "@nrwl/jest:jest",
+          "outputs": [
+            "coverage/libs/backend/node-room"
+          ],
+          "options": {
+            "jestConfig": "libs/backend/node-room/jest.config.js",
+            "passWithNoTests": true
+          }
+        },
+        "build": {
+          "executor": "@nrwl/node:package",
+          "outputs": [
+            "{options.outputPath}"
+          ],
+          "options": {
+            "outputPath": "dist/libs/backend/node-room",
+            "tsConfig": "libs/backend/node-room/tsconfig.lib.json",
+            "packageJson": "libs/backend/node-room/package.json",
+            "main": "libs/backend/node-room/src/index.ts",
+            "assets": [
+              "libs/backend/node-room/*.md"
+            ]
+          }
+        }
+      }
+    }
+  },
   "cli": {
-    "defaultCollection": "@nrwl/workspace"
-  }
+    "defaultCollection": "@nxtend/ionic-angular"
+  },
+  "generators": {
+    "@nrwl/angular:application": {
+      "style": "scss",
+      "linter": "tslint",
+      "unitTestRunner": "karma",
+      "e2eTestRunner": "cypress"
+    },
+    "@nrwl/angular:library": {
+      "style": "scss",
+      "linter": "tslint",
+      "unitTestRunner": "karma"
+    },
+    "@nrwl/angular:component": {
+      "style": "scss"
+    }
+  },
+  "defaultProject": "frontend-foodbzr-owner"
 }

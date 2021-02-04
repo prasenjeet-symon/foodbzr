@@ -1,0 +1,7 @@
+{
+  "name": "foodbzr-partner",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular"
+}

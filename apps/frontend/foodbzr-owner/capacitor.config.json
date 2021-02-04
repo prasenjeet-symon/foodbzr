@@ -1,0 +1,13 @@
+{
+  "appId": "io.ionic.starter",
+  "appName": "foodbzr-owner",
+  "bundledWebRuntime": false,
+  "npmClient": "npm",
+  "webDir": "../../../dist/apps/frontend/foodbzr-owner",
+  "plugins": {
+    "SplashScreen": {
+      "launchShowDuration": 0
+    }
+  },
+  "cordova": {}
+}

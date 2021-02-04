@@ -1,0 +1,7 @@
+{
+  "name": "foodbzr-dboy",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular"
+}
