@@ -71,3 +71,47 @@ export interface IGetKitchen {
     date_updated: string;
     row_uuid: string;
 }
+
+export interface IGetMenu {
+    menu_name: string;
+    is_active: is_active;
+    profile_picture: string;
+    bio: string;
+    kitchen_row_uuid: string;
+    regional_food_category_row_uuid: string;
+    regional_food_category_name: string;
+    food_category_row_uuid: string;
+    food_category_name: string;
+    offer_percentage: number;
+    offer_start_datetime: string;
+    offer_end_datetime: string;
+    date_created: string;
+    date_updated: string;
+    row_uuid: string;
+}
+
+export interface IGetFoodCategory {
+    name: string;
+    is_active: is_active;
+    profile_picture: string;
+    partner_row_uuid: string;
+    offer_percentage: string;
+    offer_start_datetime: string;
+    offer_end_datetime: string;
+    date_created: string;
+    date_updated: string;
+    row_uuid: string;
+}
+
+export interface IGetRegionalFoodCategory {
+    name: string;
+    is_active: is_active;
+    profile_picture: string;
+    partner_row_uuid: string;
+    offer_percentage: number;
+    offer_start_datetime: string;
+    offer_end_datetime: string;
+    date_created: string;
+    date_updated: string;
+    row_uuid: string;
+}
