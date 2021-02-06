@@ -115,3 +115,54 @@ export interface IGetRegionalFoodCategory {
     date_updated: string;
     row_uuid: string;
 }
+
+/** Currency  */
+export enum e_currency {
+    INR = 'INR',
+    USD = 'USD',
+}
+
+export const currency_values = ['INR', 'USD'];
+export type currency = 'USD' | 'INR';
+
+export interface IGetMenuSizeVariant {
+    name: string;
+    profile_picture: string;
+    price_per_unit: number;
+    currency: number;
+    min_order_amount: number;
+    bio: string;
+    menu_row_uuid: string;
+    is_active: is_active;
+    offer_percentage: number;
+    offer_start_datetime: string;
+    offer_end_datetime: string;
+    date_created: string;
+    date_updated: string;
+    row_uuid: string;
+}
+
+export interface IGetMenuPicture {
+    menu_row_uuid: string;
+    pic_uri: string;
+    thumbnail_uri: string;
+    size: number;
+    mime_type: string;
+    date_created: string;
+    date_updated: string;
+    row_uuid: string;
+}
+
+export interface IGetMenuReview {
+    menu_row_uuid: string;
+    user_row_uuid: string;
+    review: string;
+    is_active: is_active;
+    positive_points: number;
+    negative_points: number;
+    date_created: string;
+    date_updated: string;
+    row_uuid: string;
+    full_name: string;
+    profile_picture: string;
+}

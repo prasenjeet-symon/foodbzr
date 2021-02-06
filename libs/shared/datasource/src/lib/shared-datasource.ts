@@ -41,3 +41,20 @@ export { delete_regional_food_category } from './foodbzr/dao/delete/regional_foo
 export { insert_regional_food_category } from './foodbzr/dao/insert/regional_food_category.i.dao';
 export { fetch_regional_food_category_of_partner } from './foodbzr/dao/select/regional_food_category.s.dao';
 export { update_regional_food_category } from './foodbzr/dao/update/regional_food_category.u.dao';
+
+/** menu_size_variant.table.ts */
+export { delete_menu_size_variant } from './foodbzr/dao/delete/menu_size_variant.d.dao';
+export { insert_menu_size_variant } from './foodbzr/dao/insert/menu_size_variant.i.dao';
+export { fetch_menu_size_variant_of_menu, fetch_menu_size_variant_single } from './foodbzr/dao/select/menu_size_variant.s.dao';
+export { update_menu_size_variant } from './foodbzr/dao/update/menu_size_variant.u.dao';
+
+/** menu_picture.table.ts */
+export { delete_menu_picture } from './foodbzr/dao/delete/menu_picture.d.dao';
+export { insert_multi_menu_picture } from './foodbzr/dao/insert/menu_picture.i.dao';
+export { fetch_menu_picture_of_menu } from './foodbzr/dao/select/menu_picture.s.dao';
+
+/** menu_review.table.ts */
+export { delete_menu_review } from './foodbzr/dao/delete/menu_review.d.dao';
+export { insert_menu_review } from './foodbzr/dao/insert/menu_review.i.dao';
+export { fetch_menu_reviews_of_menu } from './foodbzr/dao/select/menu_review.s.dao';
+export { update_menu_review } from './foodbzr/dao/update/menu_review.u.dao';
