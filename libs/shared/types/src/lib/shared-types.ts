@@ -166,3 +166,129 @@ export interface IGetMenuReview {
     full_name: string;
     profile_picture: string;
 }
+
+export interface IGetUser {
+    owner_row_uuid: string;
+    full_name: string;
+    mobile_number: string;
+    profile_picture: string;
+    bio: string;
+    is_active: is_active;
+    gender: gender;
+    birth_date: string;
+    last_otp: string;
+    is_mobile_verified: is_active;
+    date_created: string;
+    date_updated: string;
+    row_uuid: string;
+}
+
+export interface IGetDBoy {
+    kitchen_row_uuid: string;
+    full_name: string;
+    mobile_number: string;
+    profile_picture: string;
+    gender: gender;
+    is_active: is_active;
+    is_mobile_verified: is_active;
+    last_otp: string;
+    birth_date: string;
+    is_verified: is_active;
+    date_created: string;
+    date_updated: string;
+    row_uuid: string;
+}
+
+export type delivery_status = 'placed' | 'confirmed' | 'canceled' | 'delivered';
+export const delivery_status_values = ['placed', 'confirmed', 'canceled', 'delivered'];
+
+export type pay_type = 'COD' | 'ONLINE';
+export const pay_type_values = ['COD', 'ONLINE'];
+
+export type pay_status = 'paid' | 'pending' | 'refunded';
+export const pay_status_values = ['paid', 'pending', 'refunded'];
+
+export type order_lifecycle_state = 'order placed' | 'order confirmed' | 'cooking' | 'order pickedup' | 'order on its way' | 'order delivered' | 'canceled';
+export const order_lifecycle_state_values = ['order placed', 'order confirmed', 'cooking', 'order pickedup', 'order on its way', 'order delivered', 'canceled'];
+
+export interface IOrderLifeCycle {
+    name: order_lifecycle_state;
+    is_done: boolean;
+    date_created: string;
+    date_updated: string;
+}
+export interface IFetchOrderLifecycle {
+    lifecycle: IOrderLifeCycle[];
+}
+
+export interface IGetOrder {
+    user_row_uuid: string;
+    partner_row_uuid: string;
+    kitchen_row_uuid: string;
+    dboy_row_uuid: string;
+    delivery_status: delivery_status;
+    pay_type: pay_type;
+    pay_status: pay_status;
+    otp: string;
+    amount_paid: number;
+    bzrcoin_used: number;
+    delivery_charge: number;
+    user_saved_amount: number;
+    lifecycle: IOrderLifeCycle[];
+    date_created: string;
+    date_updated: string;
+    row_uuid: string;
+}
+
+export interface IGetUserCartFull {
+    user_row_uuid: string;
+    amount: number;
+    date_created: string;
+    date_updated: string;
+    row_uuid: string;
+
+    menu_size_variant_price_per_unit: number;
+    menu_size_variant_name: string;
+    menu_size_variant_offer_percentage: number;
+    menu_size_variant_offer_start_datetime: string;
+    menu_size_variant_offer_end_datetime: string;
+    menu_size_variant_row_uuid: string;
+
+    menu_menu_name: string;
+    menu_offer_percentage: number;
+    menu_offer_start_datetime: string;
+    menu_offer_end_datetime: string;
+    menu_row_uuid: string;
+
+    kitchen_kitchen_name: string;
+    kitchen_offer_percentage: number;
+    kitchen_offer_start_datetime: string;
+    kitchen_offer_end_datetime: string;
+    kitchen_row_uuid: string;
+
+    regional_food_category_name: string;
+    regional_food_category_offer_percentage: number;
+    regional_food_category_offer_start_datetime: string;
+    regional_food_category_offer_end_datetime: string;
+    regional_food_category_row_uuid: string;
+
+    food_category_name: string;
+    food_category_offer_percentage: number;
+    food_category_offer_start_datetime: string;
+    food_category_offer_end_datetime: string;
+    food_category_row_uuid: string;
+}
+
+export interface IGetDeliveryAddress {
+    user_row_uuid: string;
+    is_active: is_active;
+    street: string;
+    pincode: string;
+    state: string;
+    country: string;
+    latitude: number;
+    longitude: number;
+    date_created: string;
+    date_updated: string;
+    row_uuid: string;
+}

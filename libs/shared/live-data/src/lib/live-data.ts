@@ -1,10 +1,11 @@
-import { Subject } from 'rxjs';
+import { Subject, BehaviorSubject } from 'rxjs';
+import { filter } from 'rxjs/operators';
 import { v4 as uuidv4 } from 'uuid';
 import { DaoLife } from '@sculify/node-room-client';
 
 export class LiveData<T> {
     public uuid: string;
-    private BSubject: Subject<T> = new Subject();
+    private BSubject: BehaviorSubject<T> = new BehaviorSubject(null);
 
     constructor() {
         this.uuid = uuidv4();
@@ -14,7 +15,7 @@ export class LiveData<T> {
         if (ctx && ctx instanceof DaoLife) {
             (ctx as DaoLife).push_live_data(this);
         }
-        return this.BSubject.asObservable();
+        return this.BSubject.pipe(filter((m) => m !== null));
     };
 
     public kill() {

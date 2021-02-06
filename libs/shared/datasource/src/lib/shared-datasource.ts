@@ -58,3 +58,41 @@ export { delete_menu_review } from './foodbzr/dao/delete/menu_review.d.dao';
 export { insert_menu_review } from './foodbzr/dao/insert/menu_review.i.dao';
 export { fetch_menu_reviews_of_menu } from './foodbzr/dao/select/menu_review.s.dao';
 export { update_menu_review } from './foodbzr/dao/update/menu_review.u.dao';
+
+/** user.table.ts */
+export { delete_user } from './foodbzr/dao/delete/user.d.dao';
+export { insert_user } from './foodbzr/dao/insert/user.i.dao';
+export { fetch_user_single } from './foodbzr/dao/select/user.s.dao';
+export { update_user } from './foodbzr/dao/update/user.u.dao';
+
+/** user_cart.table.ts */
+export { delete_user_cart } from './foodbzr/dao/delete/user_cart.d.dao';
+export { insert_user_cart } from './foodbzr/dao/insert/user_cart.i.dao';
+export { fetch_user_cart_full_details } from './foodbzr/dao/select/user_cart.s.dao';
+export { update_user_cart } from './foodbzr/dao/update/user_cart.u.dao';
+
+/** order.table.ts */
+export {} from './foodbzr/dao/delete/order.d.dao';
+export { insert_order } from './foodbzr/dao/insert/order.i.dao';
+export { fetch_order_single, fetch_order_lifecycle } from './foodbzr/dao/select/order.s.dao';
+export {
+    update_order_add_otp,
+    update_t_order_lifecycle,
+    update_order_remove_dboy,
+    update_order_pay_status,
+    update_order_lifecycle,
+    update_order_delivery_status,
+    update_order_assign_dboy,
+} from './foodbzr/dao/update/order.u.dao';
+
+/** delivery_address.table.ts */
+export { delete_delivery_address } from './foodbzr/dao/delete/delivery_address.d.dao';
+export { insert_delivery_address } from './foodbzr/dao/insert/delivery_address.i.dao';
+export { fetch_delivery_address_of_user } from './foodbzr/dao/select/delivery_address.s.dao';
+export { update_delivery_address } from './foodbzr/dao/update/delivery_address.u.dao';
+
+/** dboy.table.ts */
+export { delete_dboy } from './foodbzr/dao/delete/dboy.d.dao';
+export { insert_dboy } from './foodbzr/dao/insert/dboy.i.dao';
+export { fetch_dboy_single, fetch_dboy_of_kitchen } from './foodbzr/dao/select/dboy.s.dao';
+export { update_dboy } from './foodbzr/dao/update/dboy.u.dao';
