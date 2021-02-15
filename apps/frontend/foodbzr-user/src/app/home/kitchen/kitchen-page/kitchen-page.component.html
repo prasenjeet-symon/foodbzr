@@ -1,0 +1,45 @@
+<ion-header [translucent]="true">
+    <ion-toolbar>
+        <ion-title>Kitchen</ion-title>
+    </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+    <div class="kitchen_profile_holder">
+        <img src="../../../../assets/icon/food (6).jpg" alt="" srcset="" />
+        <!-- add to fav -->
+        <div class="fav_button">
+            <ion-fab-button color="danger">
+                <ion-icon name="heart"></ion-icon>
+            </ion-fab-button>
+        </div>
+    </div>
+
+    <!-- name -->
+    <div class="kitchen_info">
+        <ion-item>
+            <ion-icon slot="start" name="restaurant"></ion-icon>
+            <ion-label class="ion-text-wrap">
+                <h2>Lorem ipsum dolor sit.</h2>
+                <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Perferendis provident cumque totam.</p>
+            </ion-label>
+        </ion-item>
+    </div>
+
+    <!-- list of the regional food category -->
+    <div class="regional_food_cat">
+        <ion-list>
+            <ion-list-header>
+                <ion-label color="secondary"> Choose you love </ion-label>
+            </ion-list-header>
+
+            <ion-item *ngFor="let item of reg_food">
+                <ion-icon slot="end" name="chevron-forward"></ion-icon>
+                <ion-avatar slot="start"><img src="../../../../assets/icon/food (8).jpg" alt="" /></ion-avatar>
+                <ion-label>
+                    <h2>Lorem ipsum dolor sit.</h2>
+                </ion-label>
+            </ion-item>
+        </ion-list>
+    </div>
+</ion-content>

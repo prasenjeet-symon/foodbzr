@@ -1,16 +1,19 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { Tab1Page } from './tab1.page';
 
 const routes: Routes = [
-  {
-    path: '',
-    component: Tab1Page,
-  },
+    {
+        path: '',
+        loadChildren: () => import('../home/found-kitchen/found-kitchen.module').then((m) => m.FoundKitchenModule),
+    },
+    {
+        path: 'kitchen',
+        loadChildren: () => import('../home/kitchen/kitchen.module').then((m) => m.KitchenModule),
+    },
 ];
 
 @NgModule({
-  imports: [RouterModule.forChild(routes)],
-  exports: [RouterModule],
+    imports: [RouterModule.forChild(routes)],
+    exports: [RouterModule],
 })
 export class Tab1PageRoutingModule {}

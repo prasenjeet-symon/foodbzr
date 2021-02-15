@@ -1,0 +1,54 @@
+<ion-header [translucent]="true">
+    <ion-toolbar>
+        <ion-item slot="start">
+            <ion-icon slot="start" name="location"></ion-icon>
+            <ion-label> <h4>Lorem ipsum dolor sit amet consectetur. jkjl jjljllj</h4> </ion-label>
+        </ion-item>
+        <ion-buttons slot="end">
+            <ion-button> <ion-icon name="search"></ion-icon> </ion-button>
+        </ion-buttons>
+    </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+    <!-- foods menus that you may like -->
+    <div class="suggested_menus">
+        <ion-list>
+            <ion-list-header>
+                <ion-text><h4>Food trending near you</h4></ion-text>
+            </ion-list-header>
+            <ion-grid>
+                <ion-row>
+                    <ion-col *ngFor="let men of menu" size="4" size-sm="4">
+                        <div class="menu_sugg">
+                            <ion-avatar><img src="../../../../assets/icon/food (13).jpg" alt="" /></ion-avatar>
+                            <ion-text color="dark">
+                                <p>Lorem, ipsum dolor.</p>
+                            </ion-text>
+                        </div>
+                    </ion-col>
+                </ion-row>
+            </ion-grid>
+        </ion-list>
+    </div>
+
+    <!-- found kitchens -->
+    <div class="found_kitchens">
+        <ion-list>
+            <ion-list-header>
+                <ion-text><h4>345 kitchens found near you</h4></ion-text>
+            </ion-list-header>
+
+            <ion-item *ngFor="let kit of kitchen">
+                <ion-card (click)="navKitchenPage()">
+                    <img src="../../../../assets/icon/food (4).jpg" />
+                    <ion-card-header>
+                        <ion-card-subtitle>Destination</ion-card-subtitle>
+                        <ion-card-title>Madison, WI</ion-card-title>
+                    </ion-card-header>
+                    <ion-card-content> Lorem, ipsum., Lorem, ipsum dolor., Lorem, ipsum. </ion-card-content>
+                </ion-card>
+            </ion-item>
+        </ion-list>
+    </div>
+</ion-content>
