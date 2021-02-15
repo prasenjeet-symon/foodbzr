@@ -1,12 +1,12 @@
-import { instance_manager_table_name, is_there_space_in_string, node_room_config_database, parse_sql_string } from '../../utils';
+import { v4 as uuid } from 'uuid';
 import { ExecuteDaoOnline } from '../../dao/online-daos/execute_dao_online';
+import { dao_execute_type, IDatabaseWrapper, inited_instances, init_waiting_list, MYSQLConnectionConfig, rootDatabase } from '../../main-interface';
+import { instance_manager_table_name, is_there_space_in_string, node_room_config_database, parse_sql_string } from '../../utils';
+import { OfflineSync } from '../sync/sync';
+import { DatabaseConnection } from './database_connection';
 import { InstanceClient } from './instance-client';
 import { InstanceClientManager } from './instance-client-manager';
-import { OfflineSync } from '../sync/sync';
-import { dao_execute_type, IDatabaseWrapper, inited_instances, init_waiting_list, MYSQLConnectionConfig, rootDatabase } from '../../main-interface';
-import { DatabaseConnection } from './database_connection';
-import { v4 as uuid } from 'uuid';
-import { Connection } from 'mysql';
+
 
 export class DatabaseWrapper implements IDatabaseWrapper {
     private root_database_name: string;
@@ -184,6 +184,7 @@ export class DatabaseWrapper implements IDatabaseWrapper {
                 await this.start_init();
             }
         } catch (error) {
+            console.log(error,'ERR')
             first_init.reject(error);
             throw new Error(error);
         }
@@ -340,7 +341,7 @@ export class DatabaseWrapper implements IDatabaseWrapper {
      * on at a time
      */
     private create_mysql_connection = (multiple_query = false, database_name?: string) => {
-        const connection: Connection = new DatabaseConnection().create_mysql_connection(this.MYSQLConfig, multiple_query, database_name);
+        const connection: any = new DatabaseConnection().create_mysql_connection(this.MYSQLConfig, multiple_query, database_name);
         return connection;
     };
 }

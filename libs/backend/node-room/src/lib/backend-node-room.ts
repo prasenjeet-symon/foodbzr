@@ -2,7 +2,7 @@ export { QueryServerDatabase } from './dao/online-daos/query_database';
 export { BaseDao } from './dao/dao-base-class';
 export { Query } from './dao/dao-decorator';
 export { Database } from './database/database-decorator';
-export { UUIDManager } from './database/database-wrapper/uuid_manager';
+export { UUIDManager, MYSQLManager } from './database/database-wrapper/uuid_manager';
 export { IDao, IDaoConfig, MYSQLConnectionConfig, query_type } from './main-interface';
 export { DatabaseWrapper } from './database/database-wrapper/database-wrapper';
 export { DatabaseConnection } from './database/database-wrapper/database_connection';

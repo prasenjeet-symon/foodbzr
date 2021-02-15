@@ -21,3 +21,25 @@ export class UUIDManager {
         return this.uuidF();
     };
 }
+
+/** mysql taker */
+
+export class MYSQLManager {
+    private static instance: MYSQLManager;
+    public mysql: any;
+
+    private constructor(mysql: any) {
+        this.mysql = mysql;
+    }
+
+    public static initInstance = (mysql: any) => {
+        if (!MYSQLManager.instance) {
+            MYSQLManager.instance = new MYSQLManager(mysql);
+        }
+    };
+
+    public static getInstance = () => {
+        return MYSQLManager.instance;
+    };
+
+}

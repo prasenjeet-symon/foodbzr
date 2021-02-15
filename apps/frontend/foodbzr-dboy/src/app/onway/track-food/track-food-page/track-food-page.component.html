@@ -1,0 +1,53 @@
+<ion-header [translucent]="true">
+    <ion-toolbar>
+        <ion-title *ngIf="selectedOrder">Order id {{ selectedOrder.row_id }}</ion-title>
+        <ion-item *ngIf="allOrdersOnWay.length !== 0" slot="end">
+            <ion-label>Orders</ion-label>
+            <ion-select (ionChange)="updateMap()" [(ngModel)]="selectedOrder">
+                <ion-select-option *ngFor="let order of allOrdersOnWay" [value]="order">Order id {{ order.row_id }}</ion-select-option>
+            </ion-select>
+        </ion-item>
+    </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+    <!-- for ios only header  -->
+    <ion-header collapse="condense">
+        <ion-toolbar>
+            <ion-title size="large">Order id 456</ion-title>
+        </ion-toolbar>
+    </ion-header>
+
+    <div class="ion-page">
+        <div #map id="map"></div>
+
+        <!-- order actions holder -->
+        <div *ngIf="selectedOrder" class="order_actions">
+            <ion-card>
+                <ion-card-header>
+                    <ion-card-subtitle color="danger">{{ selectedOrder.pay_type }}</ion-card-subtitle>
+                    <ion-card-title> &#x20B9; {{ selectedOrder.amount_paid }} </ion-card-title>
+                </ion-card-header>
+
+                <ion-card-content>
+                    <!-- user info -->
+                    <ion-item>
+                        <ion-avatar slot="start"><img [src]="selectedOrder.user_profile_picture" alt="" srcset="" /></ion-avatar>
+                        <ion-label>
+                            <h3>{{ selectedOrder.user_full_name }}</h3>
+                            <p>+91 {{ selectedOrder.user_mobile_number }}</p>
+                        </ion-label>
+                        <ion-fab-button color="tertiary" size="small" slot="end">
+                            <ion-icon name="call"></ion-icon>
+                        </ion-fab-button>
+                    </ion-item>
+
+                    <!-- deliver button -->
+                    <div class="deliver_button">
+                        <ion-button expand="full" color="primary">Deliver Now</ion-button>
+                    </div>
+                </ion-card-content>
+            </ion-card>
+        </div>
+    </div>
+</ion-content>

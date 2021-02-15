@@ -15,7 +15,7 @@ export class update_order_add_otp extends BaseDao<IModificationDaoStatus> {
     }
 
     @Query(`
-        UPDATE order
+        UPDATE food_order
         SET otp = :otp:
         WHERE row_uuid = :order_row_uuid:
     ;`)
@@ -34,7 +34,7 @@ export class update_order_lifecycle extends BaseDao<IModificationDaoStatus> {
     }
 
     @Query(`
-        UPDATE order
+        UPDATE food_order
         SET lifecycle = :lifecycle:
         WHERE row_uuid = :order_row_uuid:
     ;`)
@@ -53,7 +53,7 @@ export class update_order_pay_status extends BaseDao<IModificationDaoStatus> {
     }
 
     @Query(`
-        UPDATE order
+        UPDATE food_order
         SET pay_status = :pay_status:
         WHERE row_uuid = :order_row_uuid:
     ;`)
@@ -72,7 +72,7 @@ export class update_order_delivery_status extends BaseDao<IModificationDaoStatus
     }
 
     @Query(`
-        UPDATE order
+        UPDATE food_order
         SET delivery_status = :delivery_status:
         WHERE row_uuid = :order_row_uuid:
     ;`)
@@ -91,7 +91,7 @@ export class update_order_assign_dboy extends BaseDao<IModificationDaoStatus> {
     }
 
     @Query(`
-        UPDATE order
+        UPDATE food_order
         SET dboy_row_uuid = :dboy_row_uuid:
         WHERE row_uuid = :order_row_uuid:
     ;`)
@@ -110,7 +110,7 @@ export class update_order_remove_dboy extends BaseDao<IModificationDaoStatus> {
     }
 
     @Query(`
-        UPDATE order
+        UPDATE food_order
         SET dboy_row_uuid = NULL
         WHERE row_uuid = :order_row_uuid:
     ;`)
@@ -135,22 +135,98 @@ export class update_t_order_lifecycle extends TBaseDao<IModificationDaoStatus> {
             /**
              * Fetch the order details
              */
-            const order_details = await new fetch_order_single(this.TDaoConfig).fetch(order_row_uuid).asyncData();
+            const order_details = await new fetch_order_single(this.TDaoConfig).fetch(order_row_uuid).asyncData(this);
             if (order_details.length === 0) {
                 throw new Error('order not found');
             }
-            const order_detail = order_details[0];
-            /**
-             *  Fetch the order lifecycle
-             */
-            const order_lifecycle = await new fetch_order_lifecycle(this.TDaoConfig).fetch(order_row_uuid).asyncData();
-            if (order_lifecycle.length === 0) {
-                throw new Error('lifecycle not found corresponding to given order_row_uuid');
-            }
-            const order_lifecycle_array = order_lifecycle[0].lifecycle;
 
+            const order_detail = order_details[0];
+            const order_lifecycle_array = order_detail.lifecycle;
+
+            /** helper functions */
+            /**
+             *
+             *
+             *
+             *
+             */
+            const confirm_order = async () => {
+                /** update the order lifecycle with order_confiremed */
+                order_lifecycle_array.forEach((p) => {
+                    if (p.name === 'order confirmed') {
+                        p.is_done = true;
+                        p.date_created = date_current;
+                        p.date_updated = date_current;
+                    }
+                });
+
+                await new update_order_lifecycle(this.TDaoConfig).fetch(JSON.stringify(order_lifecycle_array), order_row_uuid).asyncData(this);
+                /** generate the otp  for the oder*/
+                await new update_order_add_otp(this.TDaoConfig).fetch(generate_otp(5), order_row_uuid).asyncData(this);
+                /** update the delivery status */
+                await new update_order_delivery_status(this.TDaoConfig).fetch('confirmed', order_row_uuid).asyncData(this);
+            };
+
+            const cooking_order = async () => {
+                /** update the order lifecycle with order_confiremed */
+                order_lifecycle_array.forEach((p) => {
+                    if (p.name === 'cooking') {
+                        p.is_done = true;
+                        p.date_created = date_current;
+                        p.date_updated = date_current;
+                    }
+                });
+
+                await new update_order_lifecycle(this.TDaoConfig).fetch(JSON.stringify(order_lifecycle_array), order_row_uuid).asyncData(this);
+                /** update the delivery status */
+                await new update_order_delivery_status(this.TDaoConfig).fetch('cooking', order_row_uuid).asyncData(this);
+            };
+
+            const order_on_way = async () => {
+                /** update the order lifecycle with order_confiremed */
+                order_lifecycle_array.forEach((p) => {
+                    if (p.name === 'order on its way') {
+                        p.is_done = true;
+                        p.date_created = date_current;
+                        p.date_updated = date_current;
+                    }
+                });
+
+                await new update_order_lifecycle(this.TDaoConfig).fetch(JSON.stringify(order_lifecycle_array), order_row_uuid).asyncData(this);
+                /** update the delivery status */
+                await new update_order_delivery_status(this.TDaoConfig).fetch('on_way', order_row_uuid).asyncData(this);
+            };
+
+            const order_picked_up = async () => {
+                /** update the order lifecycle with order_confiremed */
+                order_lifecycle_array.forEach((p) => {
+                    if (p.name === 'order pickedup') {
+                        p.is_done = true;
+                        p.date_created = date_current;
+                        p.date_updated = date_current;
+                    }
+                });
+
+                await new update_order_lifecycle(this.TDaoConfig).fetch(JSON.stringify(order_lifecycle_array), order_row_uuid).asyncData(this);
+            };
+            /**
+             *
+             *
+             *
+             *
+             */
             /** check the type of lifecycle and update the lifecycle array */
             switch (order_lifecycle_type) {
+                case 'order pickedup then order on its way':
+                    await order_picked_up();
+                    await order_on_way();
+                    break;
+
+                case 'order confirmed then cooking':
+                    await confirm_order();
+                    await cooking_order();
+                    break;
+
                 case 'order placed':
                     await (async () => {
                         /** update order lifecycle */
@@ -162,74 +238,26 @@ export class update_t_order_lifecycle extends TBaseDao<IModificationDaoStatus> {
                             }
                         });
 
-                        await new update_order_lifecycle(this.TDaoConfig).fetch(JSON.stringify(order_lifecycle_array), order_row_uuid).asyncData();
+                        await new update_order_lifecycle(this.TDaoConfig).fetch(JSON.stringify(order_lifecycle_array), order_row_uuid).asyncData(this);
                         /** update the delivery status */
-                        await new update_order_delivery_status(this.TDaoConfig).fetch('placed', order_row_uuid).asyncData();
+                        await new update_order_delivery_status(this.TDaoConfig).fetch('placed', order_row_uuid).asyncData(this);
                     })();
                     break;
 
                 case 'order confirmed':
-                    await (async () => {
-                        /** update the order lifecycle with order_confiremed */
-                        order_lifecycle_array.forEach((p) => {
-                            if (p.name === order_lifecycle_type) {
-                                p.is_done = true;
-                                p.date_created = date_current;
-                                p.date_updated = date_current;
-                            }
-                        });
-
-                        await new update_order_lifecycle(this.TDaoConfig).fetch(JSON.stringify(order_lifecycle_array), order_row_uuid).asyncData();
-                        /** generate the otp  for the oder*/
-                        await new update_order_add_otp(this.TDaoConfig).fetch(generate_otp(5), order_row_uuid).asyncData();
-                        /** update the delivery status */
-                        await new update_order_delivery_status(this.TDaoConfig).fetch('confirmed', order_row_uuid).asyncData();
-                    })();
+                    await confirm_order();
                     break;
 
                 case 'cooking':
-                    await (async () => {
-                        /** update the order lifecycle with order_confiremed */
-                        order_lifecycle_array.forEach((p) => {
-                            if (p.name === order_lifecycle_type) {
-                                p.is_done = true;
-                                p.date_created = date_current;
-                                p.date_updated = date_current;
-                            }
-                        });
-
-                        await new update_order_lifecycle(this.TDaoConfig).fetch(JSON.stringify(order_lifecycle_array), order_row_uuid).asyncData();
-                    })();
+                    await cooking_order();
                     break;
 
                 case 'order pickedup':
-                    await (async () => {
-                        /** update the order lifecycle with order_confiremed */
-                        order_lifecycle_array.forEach((p) => {
-                            if (p.name === order_lifecycle_type) {
-                                p.is_done = true;
-                                p.date_created = date_current;
-                                p.date_updated = date_current;
-                            }
-                        });
-
-                        await new update_order_lifecycle(this.TDaoConfig).fetch(JSON.stringify(order_lifecycle_array), order_row_uuid).asyncData();
-                    })();
+                    await order_picked_up();
                     break;
 
                 case 'order on its way':
-                    await (async () => {
-                        /** update the order lifecycle with order_confiremed */
-                        order_lifecycle_array.forEach((p) => {
-                            if (p.name === order_lifecycle_type) {
-                                p.is_done = true;
-                                p.date_created = date_current;
-                                p.date_updated = date_current;
-                            }
-                        });
-
-                        await new update_order_lifecycle(this.TDaoConfig).fetch(JSON.stringify(order_lifecycle_array), order_row_uuid).asyncData();
-                    })();
+                    await order_on_way();
                     break;
 
                 case 'order delivered':
@@ -243,13 +271,13 @@ export class update_t_order_lifecycle extends TBaseDao<IModificationDaoStatus> {
                             }
                         });
 
-                        await new update_order_lifecycle(this.TDaoConfig).fetch(JSON.stringify(order_lifecycle_array), order_row_uuid).asyncData();
+                        await new update_order_lifecycle(this.TDaoConfig).fetch(JSON.stringify(order_lifecycle_array), order_row_uuid).asyncData(this);
                         /** update the delivery status */
-                        await new update_order_delivery_status(this.TDaoConfig).fetch('delivered', order_row_uuid).asyncData();
+                        await new update_order_delivery_status(this.TDaoConfig).fetch('delivered', order_row_uuid).asyncData(this);
                         /** update the pay status */
                         /** if the pay type is COD then update the pay_status */
                         if (order_detail.pay_type === 'COD') {
-                            await new update_order_pay_status(this.TDaoConfig).fetch('paid', order_row_uuid).asyncData();
+                            await new update_order_pay_status(this.TDaoConfig).fetch('paid', order_row_uuid).asyncData(this);
                         }
                     })();
                     break;
@@ -257,7 +285,7 @@ export class update_t_order_lifecycle extends TBaseDao<IModificationDaoStatus> {
                 case 'canceled':
                     await (async () => {
                         /** update the delivery status */
-                        await new update_order_delivery_status(this.TDaoConfig).fetch('canceled', order_row_uuid).asyncData();
+                        await new update_order_delivery_status(this.TDaoConfig).fetch('canceled', order_row_uuid).asyncData(this);
                     })();
                     break;
             }

@@ -9,8 +9,8 @@ import { Column, MYSQL_DATATYPE, Table } from '@sculify/node-room';
 import { delivery_status, pay_type, pay_status, delivery_status_values, pay_type_values, pay_status_values } from '@foodbzr/shared/types';
 import { get_initial_order_lifecycle } from '@foodbzr/shared/util';
 
-@Table({ tableName: 'order', primaryKey: 'row_id' })
-export class order {
+@Table({ tableName: 'food_order', primaryKey: 'row_id' })
+export class food_order {
     @Column({ dataType: MYSQL_DATATYPE.BIGINT(false) })
     private row_id: number;
 
@@ -111,8 +111,14 @@ export class order {
      * Every order goes through the lifecycle
      * placed --> confirmed ( canceled) --> cooking --> pickedup --> delivering --> delivered
      */
-    @Column({ dataType: MYSQL_DATATYPE.TINYTEXT, defaultValue: JSON.stringify(get_initial_order_lifecycle()) })
+    @Column({ dataType: MYSQL_DATATYPE.TEXT() })
     private lifecycle: string;
+
+    /**
+     * list of all the ordered foods
+     */
+    @Column({dataType: MYSQL_DATATYPE.TEXT()})
+    private order_menu: string;
 
     /** Every order rich some location
      * This section hold the address information

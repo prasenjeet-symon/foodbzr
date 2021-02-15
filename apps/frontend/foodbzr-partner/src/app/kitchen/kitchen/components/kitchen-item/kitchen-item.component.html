@@ -1,0 +1,26 @@
+<ion-card *ngFor="let kitchen of allKitchens; trackBy: trackerKitchen">
+    <img (click)="navToMenuPage(kitchen)" [src]="kitchen.profile_picture" />
+    <ion-card-header>
+        <ion-card-subtitle>{{ kitchen.street }}, {{ kitchen.city }}, {{ kitchen.pincode }}</ion-card-subtitle>
+        <ion-card-title> {{ kitchen.kitchen_name }} </ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+        <ion-item-group>
+            <ion-chip outline color="secondary" *ngFor="let week_name of kitchen.open_week_list">
+                <ion-icon name="calendar-outline"></ion-icon>
+                <ion-label>{{ week_name | weekMaker }}</ion-label>
+            </ion-chip>
+        </ion-item-group>
+    </ion-card-content>
+
+    <!-- kitchen actions holder , like edit  and analytics -->
+    <div class="ion_card_actions">
+        <ion-fab-button color="light" size="small"> <ion-icon name="analytics"></ion-icon> </ion-fab-button>
+        <ion-fab-button (click)="edit_kitchen.emit(kitchen)" color="light" size="small"> <ion-icon name="build"></ion-icon> </ion-fab-button>
+    </div>
+
+    <!-- offers indicator , if the oofers is applied then it show it's self otherwise not -->
+    <div *ngIf="kitchen.offer_percentage !== null && kitchen.offer_percentage !== 0" class="offers">
+        <ion-button color="danger"> <ion-icon class="icon_right_margin" name="flame"></ion-icon> {{ kitchen.offer_percentage }}% OFF </ion-button>
+    </div>
+</ion-card>

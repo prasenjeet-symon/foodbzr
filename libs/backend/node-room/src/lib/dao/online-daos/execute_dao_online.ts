@@ -56,6 +56,7 @@ export class ExecuteDaoOnline {
                     data.hasOwnProperty('dao_param_object')
                 )
             ) {
+                console.log('incoming dao has missing param ', data);
                 return;
             }
 
@@ -72,8 +73,8 @@ export class ExecuteDaoOnline {
             Search the map which is dao_map to check if the dao already exit
             */
             const found_dao_in_map = this.dao_map.get(dao_init_uuid);
+
             if (found_dao_in_map) {
-                console.log('found the dao in map ----> ', dao_init_uuid);
                 // found in the map , this dao already exit in the map, just update the param object and dao_call_uuid and fetch the data
                 found_dao_in_map.update_param_object(dao_param_object, dao_call_uuid);
             } else {
@@ -81,6 +82,7 @@ export class ExecuteDaoOnline {
                 Search the child database of the connected client for the given dao with dao name
                 */
                 const found_dao = this.getDaoMethod(dao_name);
+
                 /*
                 We are in the nodejs environment , So just pass the config object with proper input
                 */
@@ -92,7 +94,7 @@ export class ExecuteDaoOnline {
                         asyncServerQuery: this.connectionMYSQL,
                         instanceUUID: this.instance_uuid,
                         databaseWrapper: this.database_wrapper,
-                        canRunInstantDao: true
+                        canRunInstantDao: true,
                     });
 
                     const live_data_manager = new ManageLiveData(
@@ -251,6 +253,7 @@ class ManageLiveData {
                          * For the update pupose
                          */
                         if (this.modification_done) {
+                            console.log('modification happens', this.included_table_names,this.query_type)
                             this.modification_done(this.included_table_names);
                         }
 
@@ -295,7 +298,7 @@ class ManageLiveData {
     };
 
     public fetch = () => {
-        this.live_data.fetch(...Object.values(this.dao_param_object));
+        (this.live_data.fetch(...Object.values(this.dao_param_object)) as any).obsData();
     };
 
     public refetch = (table_range: string[]) => {

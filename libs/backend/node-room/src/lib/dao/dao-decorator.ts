@@ -74,7 +74,8 @@ export function Query(query: string, force_online: boolean = false) {
                             query_type,
                             fetch_ref,
                             original_function,
-                            args
+                            args,
+                            parent_ref
                         );
                         return DB_data;
                     },

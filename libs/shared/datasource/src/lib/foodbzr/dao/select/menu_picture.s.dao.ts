@@ -25,7 +25,7 @@ export class fetch_menu_picture_of_menu extends BaseDao<IGetMenuPicture[]> {
         FROM menu_picture
         WHERE menu_row_uuid = :menu_row_uuid:
     ;`)
-    fetch() {
+    fetch(menu_row_uuid: string) {
         return this.baseFetch(this.DBData);
     }
 }

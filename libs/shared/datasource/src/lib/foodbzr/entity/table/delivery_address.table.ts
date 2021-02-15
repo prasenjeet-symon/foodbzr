@@ -20,6 +20,9 @@ export class delivery_address {
     @Column({ dataType: MYSQL_DATATYPE.TINYTEXT })
     private street: string;
 
+    @Column({ dataType: MYSQL_DATATYPE.TINYTEXT })
+    private city: string;
+
     @Column({ dataType: MYSQL_DATATYPE.VARCHAR(10) })
     private pincode: string;
 

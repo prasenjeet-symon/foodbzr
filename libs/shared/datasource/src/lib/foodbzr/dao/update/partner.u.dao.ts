@@ -16,7 +16,7 @@ export class update_partner_otp extends BaseDao<IModificationDaoStatus> {
         UPDATE partner
         SET last_otp = :otp:
         WHERE row_uuid = :partner_row_uuid:
-    `)
+    ;`)
     fetch(partner_row_uuid: string, otp: string) {
         return this.baseFetch(this.DBData);
     }
@@ -41,7 +41,7 @@ export class update_partner extends BaseDao<IModificationDaoStatus> {
         bio = :bio:
 
         WHERE row_uuid = :partner_row_uuid:
-    `)
+    ;`)
     fetch(profile_picture: string, gender: gender, full_name: string, bio: string, partner_row_uuid: string) {
         return this.baseFetch(this.DBData);
     }
@@ -95,9 +95,65 @@ export class update_partner_mobile_number extends TBaseDao<IModificationDaoStatu
 
             await this.closeTransaction();
             return this.baseFetch({});
-            
         } catch (error) {
             await this.rollback();
         }
+    }
+}
+
+/** update bio */
+export class update_partner_bio extends BaseDao<IModificationDaoStatus> {
+    constructor(config: IDaoConfig) {
+        super(config);
+    }
+
+    @Query(`
+        UPDATE partner
+
+        SET 
+        bio = :bio:
+
+        WHERE row_uuid = :partner_row_uuid:
+    ;`)
+    fetch(bio: string, partner_row_uuid: string) {
+        return this.baseFetch(this.DBData);
+    }
+}
+
+/** update name */
+export class update_partner_name extends BaseDao<IModificationDaoStatus> {
+    constructor(config: IDaoConfig) {
+        super(config);
+    }
+
+    @Query(`
+        UPDATE partner
+
+        SET 
+        full_name = :full_name:
+
+        WHERE row_uuid = :partner_row_uuid:
+    ;`)
+    fetch(full_name: string, partner_row_uuid: string) {
+        return this.baseFetch(this.DBData);
+    }
+}
+
+/** update gender */
+export class update_partner_gender extends BaseDao<IModificationDaoStatus> {
+    constructor(config: IDaoConfig) {
+        super(config);
+    }
+
+    @Query(`
+        UPDATE partner
+
+        SET 
+        gender = :gender:
+
+        WHERE row_uuid = :partner_row_uuid:
+    ;`)
+    fetch(gender: gender, partner_row_uuid: string) {
+        return this.baseFetch(this.DBData);
     }
 }

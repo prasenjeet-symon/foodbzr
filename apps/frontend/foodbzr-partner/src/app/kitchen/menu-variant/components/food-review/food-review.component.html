@@ -1,0 +1,18 @@
+<ion-list>
+    <ion-list-header>
+        <ion-label color="secondary"> Comments </ion-label>
+    </ion-list-header>
+
+    <ion-item-sliding *ngFor="let review of allReviews; trackBy: tracker">
+        <ion-item>
+            <ion-note slot="end">{{ review.date_created | date: 'short' }}</ion-note>
+            <ion-avatar slot="start">
+                <img [src]="review.profile_picture" />
+            </ion-avatar>
+            <ion-label text-wrap>
+                <h2>{{ review.full_name }}</h2>
+                <p>{{ review.review }}</p>
+            </ion-label>
+        </ion-item>
+    </ion-item-sliding>
+</ion-list>

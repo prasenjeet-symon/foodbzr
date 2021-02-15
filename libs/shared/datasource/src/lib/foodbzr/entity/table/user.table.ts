@@ -3,8 +3,9 @@
  */
 
 import { e_is_active, gender, gender_values, is_active, is_active_values } from '@foodbzr/shared/types';
-import { Column, MYSQL_DATATYPE } from '@sculify/node-room';
+import { Column, MYSQL_DATATYPE, Table } from '@sculify/node-room';
 
+@Table({ tableName: 'user', primaryKey: 'row_id' })
 export class user {
     @Column({ dataType: MYSQL_DATATYPE.BIGINT(false) })
     private row_id: number;

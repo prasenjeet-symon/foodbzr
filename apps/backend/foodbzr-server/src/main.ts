@@ -3,13 +3,16 @@ import { listen } from 'socket.io';
 import * as http from 'http';
 import * as cors from 'cors';
 
-import { DatabaseWrapper } from '@sculify/node-room';
+import { DatabaseWrapper, MYSQLManager } from '@sculify/node-room';
 import { FoodbzrDatasource } from '@foodbzr/datasource';
 import { environment } from './environments/environment';
 import { add_test_data } from '@foodbzr/test-datasource';
+import * as mysql from 'mysql';
 
 const APP = express();
 APP.use(cors());
+
+MYSQLManager.initInstance(mysql);
 
 const SERVER = http.createServer(APP);
 const io = listen(SERVER);
@@ -32,7 +35,7 @@ foodbzrDatasource.init('test_foodbzr_database').then(() => {
     // Add the test data to the instance
     if (!environment.is_test_data_added) {
         add_test_data(MYSQL_CONFIG, 'test_foodbzr_database')
-            .then(() => console.info('added test data'))
+            .then(() => console.info('generated test data'))
             .catch((err) => console.error(err));
     }
 });

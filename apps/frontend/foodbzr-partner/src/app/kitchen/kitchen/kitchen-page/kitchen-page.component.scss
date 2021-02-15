@@ -1,0 +1,10 @@
+.kitchen_list {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.kitchen_list > div {
+    min-width: 200px;
+    max-width: 200px;
+}

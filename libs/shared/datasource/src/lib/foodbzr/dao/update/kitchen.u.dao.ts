@@ -15,14 +15,14 @@ export class update_kitchen extends BaseDao<IModificationDaoStatus> {
         UPDATE kitchen
         SET
         kitchen_name = :kitchen_name:,
-        profile_picture = :profile_picture:,
         opening_time  = :opening_time:,
         closing_time = :closing_time:,
+        radius = :radius:,
         open_week_list = :open_week_list:
 
         WHERE row_uuid = :kitchen_row_uuid:
     ;`)
-    fetch(kitchen_name: string, profile_picture: string, opening_time: string, closing_time: string, open_week_list: string, kitchen_row_uuid: string) {
+    fetch(kitchen_name: string, opening_time: string, closing_time: string, radius: number, open_week_list: string, kitchen_row_uuid: string) {
         return this.baseFetch(this.DBData);
     }
 }
@@ -45,7 +45,7 @@ export class update_kitchen_offers extends BaseDao<IModificationDaoStatus> {
 
         WHERE row_uuid = :kitchen_row_uuid:
      ;`)
-    fetch(offer_percentage: string, offer_start_datetime: string, offer_end_datetime: string, kitchen_row_uuid: string) {
+    fetch(offer_percentage: number, offer_start_datetime: string, offer_end_datetime: string, kitchen_row_uuid: string) {
         return this.baseFetch(this.DBData);
     }
 }
@@ -61,6 +61,24 @@ class update_kitchen_password_private extends BaseDao<IModificationDaoStatus> {
         WHERE row_uuid = :kitchen_row_uuid:
     ;`)
     fetch(kitchen_password: string, kitchen_row_uuid: string) {
+        return this.baseFetch(this.DBData);
+    }
+}
+
+/** update the kitchen login info */
+export class update_kitchen_login_detail extends BaseDao<IModificationDaoStatus> {
+    constructor(config: IDaoConfig) {
+        super(config);
+    }
+    @Query(`
+        UPDATE kitchen
+        SET 
+        kitchen_password = :kitchen_password:,
+        kitchen_user_id = :kitchen_user_id:
+
+        WHERE row_uuid = :kitchen_row_uuid:
+    ;`)
+    fetch(kitchen_password: string, kitchen_user_id: string, kitchen_row_uuid: string) {
         return this.baseFetch(this.DBData);
     }
 }
@@ -99,5 +117,29 @@ export class update_kitchen_password extends TBaseDao<IModificationDaoStatus> {
         } catch (error) {
             await this.rollback();
         }
+    }
+}
+
+/** update the kitchen address */
+export class update_kitchen_address extends BaseDao<IModificationDaoStatus> {
+    constructor(config: IDaoConfig) {
+        super(config);
+    }
+
+    @Query(`
+        UPDATE kitchen
+        SET 
+        street = :street:,
+        pincode = :pincode:,
+        city = :city:,
+        state = :state:,
+        country = :country:,
+        latitude = :latitude:,
+        longitude = :longitude:
+
+        WHERE row_uuid = :kitchen_row_uuid:
+    ;`)
+    fetch(street: string, pincode: string, city: string, state: string, country: string, latitude: number, longitude: number, kitchen_row_uuid: string) {
+        return this.baseFetch(this.DBData);
     }
 }

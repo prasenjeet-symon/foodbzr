@@ -74,7 +74,7 @@ export class insert_kitchen extends BaseDao<IModificationDaoStatus> {
         state: string,
         country: string,
         date_created: string,
-        row_uui: string
+        row_uuid: string
     ) {
         return this.baseFetch(this.DBData);
     }

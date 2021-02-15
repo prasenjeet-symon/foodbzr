@@ -15,6 +15,7 @@ export class fetch_kitchen_single extends BaseDao<IGetKitchen[]> {
         partner_row_uuid,
         is_active,
         kitchen_user_id,
+        kitchen_password,
         kitchen_name,
         profile_picture,
         radius,
@@ -61,6 +62,7 @@ export class fetch_kitchens_of_partner extends BaseDao<IGetKitchen[]> {
         partner_row_uuid,
         is_active,
         kitchen_user_id,
+        kitchen_password,
         kitchen_name,
         profile_picture,
         radius,
@@ -107,5 +109,51 @@ export class fetch_kitchen_password extends BaseDao<{ kitchen_password: string }
     ;`)
     fetch(kitchen_row_uuid: string) {
         return this.baseFetch(this.DBData);
+    }
+}
+
+/**
+ * Fetch all the kitchens of the every owners
+ */
+
+export class fetch_kitchen_all extends BaseDao<IGetKitchen[]> {
+    constructor(config: IDaoConfig) {
+        super(config);
+    }
+
+    @Query(`
+        SELECT
+        partner_row_uuid,
+        is_active,
+        kitchen_user_id,
+        kitchen_password,
+        kitchen_name,
+        profile_picture,
+        radius,
+        latitude,
+        longitude,
+        opening_time,
+        closing_time,
+        open_week_list,
+        offer_percentage,
+        offer_start_datetime,
+        offer_end_datetime,
+        street,
+        pincode,
+        city,
+        state,
+        country,
+        date_created,
+        date_updated,
+        row_uuid
+
+        FROM kitchen
+    ;`)
+    fetch() {
+        return this.baseFetch(
+            this.DBData.map((p) => {
+                return { ...p, open_week_list: JSON.parse(p.open_week_list as any) as number[] };
+            })
+        );
     }
 }

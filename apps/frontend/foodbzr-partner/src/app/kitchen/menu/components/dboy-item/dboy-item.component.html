@@ -1,0 +1,46 @@
+<ion-list>
+    <!-- section name -->
+    <ion-list-header>
+        <ion-label color="secondary">Delivery Boys</ion-label>
+    </ion-list-header>
+
+    <ion-item-sliding *ngFor="let dboy of allDboys">
+        <ion-item [disabled]="dboy.is_active === 'yes' ? false : true">
+            <ion-chip color="secondary" slot="end">
+                <ion-label>Call </ion-label>
+                <ion-icon name="call"></ion-icon>
+            </ion-chip>
+            <ion-avatar slot="start">
+                <img [src]="dboy.profile_picture" [alt]="dboy.full_name" srcset="" />
+            </ion-avatar>
+            <ion-label>
+                <h3>{{ dboy.full_name }}</h3>
+                <ion-text *ngIf="dboy.is_verified === 'no'" color="danger">
+                    <p>Pending</p>
+                </ion-text>
+                <ion-text *ngIf="dboy.is_verified === 'yes'" color="success">
+                    <p>Working</p>
+                </ion-text>
+            </ion-label>
+        </ion-item>
+
+        <ion-item-options side="start">
+            <!-- active inactive -->
+            <ion-item-option (click)="inActiveDboy(dboy)" *ngIf="dboy.is_active === 'yes'" color="danger">
+                <ion-icon slot="icon-only" name="trash"></ion-icon>
+            </ion-item-option>
+            <ion-item-option (click)="activateDboy(dboy)" *ngIf="dboy.is_active === 'no'" color="tertiary">
+                <ion-icon slot="icon-only" name="arrow-undo"></ion-icon>
+            </ion-item-option>
+        </ion-item-options>
+
+        <ion-item-options side="end">
+            <ion-item-option (click)="verifyDboy(dboy)" color="success" *ngIf="dboy.is_verified === 'no'">
+                <ion-icon slot="icon-only" name="checkmark"></ion-icon>
+            </ion-item-option>
+            <ion-item-option (click)="unverifyDboy(dboy)" color="warning" *ngIf="dboy.is_verified === 'yes'">
+                <ion-icon slot="icon-only" name="close"></ion-icon>
+            </ion-item-option>
+        </ion-item-options>
+    </ion-item-sliding>
+</ion-list>

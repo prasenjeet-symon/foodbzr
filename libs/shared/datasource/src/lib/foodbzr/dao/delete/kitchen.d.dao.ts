@@ -14,9 +14,9 @@ export class delete_kitchen extends BaseDao<IModificationDaoStatus> {
     @Query(`
         UPDATE kitchen
         SET is_active = :is_active:
-        WHERE row_uuid = :is_active_row_uuid:
+        WHERE row_uuid = :kitchen_row_uuid:
     ;`)
-    fetch(is_active_row_uuid: string, is_active: is_active) {
+    fetch(is_active: is_active, kitchen_row_uuid: string) {
         return this.baseFetch(this.DBData);
     }
 }

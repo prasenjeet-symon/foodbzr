@@ -73,7 +73,8 @@ export class BaseDao<T> extends LiveData<T> {
         query_type: query_type,
         original_function_ref: any,
         original_function: any,
-        original_function_args: any[]
+        original_function_args: any[],
+        parent_ref: any
     ) => {
         const modified_query = this.attachParamValues(original_query_string, param_object);
 
@@ -82,6 +83,11 @@ export class BaseDao<T> extends LiveData<T> {
          * And return the result
          */
         if (running_env() === 'node' && this.daoConfig.asyncServerQuery) {
+            /** emit query type and tables involved */
+            if (parent_ref) {
+                parent_ref.emitTablesInvolved(table_involved);
+                parent_ref.emitQueryType(query_type);
+            }
             /**
              *
              * Run the query on the server side
@@ -95,7 +101,9 @@ export class BaseDao<T> extends LiveData<T> {
                 // Execute the instant dao
                 // Notify the instance connected
                 if (this.daoConfig.databaseWrapper && this.daoConfig.instanceUUID) {
-                    this.daoConfig.databaseWrapper.notifyInstance(this.daoConfig.instanceUUID, table_involved);
+                    if (this.daoConfig.canNotify) {
+                        this.daoConfig.databaseWrapper.notifyInstance(this.daoConfig.instanceUUID, table_involved);
+                    }
                     if (this.daoConfig.canRunInstantDao) {
                         this.daoConfig.databaseWrapper.runInstantDao(this.daoConfig.instanceUUID, extra_data);
                     }

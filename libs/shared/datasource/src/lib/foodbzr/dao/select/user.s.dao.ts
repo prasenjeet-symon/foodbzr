@@ -34,3 +34,34 @@ export class fetch_user_single extends BaseDao<IGetUser[]> {
         return this.baseFetch(this.DBData);
     }
 }
+
+/** fetch all users */
+
+export class fetch_user_all extends BaseDao<IGetUser[]> {
+    constructor(config: IDaoConfig) {
+        super(config);
+    }
+
+    @Query(`
+        SELECT
+
+        owner_row_uuid,
+        full_name,
+        mobile_number,
+        profile_picture,
+        bio,
+        is_active,
+        gender,
+        birth_date,
+        last_otp,
+        is_mobile_verified,
+        date_created,
+        date_updated,
+        row_uuid
+
+        FROM user
+    ;`)
+    fetch() {
+        return this.baseFetch(this.DBData);
+    }
+}

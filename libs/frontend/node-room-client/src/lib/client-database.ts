@@ -47,11 +47,15 @@ export class ClientDatabase {
         daoConfig.asyncClientQuery = DaoManager.getInstance();
         this.listen_for_response(); // listen for the socket connection response, once the response is complete then start table sync
 
-        SyncOfflineTables.initInstance(this.database_name, this.socket, this.offline_tables, this.database, this.default_dao_running_status, DaoManager.getInstance().modification_happens);
+        if (default_dao_running_status === 'offline') {
+            SyncOfflineTables.initInstance(this.database_name, this.socket, this.offline_tables, this.database, this.default_dao_running_status, DaoManager.getInstance().modification_happens);
+        }
     }
 
     public initInstance = async () => {
-        await this.create_all_offline_tables();
+        if (this.default_dao_running_status === 'offline') {
+            await this.create_all_offline_tables();
+        }
         this.socket.emit(`${this.root_database_name}`, {
             socket_connection_uuid: this.socket_id,
             instance_uuid: this.instance_uuid,

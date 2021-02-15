@@ -10,7 +10,7 @@ export class insert_order extends BaseDao<IModificationDaoStatus> {
     }
 
     @Query(`
-        INSERT INTO order
+        INSERT INTO food_order
         (
             user_row_uuid,
             partner_row_uuid,
@@ -22,6 +22,7 @@ export class insert_order extends BaseDao<IModificationDaoStatus> {
             delivery_charge,
             user_saved_amount,
             lifecycle,
+            order_menu,
             order_address_row_uuid,
             date_created,
             row_uuid
@@ -38,6 +39,7 @@ export class insert_order extends BaseDao<IModificationDaoStatus> {
             :delivery_charge:,
             :user_saved_amount:,
             :lifecycle:,
+            :order_menu:,
             :order_address_row_uuid:,
             :date_created:,
             :row_uuid:
@@ -54,6 +56,7 @@ export class insert_order extends BaseDao<IModificationDaoStatus> {
         delivery_charge: number,
         user_saved_amount: number,
         lifecycle: string,
+        order_menu: string,
         order_address_row_uuid: string,
         date_created: string,
         row_uuid: string

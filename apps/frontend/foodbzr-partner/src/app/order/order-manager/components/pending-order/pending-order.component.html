@@ -1,0 +1,111 @@
+<!-- list all the pending-order -->
+<ion-list>
+    <ion-list-header>
+        <ion-label>Pending Orders </ion-label>
+    </ion-list-header>
+
+    <ion-item-sliding *ngFor="let pending_order of pending_arr; trackBy: pendingOrderTracker">
+        <ion-item>
+            <ion-avatar slot="start">
+                <img src="../../../../../assets/icon/order-food.png" alt="order-food" srcset="" />
+            </ion-avatar>
+            <ion-label>
+                <h2>New order recieved</h2>
+                <p>{{ pending_order.pay_type }}</p>
+            </ion-label>
+            <ion-note slot="end"> {{ pending_order.date_created | date: 'short' }} </ion-note>
+        </ion-item>
+
+        <ion-item-options side="start">
+            <ion-item-option (click)="changeOrderStatus('canceled', pending_order.row_uuid)" color="danger">
+                <ion-icon slot="icon-only" name="close-outline"></ion-icon>
+            </ion-item-option>
+        </ion-item-options>
+
+        <ion-item-options side="end">
+            <ion-item-option (click)="showOrderLocation(pending_order.latitude, pending_order.longitude)" color="tertiary">
+                <ion-icon slot="icon-only" name="location"></ion-icon>
+            </ion-item-option>
+            <ion-item-option (click)="changeOrderStatus('order confirmed then cooking', pending_order.row_uuid)" color="success">
+                <ion-icon slot="icon-only" name="checkmark-outline"></ion-icon>
+            </ion-item-option>
+        </ion-item-options>
+    </ion-item-sliding>
+</ion-list>
+
+<ion-list>
+    <ion-list-header>
+        <ion-label>Cooking</ion-label>
+    </ion-list-header>
+    <ion-item-sliding *ngFor="let item_cooking of cooking_arr; trackBy: cookingOrderTracker">
+        <ion-item>
+            <ion-avatar slot="start">
+                <img src="../../../../../assets/icon/boiling.png" alt="" srcset="" />
+            </ion-avatar>
+            <ion-avatar *ngIf="item_cooking.dboy_row_uuid" slot="end">
+                <img [src]="item_cooking.profile_picture" alt="" srcset="" />
+            </ion-avatar>
+            <ion-label class="ion-text-wrap">
+                <h2>Oder id {{ item_cooking.row_id }}</h2>
+                <p *ngIf="item_cooking.dboy_row_uuid">
+                    Food with<strong
+                        ><i>order id {{ item_cooking.row_id }}</i></strong
+                    >will be delivered by the delivery boy <b>{{ item_cooking.full_name }}</b>
+                </p>
+                <p *ngIf="!item_cooking.dboy_row_uuid">No delivery boy is selected to deliver this food. Please choose one by <b>sliding right</b></p>
+            </ion-label>
+        </ion-item>
+
+        <ion-item-options side="start">
+            <ion-item-option (click)="changeOrderStatus('canceled', item_cooking.row_uuid)" color="danger">
+                <ion-icon slot="icon-only" name="close-outline"></ion-icon>
+            </ion-item-option>
+        </ion-item-options>
+
+        <ion-item-options side="end">
+            <ion-item-option (click)="chooseDeliveryBoy(item_cooking.dboy_row_uuid, item_cooking.kitchen_row_uuid, item_cooking.row_uuid)" color="tertiary">
+                <ion-avatar>
+                    <img src="../../../../../assets/icon/food-delivery.png" alt="" srcset="" />
+                </ion-avatar>
+            </ion-item-option>
+        </ion-item-options>
+    </ion-item-sliding>
+</ion-list>
+
+<ion-list>
+    <ion-list-header>
+        <ion-label>On it's way</ion-label>
+    </ion-list-header>
+    <ion-item-sliding *ngFor="let onway of onitsway_arr; trackBy: onitsWayOrderTracker">
+        <ion-item>
+            <ion-avatar slot="start">
+                <img src="../../../../../assets/icon/street-map.png" alt="" srcset="" />
+            </ion-avatar>
+            <ion-avatar slot="end">
+                <img [src]="onway.profile_picture" alt="" srcset="" />
+            </ion-avatar>
+            <ion-label class="ion-text-wrap">
+                <h2>Order id {{ onway.row_id }} on it's way</h2>
+                <p>
+                    Food with
+                    <b
+                        ><i>order id {{ onway.row_id }}</i></b
+                    >
+                    is being delivered by the delivery boy <b>{{ onway.full_name }}</b>
+                </p>
+            </ion-label>
+        </ion-item>
+
+        <ion-item-options side="start">
+            <ion-item-option (click)="changeOrderStatus('canceled', onway.row_uuid)" color="danger">
+                <ion-icon slot="icon-only" name="close-outline"></ion-icon>
+            </ion-item-option>
+        </ion-item-options>
+
+        <ion-item-options side="end">
+            <ion-item-option color="tertiary">
+                <ion-icon slot="icon-only" name="navigate-circle"></ion-icon>
+            </ion-item-option>
+        </ion-item-options>
+    </ion-item-sliding>
+</ion-list>

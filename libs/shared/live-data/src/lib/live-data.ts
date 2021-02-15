@@ -15,6 +15,7 @@ export class LiveData<T> {
         if (ctx && ctx instanceof DaoLife) {
             (ctx as DaoLife).push_live_data(this);
         }
+        //
         return this.BSubject.pipe(filter((m) => m !== null));
     };
 

@@ -1,0 +1,114 @@
+<ion-header translucent>
+    <ion-toolbar>
+        <ion-title>Create Kitchen</ion-title>
+        <ion-buttons slot="end">
+            <ion-button (click)="newKitchen()" color="secondary">Save</ion-button>
+        </ion-buttons>
+        <ion-buttons slot="end">
+            <ion-button (click)="closeModal()"> <ion-icon name="close-outline"></ion-icon> </ion-button>
+        </ion-buttons>
+    </ion-toolbar>
+</ion-header>
+<ion-content fullscreen>
+    <!-- upload the profile picture of the kitchen -->
+    <div class="upload_profile_picture">
+        <img src=" ../../../../../assets/images/res1.webp" alt="" srcset="" />
+        <div class="file_chooser">
+            <ion-fab-button color="secondary"> <ion-icon name="aperture-sharp"></ion-icon> </ion-fab-button>
+        </div>
+    </div>
+
+    <div class="kitchen_details">
+        <ion-list>
+            <ion-list-header>
+                <ion-label color="secondary"> Kitchen Details </ion-label>
+            </ion-list-header>
+            <ion-item>
+                <ion-label>Kitchen Name</ion-label>
+                <ion-input [(ngModel)]="kitchen_name" required="true" inputmode="text"></ion-input>
+            </ion-item>
+            <ion-item>
+                <ion-label>Opening Time</ion-label>
+                <ion-datetime display-format="h:mm A" picker-format="h:mm A" [(ngModel)]="opening_time"></ion-datetime>
+            </ion-item>
+            <ion-item>
+                <ion-label>Closing Time</ion-label>
+                <ion-datetime display-format="h:mm A" picker-format="h:mm A" [(ngModel)]="closing_time"></ion-datetime>
+            </ion-item>
+            <ion-item>
+                <ion-label>Open Week List</ion-label>
+                <ion-select [(ngModel)]="open_week_list" multiple>
+                    <ion-select-option value="1">Sunday</ion-select-option>
+                    <ion-select-option value="2">Monday</ion-select-option>
+                    <ion-select-option value="3">Tuesday</ion-select-option>
+                    <ion-select-option value="4">Wednesday</ion-select-option>
+                    <ion-select-option value="5">Thursday</ion-select-option>
+                    <ion-select-option value="6">Friday</ion-select-option>
+                    <ion-select-option value="7">Saturday</ion-select-option>
+                </ion-select>
+            </ion-item>
+            <ion-item>
+                <ion-label>Radius</ion-label>
+                <ion-range [(ngModel)]="kitchen_radius" dualKnobs="false" min="10" max="20" step="1" snaps="true"></ion-range>
+            </ion-item>
+        </ion-list>
+    </div>
+
+    <!-- kitchen login info -->
+    <div class="kitchen_login_info">
+        <ion-list>
+            <ion-list-header>
+                <ion-label color="secondary"> Kitchen Login Details </ion-label>
+            </ion-list-header>
+            <ion-item>
+                <ion-label>Kitchen Userid</ion-label>
+                <ion-input [(ngModel)]="kitchen_user_id"></ion-input>
+            </ion-item>
+            <ion-item>
+                <ion-label>Kitchen Password</ion-label>
+                <ion-input [(ngModel)]="kitchen_password"></ion-input>
+            </ion-item>
+            <ion-item>
+                <ion-label>Confirm Password</ion-label>
+                <ion-input [(ngModel)]="kitchen_password_again"></ion-input>
+            </ion-item>
+        </ion-list>
+    </div>
+
+    <!-- address information -->
+    <div class="address_information">
+        <ion-list>
+            <ion-list-header>
+                <ion-label color="secondary"> Address Information </ion-label>
+            </ion-list-header>
+
+            <!-- extract location from gps-->
+            <ion-item>
+                <ion-avatar slot="start"> <img src="../../../../../assets/icon/map.png" alt="" srcset="" /> </ion-avatar>
+                <ion-label *ngIf="!(latitude && longitude)"> Search Location </ion-label>
+                <ion-label *ngIf="latitude && longitude"> Found: {{ latitude }}, {{ longitude }} </ion-label>
+                <ion-button (click)="searchLocation()" slot="end"> search </ion-button>
+            </ion-item>
+            <ion-item>
+                <ion-label> Street </ion-label>
+                <ion-input [(ngModel)]="street" inputmode="text"></ion-input>
+            </ion-item>
+            <ion-item>
+                <ion-label> Pincode </ion-label>
+                <ion-input [(ngModel)]="pincode" inputmode="text"></ion-input>
+            </ion-item>
+            <ion-item>
+                <ion-label> City </ion-label>
+                <ion-input [(ngModel)]="city" inputmode="text"></ion-input>
+            </ion-item>
+            <ion-item>
+                <ion-label> State </ion-label>
+                <ion-input [(ngModel)]="state" inputmode="text"></ion-input>
+            </ion-item>
+            <ion-item>
+                <ion-label> Country </ion-label>
+                <ion-input [(ngModel)]="country" inputmode="text"></ion-input>
+            </ion-item>
+        </ion-list>
+    </div>
+</ion-content>

@@ -1,8 +1,6 @@
-import { InstanceClient } from './instance-client';
-import { dao_execute_type, MYSQLConnectionConfig } from '../../main-interface';
-import { Connection } from 'mysql';
-import { DatabaseConnection } from './database_connection';
 import { QueryServerDatabase } from '../../dao/online-daos/query_database';
+import { dao_execute_type, MYSQLConnectionConfig } from '../../main-interface';
+import { InstanceClient } from './instance-client';
 
 export class InstanceClientManager {
     public DB_connection: QueryServerDatabase;

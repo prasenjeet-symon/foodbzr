@@ -1,15 +1,14 @@
-import { Connection } from 'mysql';
+import { v4 as uuid } from 'uuid';
 import { DatabaseConnection } from '../../database/database-wrapper/database_connection';
 import { MYSQLConnectionConfig, query_type } from '../../main-interface';
 import { parse_sql_string } from '../../utils';
-import { v4 as uuid } from 'uuid';
 
 /**
  * Query the database and return the result in promise
  */
 export class QueryServerDatabase {
     private DBConnection: DatabaseConnection;
-    public connection: Connection;
+    public connection: any;
 
     constructor(private MYSQLConfig: MYSQLConnectionConfig, private database_name: string) {
         this.DBConnection = new DatabaseConnection();

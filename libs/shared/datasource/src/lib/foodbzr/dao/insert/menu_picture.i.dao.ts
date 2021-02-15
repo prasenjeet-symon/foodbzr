@@ -3,14 +3,14 @@
  */
 
 import { IModificationDaoStatus } from '@foodbzr/shared/types';
-import { IDaoConfig, MIBaseDao, Query } from '@sculify/node-room';
+import { IDaoConfig, MIBaseDao, MIQuery, Query } from '@sculify/node-room';
 
 export class insert_multi_menu_picture extends MIBaseDao<IModificationDaoStatus> {
     constructor(config: IDaoConfig) {
         super(config);
     }
 
-    @Query(`
+    @MIQuery(`
         INSERT INTO menu_picture
         (
             menu_row_uuid,
@@ -22,7 +22,7 @@ export class insert_multi_menu_picture extends MIBaseDao<IModificationDaoStatus>
             row_uuid
         )
         VALUES
-        :values:
+        :insert_values:
     ;`)
     fetch(multi_pics: { menu_row_uuid: string; pic_uri: string; thumbnail_uri: string; size: string; mime_type: string; date_created: string; row_uuid: string }[]) {
         return this.baseFetch(this.DBData);

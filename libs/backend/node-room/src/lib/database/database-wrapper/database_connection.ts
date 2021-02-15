@@ -1,5 +1,5 @@
 import { MYSQLConnectionConfig } from '../../main-interface';
-import * as mysql from 'mysql';
+import { MYSQLManager } from './uuid_manager';
 
 /**
  * Create the database connection and manage it
@@ -7,9 +7,12 @@ import * as mysql from 'mysql';
  */
 
 export class DatabaseConnection {
-    private connection: mysql.Connection;
+    private connection: any;
+    private mysql: any;
 
-    constructor() {}
+    constructor() {
+        this.mysql = MYSQLManager.getInstance().mysql;
+    }
 
     public dispose_connection() {
         if (this.connection) {
@@ -20,7 +23,7 @@ export class DatabaseConnection {
     public create_mysql_connection = (MYSQLConfig: MYSQLConnectionConfig, multiple_query = false, database_name?: string) => {
         if (database_name) {
             /** Database name is provided */
-            this.connection = mysql.createConnection({
+            this.connection = this.mysql.createConnection({
                 host: MYSQLConfig.host,
                 port: MYSQLConfig.port,
                 password: MYSQLConfig.password,
@@ -33,7 +36,7 @@ export class DatabaseConnection {
             return this.connection;
         } else {
             // database name is not provided
-            this.connection = mysql.createConnection({
+            this.connection = this.mysql.createConnection({
                 host: MYSQLConfig.host,
                 port: MYSQLConfig.port,
                 password: MYSQLConfig.password,

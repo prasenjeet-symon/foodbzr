@@ -28,7 +28,7 @@ export class fetch_delivery_address_of_user extends BaseDao<IGetDeliveryAddress[
         FROM delivery_address
         WHERE user_row_uuid = :user_row_uuid:
     ;`)
-    fetch() {
+    fetch(user_row_uuid: string) {
         return this.baseFetch(this.DBData);
     }
 }

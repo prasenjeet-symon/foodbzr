@@ -84,3 +84,32 @@ export class fetch_partner_otp extends BaseDao<{ last_otp: string }[]> {
         return this.baseFetch(this.DBData);
     }
 }
+
+/**
+ *  Fetch all partners of all owners
+ */
+
+export class fetch_partner_all extends BaseDao<IGetPartner[]> {
+    constructor(config: IDaoConfig) {
+        super(config);
+    }
+
+    @Query(`
+        SELECT
+
+        owner_row_uuid,
+        is_active,
+        profile_picture,
+        gender,
+        full_name,
+        mobile_number,
+        bio,
+        date_created,
+        row_uuid
+
+        FROM partner
+    ;`)
+    fetch() {
+        return this.baseFetch(this.DBData);
+    }
+}

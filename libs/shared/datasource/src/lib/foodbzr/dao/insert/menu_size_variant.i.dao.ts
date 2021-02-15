@@ -19,9 +19,6 @@ export class insert_menu_size_variant extends BaseDao<IModificationDaoStatus> {
             min_order_amount,
             bio,
             menu_row_uuid,
-            offer_percentage,
-            offer_start_datetime,
-            offer_end_datetime,
             date_created,
             row_uuid
         )
@@ -33,9 +30,6 @@ export class insert_menu_size_variant extends BaseDao<IModificationDaoStatus> {
             :min_order_amount:,
             :bio:,
             :menu_row_uuid:,
-            :offer_percentage:,
-            :offer_start_datetime:,
-            :offer_end_datetime:,
             :date_created:,
             :row_uuid:
         )
@@ -47,9 +41,6 @@ export class insert_menu_size_variant extends BaseDao<IModificationDaoStatus> {
         min_order_amount: number,
         bio: string,
         menu_row_uuid: string,
-        offer_percentage: number,
-        offer_start_datetime: string,
-        offer_end_datetime: string,
         date_created: string,
         row_uuid: string
     ) {

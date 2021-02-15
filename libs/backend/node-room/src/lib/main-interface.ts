@@ -191,6 +191,7 @@ export interface IDaoConfig {
     // If the dao running mode is asyn then we use this property
     instanceUUID?: string;
     databaseWrapper?: DatabaseWrapper;
+    canNotify?: boolean
 
     captureQueryString?: (queryString: string) => void;
     captureMetadata?: (data: dao_metadata) => void;

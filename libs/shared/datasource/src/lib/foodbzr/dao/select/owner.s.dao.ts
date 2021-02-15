@@ -31,3 +31,33 @@ export class fetch_owner extends BaseDao<IGetOwner[]> {
         return this.baseFetch(this.DBData);
     }
 }
+
+/**
+ *  Fetch all the owner of the foodbzr
+ */
+
+export class fetch_owner_all extends BaseDao<IGetOwner[]> {
+    constructor(config: IDaoConfig) {
+        super(config);
+    }
+
+    @Query(`
+        SELECT
+
+        mobile_number,
+        full_name,
+        bio,
+        gender,
+        last_otp,
+        profile_picture,
+        is_active,
+        date_created,
+        date_updated,
+        row_uuid
+
+        FROM owner
+    ;`)
+    fetch() {
+        return this.baseFetch(this.DBData);
+    }
+}

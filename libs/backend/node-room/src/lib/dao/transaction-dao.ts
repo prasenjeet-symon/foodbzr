@@ -1,5 +1,6 @@
 import { LiveData } from '@sculify/live-data';
 import { IDaoConfig, query_type } from '../main-interface';
+import { extract_function_param_names, running_env } from '../utils';
 import { QueryServerDatabase } from './online-daos/query_database';
 
 export class TBaseDao<T> extends LiveData<T> {
@@ -41,16 +42,24 @@ export class TBaseDao<T> extends LiveData<T> {
         return;
     }
 
-    protected async asyncDao(original_function: any, original_function_ref: any, original_function_args: any[]) {
+    //TODO: pending task make this run on web plus server , see the normal dao
+    protected async asyncDao(original_function: any, original_function_ref: any, original_function_args: any[], parent_ref: any) {
+        console.time('time taken for the transaction');
         await original_function.apply(original_function_ref, original_function_args);
+        console.timeEnd('time taken for the transaction');
         return this.ModifiedData;
     }
 
-    protected async obsDao(original_function: any, original_function_ref: any, original_function_args: any[]) {
-        this.child_dao_query_types = ['TRANSACTION'];
+    protected async obsDao(original_function: any, original_function_ref: any, original_function_args: any[], param_object: any, dao_name: string) {
+        this.child_dao_query_types = [];
         this.tablesInvolved = [];
-        await original_function.apply(original_function_ref, original_function_args);
-        this.push({ data: this.ModifiedData, extra_data: [] } as any, this.uuid);
+
+        if (running_env() === 'web') {
+            this.daoConfig.clientQuery.runDao(this.uuid, true, this, '', param_object, dao_name, original_function_ref, original_function, original_function_args);
+        } else {
+            await original_function.apply(original_function_ref, original_function_args);
+            this.push({ data: this.ModifiedData, extra_data: [] } as any, this.uuid);
+        }
     }
 
     public async openTransaction() {
@@ -59,7 +68,7 @@ export class TBaseDao<T> extends LiveData<T> {
         /** Start the transaction on the connection */
         await this.newServerQuery.do_multiple_query('START TRANSACTION;');
         /** Modifiy the daoConfig Object for the transaction */
-        this.TDaoConfig = { ...this.daoConfig, serverQuery: this.newServerQuery, asyncServerQuery: this.newServerQuery, canRunInstantDao: false };
+        this.TDaoConfig = { ...this.daoConfig, serverQuery: this.newServerQuery, asyncServerQuery: this.newServerQuery, canNotify: false, canRunInstantDao: false };
     }
 
     /**Close the opened Transaction */
@@ -80,18 +89,35 @@ export class TBaseDao<T> extends LiveData<T> {
 export function TQuery() {
     return function (target: Object, propertyKey: string, descriptor: PropertyDescriptor): PropertyDescriptor {
         const original_function = descriptor.value;
+        /** Extract the "fetch" function param names */
+        const param_names = extract_function_param_names(descriptor.value);
 
         descriptor.value = function (...args: any[]) {
+            /**
+             * Extract the param value and associate it with proper param name
+             * To construct the param object - { 'param_name' :'param_value'}
+             */
+            const param_object: any = {};
+            param_names.forEach((param_name, index) => {
+                param_name = param_name.trim();
+                if (args[index]) {
+                    param_object[param_name] = args[index];
+                } else {
+                    param_object[param_name] = undefined;
+                }
+            });
+
+            /** this is the reference to the base class */
             const containing_class = this as any; // Base class ref
 
             const running_env_config = function (fetch_ref: any) {
                 return {
                     asyncData: async function (parent_ref?: any) {
-                        const data = await containing_class.asyncDao(original_function, fetch_ref, args);
+                        const data = await containing_class.asyncDao(original_function, fetch_ref, args, parent_ref);
                         return data;
                     },
                     obsData: () => {
-                        containing_class.obsDao(original_function, fetch_ref, args);
+                        containing_class.obsDao(original_function, fetch_ref, args, param_object, target.constructor.name.trim());
                     },
                 };
             };
