@@ -10,6 +10,14 @@ const routes: Routes = [
         path: 'kitchen',
         loadChildren: () => import('../home/kitchen/kitchen.module').then((m) => m.KitchenModule),
     },
+    {
+        path: 'kitchen-menus',
+        loadChildren: () => import('../home/menu/menu.module').then((m) => m.MenuModule),
+    },
+    {
+        path: 'search',
+        loadChildren: () => import('../home/search/search.module').then((m) => m.SearchModule),
+    },
 ];
 
 @NgModule({

@@ -1,0 +1,29 @@
+.order_done {
+    padding: 30px 0px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.order_done > div:nth-of-type(1) {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.order_done > div:nth-of-type(1) > img {
+    width: 30%;
+    height: auto;
+    object-fit: cover;
+}
+
+.order_done > div:nth-of-type(2) {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.order_info_item {
+    margin: 15px 0px;
+    border-bottom: 1px dotted gainsboro;
+}

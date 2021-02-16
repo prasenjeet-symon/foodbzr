@@ -1,0 +1,16 @@
+.quantity_adder {
+    display: flex;
+    align-items: center;
+}
+.quantity_adder div {
+    width: 100px;
+}
+
+.quantity_adder input {
+    width: 100%;
+    height: 95%;
+    border: 0px;
+    font-size: 22px;
+    text-align: center;
+    outline-width: 0px;
+}

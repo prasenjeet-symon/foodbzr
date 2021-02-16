@@ -1,0 +1,58 @@
+.card_actions {
+    padding: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+}
+
+.food_item {
+    margin: 15px 0px;
+}
+
+.food_item > div:nth-of-type(1) {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 5px 0px;
+    border-bottom: 1px dotted gainsboro;
+}
+
+.food_item > div:nth-of-type(1) > div:nth-of-type(1) {
+    display: flex;
+    align-items: center;
+}
+
+.total_summation {
+    display: flex;
+    align-items: center;
+}
+
+.total_summation > div:nth-of-type(1) {
+    flex: 1;
+}
+
+.final_item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin: 10px 0px;
+}
+
+.final_item > div:nth-of-type(1) {
+    margin-right: 15px;
+}
+
+.total_summation {
+    padding: 10px;
+}
+
+.amount_payable {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin: 25px 0px;
+}
+
+.amount_payable > div:nth-of-type(1) {
+    margin-right: 15px;
+}

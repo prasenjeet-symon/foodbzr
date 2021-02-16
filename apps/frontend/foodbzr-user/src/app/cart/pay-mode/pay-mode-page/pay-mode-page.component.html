@@ -1,0 +1,32 @@
+<ion-header [translucent]="true">
+    <ion-toolbar>
+        <ion-title>Choose pay mode</ion-title>
+    </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+    <!-- for ios only header  -->
+    <ion-header collapse="condense">
+        <ion-toolbar>
+            <ion-title size="large">Choose pay mode</ion-title>
+        </ion-toolbar>
+    </ion-header>
+
+    <!-- list all pay mode -->
+    <ion-list>
+        <ion-item>
+            <ion-avatar slot="start"> <img src="../../../../assets/icon/cash-on-delivery.png" alt="" srcset="" /> </ion-avatar>
+            <ion-label>
+                <h2>COD</h2>
+                <p>Pay at the time of delivery</p>
+            </ion-label>
+            <ion-checkbox slot="end"></ion-checkbox>
+        </ion-item>
+    </ion-list>
+
+    <ion-fab vertical="bottom" horizontal="end" slot="fixed">
+        <ion-fab-button color="secondary">
+            <ion-icon name="checkmark-done"></ion-icon>
+        </ion-fab-button>
+    </ion-fab>
+</ion-content>

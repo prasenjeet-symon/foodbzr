@@ -1,0 +1,87 @@
+<ion-header [translucent]="true">
+    <ion-toolbar>
+        <ion-title>Order history</ion-title>
+    </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+    <!-- for ios only header  -->
+    <ion-header collapse="condense">
+        <ion-toolbar>
+            <ion-title size="large">Order history</ion-title>
+        </ion-toolbar>
+    </ion-header>
+
+    <!-- list all the orders  -->
+
+    <ion-list>
+        <ion-list-header>
+            <ion-label> 2020-02-12 </ion-label>
+        </ion-list-header>
+
+        <!-- placed -->
+        <ion-item>
+            <ion-avatar slot="start"><img src="../../../../assets/icon/food (11).jpg" alt="" srcset="" /></ion-avatar>
+            <ion-label>
+                <h2>Order id 34456</h2>
+                <p>&#x20B9; 3400.90 <b>( COD )</b></p>
+            </ion-label>
+            <ion-chip color="warning" slot="end">
+                <ion-icon name="time"></ion-icon>
+                <ion-label>Placed</ion-label>
+            </ion-chip>
+        </ion-item>
+
+        <!-- cooking -->
+        <ion-item>
+            <ion-avatar slot="start"><img src="../../../../assets/icon/food (11).jpg" alt="" srcset="" /></ion-avatar>
+            <ion-label>
+                <h2>Order id 34456</h2>
+                <p>&#x20B9; 3400.90</p>
+            </ion-label>
+            <ion-chip color="warning" slot="end">
+                <ion-icon name="cafe"></ion-icon>
+                <ion-label>Cooking</ion-label>
+            </ion-chip>
+        </ion-item>
+
+        <!-- on way -->
+        <ion-item>
+            <ion-avatar slot="start"><img src="../../../../assets/icon/food (11).jpg" alt="" srcset="" /></ion-avatar>
+            <ion-label>
+                <h2>Order id 34456</h2>
+                <p>&#x20B9; 3400.90</p>
+            </ion-label>
+            <ion-chip color="secondary" slot="end">
+                <ion-icon name="bicycle"></ion-icon>
+                <ion-label>On it's way</ion-label>
+            </ion-chip>
+        </ion-item>
+
+        <!-- delivered  -->
+        <ion-item>
+            <ion-avatar slot="start"><img src="../../../../assets/icon/food (11).jpg" alt="" srcset="" /></ion-avatar>
+            <ion-label>
+                <h2>Order id 34456</h2>
+                <p>&#x20B9; 3400.90</p>
+            </ion-label>
+            <ion-chip color="success" slot="end">
+                <ion-icon name="checkmark-done"></ion-icon>
+                <ion-label>Delivered</ion-label>
+            </ion-chip>
+        </ion-item>
+
+        <!-- canceled -->
+        <ion-item>
+            <ion-avatar slot="start"><img src="../../../../assets/icon/food (11).jpg" alt="" srcset="" /></ion-avatar>
+            <ion-label>
+                <h2>Order id 34456</h2>
+                <p>&#x20B9; 3400.90</p>
+            </ion-label>
+            <ion-chip color="danger" slot="end">
+                <ion-icon name="close"></ion-icon>
+                <ion-label>Canceled</ion-label>
+            </ion-chip>
+        </ion-item>
+    </ion-list>
+</ion-content>
