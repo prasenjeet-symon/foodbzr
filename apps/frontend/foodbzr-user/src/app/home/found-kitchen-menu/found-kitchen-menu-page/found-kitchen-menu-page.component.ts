@@ -1,4 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, NgZone, OnInit } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
 
 @Component({
     selector: 'foodbzr-found-kitchen-menu',
@@ -6,7 +7,9 @@ import { Component, OnInit } from '@angular/core';
     styleUrls: ['./found-kitchen-menu-page.component.scss'],
 })
 export class FoundKitchenMenuPageComponent implements OnInit {
-    constructor() {}
+    found_kitchens = new Array(10).fill(null);
+
+    constructor(private ngZone: NgZone, private activatedRoute: ActivatedRoute, private router: Router) {}
 
     ngOnInit() {}
 }

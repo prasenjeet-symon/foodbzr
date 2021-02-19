@@ -1,4 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
+import { IGetOrder } from '@foodbzr/shared/types';
+import { ModalController } from '@ionic/angular';
 
 @Component({
     selector: 'foodbzr-order-done',
@@ -6,8 +8,15 @@ import { Component, OnInit } from '@angular/core';
     styleUrls: ['./order-done.component.scss'],
 })
 export class OrderDoneComponent implements OnInit {
+    
+    @Input() order: IGetOrder;
 
-    constructor() {}
+    constructor(private modal: ModalController) {}
 
     ngOnInit() {}
+
+    /** close the modal */
+    closeModal() {
+        this.modal.dismiss();
+    }
 }

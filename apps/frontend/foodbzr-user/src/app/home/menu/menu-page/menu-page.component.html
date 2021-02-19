@@ -1,6 +1,9 @@
 <ion-header [translucent]="true">
     <ion-toolbar>
         <ion-title>Menu</ion-title>
+        <ion-buttons slot="start">
+            <ion-back-button></ion-back-button>
+        </ion-buttons>
     </ion-toolbar>
 </ion-header>
 
@@ -8,26 +11,44 @@
     <ion-header collapse="condense">
         <ion-toolbar>
             <ion-title size="large">Menu</ion-title>
+            <ion-buttons slot="start">
+                <ion-back-button></ion-back-button>
+            </ion-buttons>
         </ion-toolbar>
     </ion-header>
 
     <!-- list all the menus to choose from -->
-    <ion-list>
+    <ion-list *ngIf="kitchenMenus.length !== 0">
         <ion-list-header>
             <ion-label> Menus </ion-label>
         </ion-list-header>
 
-        <ion-item *ngFor="let menu of menus">
+        <ion-item *ngFor="let menu of kitchenMenus">
             <ion-avatar slot="start">
-                <img src="../../../../assets/icon/food (11).jpg" alt="" srcset="" />
+                <img [src]="menu.menu_profile_picture" [alt]="menu.menu_menu_name" srcset="" />
             </ion-avatar>
             <ion-label>
-                <h2>Lorem ipsum dolor sit.</h2>
-                <h3>&#x20B9; 450.89</h3>
-                <p><del> &#x20B9; 670.98</del></p>
+                <h2>{{ menu.menu_menu_name }}</h2>
+                <h3>&#x20B9; {{ menu.final_price }}</h3>
+                <p>
+                    <del> &#x20B9; {{ menu.menu_variant_price_per_unit }}</del>
+                </p>
             </ion-label>
-            <ion-chip color="danger" slot="end"> 34% OFF </ion-chip>
-            <ion-icon (click)="addToCart()" slot="end" name="bag"></ion-icon>
+            <ion-chip *ngIf="menu.final_offer_percentage !== 0" color="danger" slot="end"> {{ menu.final_offer_percentage }}% OFF </ion-chip>
+            <ion-icon (click)="addToCart(menu)" slot="end" name="bag"></ion-icon>
         </ion-item>
     </ion-list>
+
+    <!-- empty menus -->
+    <div *ngIf="kitchenMenus.length === 0" class="empty_screen">
+        <div><img src="../../../../assets/icon/box.png" alt="" srcset="" /></div>
+        <div>
+            <ion-text color="danger"> <h2>Nothing here</h2> </ion-text>
+        </div>
+        <div>
+            <ion-text>
+                <p>Looks like it's nothing in here</p>
+            </ion-text>
+        </div>
+    </div>
 </ion-content>

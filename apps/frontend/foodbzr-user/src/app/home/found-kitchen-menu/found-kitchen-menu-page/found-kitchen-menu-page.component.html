@@ -1,0 +1,29 @@
+<ion-header [translucent]="true">
+    <ion-toolbar>
+        <ion-title>Search result</ion-title>
+        <ion-buttons slot="start">
+            <ion-back-button></ion-back-button>
+        </ion-buttons>
+    </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+    <!-- found kitchen serving the menus -->
+
+    <ion-list>
+        <ion-list-header>
+            <ion-label color="secondary"> Found 233 kitchen serving the menu <b> Lorem, ipsum dolor. </b> </ion-label>
+        </ion-list-header>
+
+        <ion-item *ngFor="let item of found_kitchens">
+            <ion-card>
+                <img src="../../../../assets/icon/food (5).jpg" />
+                <ion-card-header>
+                    <ion-card-subtitle>Destination</ion-card-subtitle>
+                    <ion-card-title>Madison, WI</ion-card-title>
+                </ion-card-header>
+                <ion-card-content> Lorem, ipsum dolor. , Lorem ipsum dolor sit. , Lorem ipsum dolor sit amet. </ion-card-content>
+            </ion-card>
+        </ion-item>
+    </ion-list>
+</ion-content>

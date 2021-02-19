@@ -20,7 +20,7 @@ import { insert_menu } from './dao/insert/menu.i.dao';
 import { insert_multi_menu_picture } from './dao/insert/menu_picture.i.dao';
 import { insert_menu_review } from './dao/insert/menu_review.i.dao';
 import { insert_menu_size_variant } from './dao/insert/menu_size_variant.i.dao';
-import { insert_order } from './dao/insert/order.i.dao';
+import { insert_order, insert_order_take_order } from './dao/insert/order.i.dao';
 import { insert_owner } from './dao/insert/owner.i.dao';
 import { insert_partner } from './dao/insert/partner.i.dao';
 import { insert_regional_food_category } from './dao/insert/regional_food_category.i.dao';
@@ -29,17 +29,17 @@ import { insert_user_cart } from './dao/insert/user_cart.i.dao';
 import { fetch_dboy_of_kitchen, fetch_dboy_single } from './dao/select/dboy.s.dao';
 import { fetch_delivery_address_of_user } from './dao/select/delivery_address.s.dao';
 import { fetch_food_category_of_partner } from './dao/select/food_category.s.dao';
-import { fetch_kitchens_of_partner, fetch_kitchen_all, fetch_kitchen_password, fetch_kitchen_single } from './dao/select/kitchen.s.dao';
-import { fetch_menus_of_kitchen, fetch_menu_single } from './dao/select/menu.s.dao';
+import { fetch_kitchens_of_partner, fetch_kitchen_all, fetch_kitchen_in_range, fetch_kitchen_password, fetch_kitchen_search, fetch_kitchen_single } from './dao/select/kitchen.s.dao';
+import { fetch_menus_of_kitchen, fetch_menu_of_regional_food_cat, fetch_menu_search, fetch_menu_single } from './dao/select/menu.s.dao';
 import { fetch_menu_picture_of_menu } from './dao/select/menu_picture.s.dao';
 import { fetch_menu_reviews_of_menu } from './dao/select/menu_review.s.dao';
-import { fetch_menu_size_variant_of_menu, fetch_menu_size_variant_single } from './dao/select/menu_size_variant.s.dao';
+import { fetch_menu_size_variant_for_cart, fetch_menu_size_variant_of_menu, fetch_menu_size_variant_single } from './dao/select/menu_size_variant.s.dao';
 import { fetch_order_all, fetch_order_lifecycle, fetch_order_on_way_dboy, fetch_order_pending_dboy, fetch_order_single, fetch_order_status } from './dao/select/order.s.dao';
 import { fetch_owner, fetch_owner_all } from './dao/select/owner.s.dao';
 import { fetch_partners_of_owner, fetch_partner_all, fetch_partner_otp, fetch_partner_single } from './dao/select/partner.s.dao';
 import { fetch_regional_food_category_of_partner } from './dao/select/regional_food_category.s.dao';
 import { fetch_user_all, fetch_user_single } from './dao/select/user.s.dao';
-import { fetch_user_cart_full_details } from './dao/select/user_cart.s.dao';
+import { fetch_user_cart_for_checkout, fetch_user_cart_full_details, fetch_user_cart_total_items } from './dao/select/user_cart.s.dao';
 import { update_dboy, update_dboy_verify } from './dao/update/dboy.u.dao';
 import { update_delivery_address } from './dao/update/delivery_address.u.dao';
 import { update_food_category } from './dao/update/food_category.u.dao';
@@ -60,7 +60,7 @@ import { update_owner_otp } from './dao/update/owner.u.dao';
 import { update_partner, update_partner_bio, update_partner_gender, update_partner_mobile_number, update_partner_name, update_partner_otp } from './dao/update/partner.u.dao';
 import { update_regional_food_category } from './dao/update/regional_food_category.u.dao';
 import { update_user } from './dao/update/user.u.dao';
-import { update_user_cart } from './dao/update/user_cart.u.dao';
+import { update_user_cart, update_user_cart_cooking_instruction } from './dao/update/user_cart.u.dao';
 import { dboy } from './entity/table/dboy.table';
 import { delivery_address } from './entity/table/delivery_address.table';
 import { food_category } from './entity/table/food_category.table';
@@ -175,6 +175,8 @@ export class FoodbzrDatasource {
     public fetch_kitchen_all = fetch_kitchen_all;
     public update_kitchen_login_detail = update_kitchen_login_detail;
     public update_kitchen_address = update_kitchen_address;
+    public fetch_kitchen_in_range = fetch_kitchen_in_range;
+    public fetch_kitchen_search = fetch_kitchen_search;
 
     /** menu.table.ts */
     public delete_menu = delete_menu;
@@ -184,6 +186,8 @@ export class FoodbzrDatasource {
     public update_menu = update_menu;
     public update_menu_offers = update_menu_offers;
     public update_menu_category = update_menu_category;
+    public fetch_menu_of_regional_food_cat = fetch_menu_of_regional_food_cat; 
+    public fetch_menu_search = fetch_menu_search;
 
     /** food_category.table.ts */
     public delete_food_category = delete_food_category;
@@ -204,6 +208,7 @@ export class FoodbzrDatasource {
     public insert_menu_size_variant = insert_menu_size_variant;
     public update_menu_size_variant = update_menu_size_variant;
     public update_menu_size_variant_offer = update_menu_size_variant_offer;
+    public fetch_menu_size_variant_for_cart = fetch_menu_size_variant_for_cart;
 
     /** menu_picture.table.ts */
     public delete_menu_picture = delete_menu_picture;
@@ -228,6 +233,9 @@ export class FoodbzrDatasource {
     public delete_user_cart = delete_user_cart;
     public insert_user_cart = insert_user_cart;
     public update_user_cart = update_user_cart;
+    public fetch_user_cart_total_items = fetch_user_cart_total_items;
+    public fetch_user_cart_for_checkout = fetch_user_cart_for_checkout;
+    public update_user_cart_cooking_instruction = update_user_cart_cooking_instruction;
 
     /** order.table.ts  */
     public fetch_order_lifecycle = fetch_order_lifecycle;
@@ -244,6 +252,7 @@ export class FoodbzrDatasource {
     public fetch_order_status = fetch_order_status;
     public fetch_order_pending_dboy = fetch_order_pending_dboy;
     public fetch_order_on_way_dboy = fetch_order_on_way_dboy;
+    public insert_order_take_order = insert_order_take_order;
 
     /** delivery_address.table.ts */
     public delete_delivery_address = delete_delivery_address;

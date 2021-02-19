@@ -1,12 +1,15 @@
 <ion-header [translucent]="true">
     <ion-toolbar>
         <ion-title>Kitchen</ion-title>
+        <ion-buttons slot="start">
+            <ion-back-button></ion-back-button>
+        </ion-buttons>
     </ion-toolbar>
 </ion-header>
 
 <ion-content [fullscreen]="true">
     <div class="kitchen_profile_holder">
-        <img src="../../../../assets/icon/food (6).jpg" alt="" srcset="" />
+        <img [src]="profile_picture" alt="" srcset="" />
         <!-- add to fav -->
         <div class="fav_button">
             <ion-fab-button color="danger">
@@ -20,7 +23,7 @@
         <ion-item>
             <ion-icon slot="start" name="restaurant"></ion-icon>
             <ion-label class="ion-text-wrap">
-                <h2>Lorem ipsum dolor sit.</h2>
+                <h2>{{ kitchen_name }}</h2>
                 <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Perferendis provident cumque totam.</p>
             </ion-label>
         </ion-item>
@@ -33,11 +36,11 @@
                 <ion-label color="secondary"> Choose you love </ion-label>
             </ion-list-header>
 
-            <ion-item *ngFor="let item of reg_food">
+            <ion-item (click)="navToMenu(menu_regional)" *ngFor="let menu_regional of kitchen_reg_menus">
                 <ion-icon slot="end" name="chevron-forward"></ion-icon>
-                <ion-avatar slot="start"><img src="../../../../assets/icon/food (8).jpg" alt="" /></ion-avatar>
+                <ion-avatar slot="start"><img [src]="menu_regional.profile_picture" alt="" /></ion-avatar>
                 <ion-label>
-                    <h2>Lorem ipsum dolor sit.</h2>
+                    <h2>{{ menu_regional.name }}</h2>
                 </ion-label>
             </ion-item>
         </ion-list>

@@ -12,20 +12,43 @@
         </ion-toolbar>
     </ion-header>
 
-    <ion-card>
-        <img src="../../../../assets/icon/food (5).jpg" />
+    <ion-card *ngFor="let kitchen of allCheckoutItems">
+        <img [src]="kitchen.kitchen.profile_picture" />
         <ion-card-header>
-            <ion-card-subtitle>Lorem ipsum dolor sit amet consectetur.</ion-card-subtitle>
-            <ion-card-title>Madison, WI</ion-card-title>
+            <ion-card-subtitle>{{ kitchen.kitchen.address }}</ion-card-subtitle>
+            <ion-card-title>{{ kitchen.kitchen.kitchen_name }}</ion-card-title>
         </ion-card-header>
         <ion-card-content>
-            <div *ngFor="let item of menus_items" class="food_item">
-                <div>
-                    <div><b>Lorem ipsum dolor sit.</b> <ion-icon name="close"> </ion-icon> <i>4</i></div>
-                    <div>&#x20B9; 145.67</div>
-                </div>
-                <div><b>Instruction</b> : <code> Lorem ipsum dolor, sit amet consectetur adipisicing elit. Quo aut consequatur incidunt! </code></div>
-            </div>
+            <ion-item-sliding *ngFor="let item of kitchen.orders">
+                <ion-item>
+                    <div class="food_item">
+                        <div>
+                            <div class="menu_name">{{ item.menu_name }} ({{ item.menu_variant_name }})</div>
+                            <div>
+                                &#x20B9; {{ item.original_menu_price }} <ion-icon name="close"> </ion-icon> <i>{{ item.user_cart_amount }}</i>
+                            </div>
+                        </div>
+                        <div *ngIf="item.user_cart_instruction">
+                            <b>Instruction</b> : <code> {{ item.user_cart_instruction }} </code>
+                        </div>
+                    </div>
+                </ion-item>
+
+                <ion-item-options side="start">
+                    <ion-item-option (click)="deleteItem(item.user_cart_row_uuid)" color="danger">
+                        <ion-icon slot="icon-only" name="trash"></ion-icon>
+                    </ion-item-option>
+                </ion-item-options>
+
+                <ion-item-options side="end">
+                    <ion-item-option (click)="updateNumberOfitem(item.user_cart_row_uuid, item.menu_variant_min_order_amount, item.user_cart_amount)" color="tertiary">
+                        <ion-icon slot="icon-only" name="bag-add"></ion-icon>
+                    </ion-item-option>
+                    <ion-item-option (click)="updateInstruction(item.user_cart_instruction, item.user_cart_row_uuid)" color="secondary">
+                        <ion-icon slot="icon-only" name="create"></ion-icon>
+                    </ion-item-option>
+                </ion-item-options>
+            </ion-item-sliding>
         </ion-card-content>
 
         <div class="total_summation">
@@ -33,32 +56,32 @@
             <div>
                 <div class="final_item">
                     <div><b>Menu total :</b></div>
-                    <div>&#x20B9; 456.89</div>
+                    <div>&#x20B9; {{ kitchen.final_calculation.total_menu_price }}</div>
                 </div>
                 <div class="final_item">
                     <div><b>Discount :</b></div>
-                    <div>&#x20B9; 456.89</div>
+                    <div>&#x20B9; {{ kitchen.final_calculation.total_amount_saved }}</div>
                 </div>
                 <div class="final_item">
                     <div><b>Delivery charge :</b></div>
-                    <div>&#x20B9; 6.89</div>
+                    <div>&#x20B9; {{ kitchen.final_calculation.delivery_charge }}</div>
                 </div>
                 <div class="final_item">
                     <div><b> Tax :</b></div>
-                    <div>&#x20B9; 60.89</div>
+                    <div>&#x20B9; {{ kitchen.final_calculation.tax_amount }}</div>
                 </div>
 
                 <div class="amount_payable">
                     <div>
                         <b> <i>Amount Payable</i> :</b>
                     </div>
-                    <div>&#x20B9; 456.89</div>
+                    <div>&#x20B9; {{ kitchen.final_calculation.amount_payable }}</div>
                 </div>
             </div>
         </div>
 
         <div class="card_actions">
-            <ion-button color="success"> Checkout </ion-button>
+            <ion-button (click)="navAddressChoser(kitchen.kitchen.kitchen_row_uuid)" color="success"> Checkout </ion-button>
         </div>
     </ion-card>
 </ion-content>

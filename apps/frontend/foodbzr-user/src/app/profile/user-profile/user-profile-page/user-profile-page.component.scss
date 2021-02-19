@@ -1,0 +1,32 @@
+.user_profile {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 15px 0px;
+}
+
+.user_profile > div:nth-of-type(3) {
+    color: var(--ion-color-step-400);
+}
+
+.user_profile > div:nth-of-type(4) {
+    display: flex;
+    flex-direction: column;
+    padding: 10px 40px;
+    background-color: var(--ion-item-background);
+    align-items: center;
+    margin: 10px 0px;
+}
+
+.user_profile > div:nth-of-type(4) > div:nth-of-type(1) {
+    font-size: 1.4rem;
+    font-family: inherit;
+    color: var(--ion-color-success);
+}
+
+.user_profile > div:nth-of-type(4) > div:nth-of-type(2) {
+    font-size: 0.8rem;
+    font-family: inherit;
+    margin-top: 5px;
+    color: var(--ion-color-step-500);
+}

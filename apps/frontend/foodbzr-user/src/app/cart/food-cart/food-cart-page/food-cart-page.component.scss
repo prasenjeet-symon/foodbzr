@@ -11,15 +11,24 @@
 
 .food_item > div:nth-of-type(1) {
     display: flex;
-    align-items: center;
-    justify-content: space-between;
+    align-items: stretch;
     padding: 5px 0px;
     border-bottom: 1px dotted gainsboro;
 }
 
 .food_item > div:nth-of-type(1) > div:nth-of-type(1) {
+    flex: 1;
+    font-weight: 600;
+}
+
+.food_item > div:nth-of-type(1) > div:nth-of-type(2) {
     display: flex;
     align-items: center;
+    padding-left: 5px;
+}
+
+.food_item > div:nth-of-type(2) {
+    font-size: 0.85rem;
 }
 
 .total_summation {
@@ -35,7 +44,7 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin: 10px 0px;
+    margin: 4px 0px;
 }
 
 .final_item > div:nth-of-type(1) {
@@ -55,4 +64,9 @@
 
 .amount_payable > div:nth-of-type(1) {
     margin-right: 15px;
+}
+
+.menu_name {
+    word-wrap: none;
+    font-size: 0.85rem;
 }

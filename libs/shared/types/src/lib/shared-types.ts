@@ -232,9 +232,6 @@ export interface OrderMenu {
     amount: number;
     cooking_instruction: string;
 
-    offer_percentage: number;
-    offer_maker: 'regional_food_category' | 'food_category' | 'kitchen' | 'menu' | 'menu_variant';
-
     original_price: number;
     after_offer_price: number;
     money_saved: number;
@@ -332,6 +329,7 @@ export interface IGetDeliveryAddress {
     date_created: string;
     date_updated: string;
     row_uuid: string;
+    is_selected: boolean;
 }
 
 export interface IGetOrderOnWay {
@@ -363,6 +361,199 @@ export interface IGetOrderOnWay {
     dboy_mobile_number: string;
     latitude: number;
     longitude: number;
+    street: string;
+    pincode: string;
+    city: string;
+    state: string;
+    country: string;
+}
+
+export interface IGetMenuVariantForCart {
+    is_selected: boolean;
+    final_price: number;
+    final_offer_percentage: number;
+
+    regional_food_category_name: string;
+    regional_food_category_is_active: is_active;
+    regional_food_category_offer_percentage: number;
+    regional_food_category_offer_start_datetime: string;
+    regional_food_category_offer_end_datetime: string;
+
+    food_category_name: string;
+    food_category_is_active: is_active;
+    food_category_offer_percentage: number;
+    food_category_offer_start_datetime: string;
+    food_category_offer_end_datetime: string;
+
+    kitchen_is_active: is_active;
+    kitchen_offer_percentage: number;
+    kitchen_offer_start_datetime: string;
+    kitchen_offer_end_datetime: string;
+
+    regional_food_category_row_uuid: string;
+    food_category_row_uuid: string;
+
+    menu_menu_name: string;
+    menu_is_active: is_active;
+    menu_profile_picture: string;
+    menu_bio: string;
+    kitchen_row_uuid: string;
+
+    menu_offer_percentage: number;
+    menu_offer_start_datetime: string;
+    menu_offer_end_datetime: string;
+    menu_date_created: string;
+    menu_date_updated: string;
+    menu_row_uuid: string;
+
+    menu_variant_name: string;
+    menu_variant_price_per_unit: number;
+    menu_variant_is_active: is_active;
+    menu_variant_offer_percentage: number;
+    menu_variant_offer_start_datetime: string;
+    menu_variant_offer_end_datetime: string;
+    menu_variant_row_uuid: string;
+    menu_variant_min_order_amount: number;
+    menu_variant_profile_picture: string;
+}
+
+export interface IGetMenuForCart {
+    final_price: number;
+    final_offer_percentage: number;
+
+    regional_food_category_name: string;
+    regional_food_category_is_active: is_active;
+    regional_food_category_offer_percentage: number;
+    regional_food_category_offer_start_datetime: string;
+    regional_food_category_offer_end_datetime: string;
+
+    food_category_name: string;
+    food_category_is_active: is_active;
+    food_category_offer_percentage: number;
+    food_category_offer_start_datetime: string;
+    food_category_offer_end_datetime: string;
+
+    kitchen_is_active: is_active;
+    kitchen_offer_percentage: number;
+    kitchen_offer_start_datetime: string;
+    kitchen_offer_end_datetime: string;
+
+    regional_food_category_row_uuid: string;
+    food_category_row_uuid: string;
+
+    menu_menu_name: string;
+    menu_is_active: is_active;
+    menu_profile_picture: string;
+    menu_bio: string;
+    kitchen_row_uuid: string;
+
+    menu_offer_percentage: number;
+    menu_offer_start_datetime: string;
+    menu_offer_end_datetime: string;
+    menu_date_created: string;
+    menu_date_updated: string;
+    menu_row_uuid: string;
+
+    menu_variant_price_per_unit: number;
+    menu_variant_is_active: is_active;
+    menu_variant_offer_percentage: number;
+    menu_variant_offer_start_datetime: string;
+    menu_variant_offer_end_datetime: string;
+    menu_variant_row_uuid: string;
+}
+
+export interface IGetUserCartForCheckout {
+    kitchen_partner_row_uuid: string;
+    is_selected: boolean;
+    final_offer_percentage: number;
+    final_price: number;
+    amount_saved: number;
+    total_final_price: number;
+    total_amount_saved: number;
+
+    user_cart_amount: number;
+    user_cart_row_uuid: string;
+    user_cart_instruction: string;
+
+    regional_food_category_name: string;
+    regional_food_category_is_active: is_active;
+    regional_food_category_offer_percentage: number;
+    regional_food_category_offer_start_datetime: string;
+    regional_food_category_offer_end_datetime: string;
+
+    food_category_name: string;
+    food_category_is_active: is_active;
+    food_category_offer_percentage: number;
+    food_category_offer_start_datetime: string;
+    food_category_offer_end_datetime: string;
+
+    kitchen_profile_picture: string;
+    kitchen_kitchen_name: string;
+    kitchen_opening_time: string;
+    kitchen_closing_time: string;
+
+    kitchen_is_active: is_active;
+    kitchen_offer_percentage: number;
+    kitchen_offer_start_datetime: string;
+    kitchen_offer_end_datetime: string;
+
+    kitchen_street: string;
+    kitchen_pincode: string;
+    kitchen_city: string;
+    kitchen_state: string;
+    kitchen_country: string;
+
+    menu_menu_name: string;
+    menu_is_active: is_active;
+    menu_profile_picture: string;
+    kitchen_row_uuid: string;
+    regional_food_category_row_uuid: string;
+    food_category_row_uuid: string;
+    menu_offer_percentage: number;
+    menu_offer_start_datetime: string;
+    menu_offer_end_datetime: string;
+    menu_row_uuid: string;
+
+    menu_variant_name: string;
+    menu_variant_price_per_unit: number;
+    menu_variant_is_active: is_active;
+    menu_variant_offer_percentage: number;
+    menu_variant_offer_start_datetime: string;
+    menu_variant_offer_end_datetime: string;
+    menu_variant_row_uuid: string;
+    menu_variant_min_order_amount: number;
+}
+
+export interface IGetUserCartGroupedKitchen {
+    kitchen: { kitchen_row_uuid: string; kitchen_partner_row_uuid: string; kitchen_name: string; profile_picture: string; address: string; can_take_order: boolean };
+    orders: {
+        menu_name: string;
+        menu_variant_name: string;
+        user_cart_row_uuid: string;
+        user_cart_amount: number;
+        menu_variant_row_uuid: string;
+        menu_row_uuid: string;
+        kitchen_row_uuid: string;
+        original_menu_price: number;
+        final_price: number;
+        amount_saved: number;
+        total_final_price: number;
+        total_amount_saved: number;
+        user_cart_instruction: string;
+        menu_variant_min_order_amount: number;
+    }[];
+    final_calculation: { total_menu_price: number; total_amount_saved: number; tax_amount: number; delivery_charge: number; amount_payable: number };
+}
+
+export interface IGetMenuSearchResult {
+    name: string;
+    profile_picture: string;
+}
+
+export interface IGetKitchenSearchResult {
+    kitchen_name: string;
+    profile_picture: string;
+    address: string;
     street: string;
     pincode: string;
     city: string;

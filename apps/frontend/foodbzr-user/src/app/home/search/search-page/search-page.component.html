@@ -1,6 +1,9 @@
 <ion-header [translucent]="true">
     <ion-toolbar>
-        <ion-searchbar></ion-searchbar>
+        <ion-buttons slot="start">
+            <ion-back-button></ion-back-button>
+        </ion-buttons>
+        <ion-searchbar debounce="1000" #seachTerm (ionChange)="search(seachTerm.value)"></ion-searchbar>
     </ion-toolbar>
 </ion-header>
 
@@ -8,27 +11,27 @@
     <!-- found menu item -->
     <ion-list>
         <ion-list-header>
-            <ion-label color="secondary"> 12 Menus found </ion-label>
+            <ion-label color="secondary"> {{ menuResults.length }} Menus found </ion-label>
         </ion-list-header>
-        <ion-item *ngFor="let item of menu_found">
-            <ion-avatar slot="start"><img src="../../../../assets/icon/food (1).jpg" alt="" srcset="" /></ion-avatar>
-            <ion-label> Lorem ipsum dolor sit. </ion-label>
+        <ion-item *ngFor="let item of menuResults">
+            <ion-avatar slot="start"><img [src]="item.profile_picture" alt="" srcset="" /></ion-avatar>
+            <ion-label> {{ item.name }} </ion-label>
             <ion-icon slot="end" name="chevron-forward"></ion-icon>
         </ion-item>
 
         <!-- kitchen founds -->
         <ion-list-header>
-            <ion-label color="secondary">340 kitchens found</ion-label>
+            <ion-label color="secondary">{{ kitchenResult.length }} kitchens found</ion-label>
         </ion-list-header>
 
-        <ion-item *ngFor="let item of kitchens_found">
+        <ion-item *ngFor="let item of kitchenResult">
             <ion-card>
-                <img src="../../../../assets/icon/food (10).jpg" />
+                <img [src]="item.profile_picture" />
                 <ion-card-header>
-                    <ion-card-subtitle>Destination</ion-card-subtitle>
-                    <ion-card-title>Madison, WI</ion-card-title>
+                    <ion-card-subtitle>{{ item.address }}</ion-card-subtitle>
+                    <ion-card-title>{{ item.kitchen_name }}</ion-card-title>
                 </ion-card-header>
-                <ion-card-content> Lorem, ipsum dolor., Lorem, ipsum., Lorem ipsum dolor sit amet. </ion-card-content>
+                <ion-card-content> </ion-card-content>
             </ion-card>
         </ion-item>
     </ion-list>

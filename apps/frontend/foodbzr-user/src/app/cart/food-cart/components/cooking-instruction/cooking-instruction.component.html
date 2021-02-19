@@ -1,0 +1,25 @@
+<ion-header [translucent]="true">
+    <ion-toolbar>
+        <ion-title>Cooking instruction</ion-title>
+        <ion-buttons slot="end">
+            <ion-button (click)="saveInstruction()" color="secondary">Save</ion-button>
+        </ion-buttons>
+        <ion-buttons slot="end">
+            <ion-button (click)="closeModal()"> <ion-icon name="close-outline"></ion-icon> </ion-button>
+        </ion-buttons>
+    </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+    <!-- for ios only header  -->
+    <ion-header collapse="condense">
+        <ion-toolbar>
+            <ion-title size="large">Cooking instruction</ion-title>
+        </ion-toolbar>
+    </ion-header>
+
+    <ion-item>
+        <ion-label>Instruction</ion-label>
+        <ion-textarea [(ngModel)]="instruction" rows="6" cols="20" placeholder="Enter any instruction here..."></ion-textarea>
+    </ion-item>
+</ion-content>

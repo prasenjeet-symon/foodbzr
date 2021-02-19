@@ -36,17 +36,19 @@
     <div class="found_kitchens">
         <ion-list>
             <ion-list-header>
-                <ion-text><h4>345 kitchens found near you</h4></ion-text>
+                <ion-text color="secondary"
+                    ><h4>{{ foundKitchens.length }} kitchens found near you</h4></ion-text
+                >
             </ion-list-header>
 
-            <ion-item *ngFor="let kit of kitchen">
-                <ion-card (click)="navKitchenPage()">
-                    <img src="../../../../assets/icon/food (4).jpg" />
+            <ion-item *ngFor="let kitchen of foundKitchens">
+                <ion-card (click)="navKitchenPage(kitchen)">
+                    <img [src]="kitchen.profile_picture" />
                     <ion-card-header>
-                        <ion-card-subtitle>Destination</ion-card-subtitle>
-                        <ion-card-title>Madison, WI</ion-card-title>
+                        <ion-card-subtitle>{{ kitchen.street }}, {{ kitchen.city }}, {{ kitchen.pincode }}, {{ kitchen.state }}, {{ kitchen.country }}</ion-card-subtitle>
+                        <ion-card-title>{{ kitchen.kitchen_name }}</ion-card-title>
                     </ion-card-header>
-                    <ion-card-content> Lorem, ipsum., Lorem, ipsum dolor., Lorem, ipsum. </ion-card-content>
+                    <ion-card-content> </ion-card-content>
                 </ion-card>
             </ion-item>
         </ion-list>

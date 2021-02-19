@@ -1,6 +1,9 @@
 <ion-header [translucent]="true">
     <ion-toolbar>
         <ion-title>Address</ion-title>
+        <ion-buttons slot="start">
+            <ion-back-button></ion-back-button>
+        </ion-buttons>
     </ion-toolbar>
 </ion-header>
 
@@ -16,25 +19,25 @@
 
     <ion-list>
         <!-- add new address -->
-        <ion-item>
+        <ion-item (click)="chooseAddress()">
             <ion-icon slot="start" name="location"> </ion-icon>
             <ion-label> <h2>Add new address</h2> </ion-label>
             <ion-button slot="end"> <ion-icon name="add"></ion-icon> </ion-button>
         </ion-item>
 
-        <ion-item>
+        <ion-item (click)="addressSelected(address)" [disabled]="address.is_active === 'yes' ? false : true" *ngFor="let address of allAddress; trackBy: tracker">
             <ion-icon slot="start" name="location"> </ion-icon>
-            <ion-checkbox slot="end"></ion-checkbox>
             <ion-label class="ion-text-wrap">
-                <h2>Prasenjeet Symon</h2>
-                <p>Lorem ipsum dolor, sit amet consectetur adipisicing elit. Sit repellendus fugit amet.</p>
-                <h6>+91 80833721360</h6>
+                <h2>{{ user_full_name }}</h2>
+                <h4>+91 {{ mobile_number }}</h4>
+                <p>{{ address.street }}, {{ address.city }}, {{ address.pincode }} , {{ address.state }}, {{ address.country }}</p>
             </ion-label>
+            <ion-checkbox [checked]="address.is_selected" slot="end"></ion-checkbox>
         </ion-item>
     </ion-list>
 
     <ion-fab vertical="bottom" horizontal="end" slot="fixed">
-        <ion-fab-button color="secondary">
+        <ion-fab-button (click)="goToPayMode()" color="secondary">
             <ion-icon name="arrow-forward-circle"></ion-icon>
         </ion-fab-button>
     </ion-fab>

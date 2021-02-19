@@ -35,7 +35,7 @@ export class fetch_order_single extends BaseDao<IGetOrder[]> {
 
     @Query(`
         SELECT 
-
+        row_id,
         user_row_uuid,
         partner_row_uuid,
         kitchen_row_uuid,
@@ -75,7 +75,7 @@ export class fetch_order_all extends BaseDao<IGetOrder[]> {
 
     @Query(`
         SELECT 
-
+        row_id,
         user_row_uuid,
         partner_row_uuid,
         kitchen_row_uuid,

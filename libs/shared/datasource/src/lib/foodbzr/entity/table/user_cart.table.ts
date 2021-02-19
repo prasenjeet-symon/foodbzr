@@ -20,6 +20,9 @@ export class user_cart {
     @Column({ dataType: MYSQL_DATATYPE.TINYINT(false) })
     private amount: number;
 
+    @Column({ dataType: MYSQL_DATATYPE.TEXT() })
+    private instruction: string;
+
     @Column({ dataType: MYSQL_DATATYPE.DATETIME })
     private date_created: string;
 

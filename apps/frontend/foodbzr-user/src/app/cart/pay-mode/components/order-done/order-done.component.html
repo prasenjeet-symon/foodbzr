@@ -10,31 +10,32 @@
                 <ion-card-header>
                     <ion-card-title>Order details</ion-card-title>
                 </ion-card-header>
-                <ion-card-content>
+                <ion-card-content *ngIf="order">
                     <div class="order_info_item">
-                        <div><b>Lorem ipsum dolor sit.</b></div>
-                        <div><code>Lorem ipsum dolor sit amet consectetur.</code></div>
+                        <div><b>Order id</b></div>
+                        <div>
+                            <code>{{ order.row_id }}</code>
+                        </div>
                     </div>
 
                     <div class="order_info_item">
-                        <div><b>Lorem ipsum dolor sit.</b></div>
-                        <div><code>Lorem ipsum dolor sit amet consectetur.</code></div>
+                        <div><b>Transaction id</b></div>
+                        <div>
+                            <code>{{ order.row_uuid }}</code>
+                        </div>
                     </div>
 
                     <div class="order_info_item">
-                        <div><b>Lorem ipsum dolor sit.</b></div>
-                        <div><code>Lorem ipsum dolor sit amet consectetur.</code></div>
-                    </div>
-
-                    <div class="order_info_item">
-                        <div><b>Date</b></div>
-                        <div><code> 2020/02/23 03:45 AM </code></div>
+                        <div><b> Date </b></div>
+                        <div>
+                            <code>{{ order.date_created | date: 'short' }}</code>
+                        </div>
                     </div>
                 </ion-card-content>
             </ion-card>
         </div>
         <div>
-            <ion-button color="secondary">Back to home</ion-button>
+            <ion-button (click)="closeModal()" color="secondary">Back to home</ion-button>
         </div>
     </div>
 </ion-content>

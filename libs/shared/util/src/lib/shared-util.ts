@@ -133,3 +133,24 @@ export const google_map_dark_theme = [
         stylers: [{ color: '#17263c' }],
     },
 ];
+
+export const find_unique_items = <T>(items: T[], key: string) => {
+    const unique_one: T[] = [];
+    items.forEach((p) => {
+        if (unique_one.some((val) => val[key] === p[key])) {
+        } else {
+            // push the item
+            unique_one.push(p);
+        }
+    });
+
+    return unique_one;
+};
+
+export const can_apply_offer = (start_datetime: string, current_datetime: string, end_datetime: string) => {
+    if (+new Date(current_datetime) >= +new Date(start_datetime) && +new Date(current_datetime) <= +new Date(end_datetime)) {
+        return true;
+    } else {
+        return false;
+    }
+};

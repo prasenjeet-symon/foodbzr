@@ -2,3 +2,24 @@
     --width: 100%;
     --min-width: 100%;
 }
+
+.empty_screen {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 45px;
+}
+.empty_screen > div:nth-of-type(1) > img {
+    width: 40%;
+    height: auto;
+}
+
+.empty_screen > div:nth-of-type(1) {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.empty_screen>div:nth-of-type(3){
+    color: var(--ion-color-step-400);
+}

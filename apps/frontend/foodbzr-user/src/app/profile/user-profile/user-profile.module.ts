@@ -3,7 +3,7 @@ import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { IonicModule } from '@ionic/angular';
-import { FoundKitchenMenuPageComponent } from './found-kitchen-menu-page/found-kitchen-menu-page.component';
+import { UserProfilePageComponent } from './user-profile-page/user-profile-page.component';
 
 @NgModule({
     imports: [
@@ -13,10 +13,10 @@ import { FoundKitchenMenuPageComponent } from './found-kitchen-menu-page/found-k
         RouterModule.forChild([
             {
                 path: '',
-                component: FoundKitchenMenuPageComponent,
+                component: UserProfilePageComponent,
             },
         ]),
     ],
-    declarations: [FoundKitchenMenuPageComponent],
+    declarations: [UserProfilePageComponent],
 })
-export class FoundKitchenMenuModule {}
+export class UserProfileModule {}

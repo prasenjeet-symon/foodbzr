@@ -4,6 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { IonicModule } from '@ionic/angular';
 import { AddressPageComponent } from './address-page/address-page.component';
+import { SearchLocationComponent } from './components/choose-location/choose-location.component';
 
 @NgModule({
     imports: [
@@ -17,7 +18,8 @@ import { AddressPageComponent } from './address-page/address-page.component';
             },
         ]),
     ],
-    declarations: [AddressPageComponent],
+    entryComponents: [SearchLocationComponent],
+    declarations: [AddressPageComponent, SearchLocationComponent],
     exports: [],
 })
 export class AddressModule {}

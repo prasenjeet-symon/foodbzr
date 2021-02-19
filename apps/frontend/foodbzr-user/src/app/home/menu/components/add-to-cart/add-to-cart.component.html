@@ -2,7 +2,7 @@
 
 <ion-header [translucent]="true">
     <ion-toolbar>
-        <ion-title color="success"> &#x20B9; 3400.34 </ion-title>
+        <ion-title color="success"> &#x20B9; {{ totalPrice }} </ion-title>
         <ion-buttons slot="end">
             <ion-button (click)="closeModal()"> <ion-icon name="close-outline"></ion-icon> </ion-button>
         </ion-buttons>
@@ -15,15 +15,17 @@
             <ion-label> Variants </ion-label>
         </ion-list-header>
 
-        <ion-item *ngFor="let item of menu_variants">
-            <ion-avatar slot="start"><img src="../../../../../assets/icon/food (13).jpg" alt="" srcset="" /></ion-avatar>
+        <ion-item (click)="itemSelected(item)" *ngFor="let item of menuSizeVariants; trackBy: tracker">
+            <ion-avatar slot="start"><img [src]="item.menu_variant_profile_picture" srcset="" /></ion-avatar>
             <ion-label>
-                <h2>Lorem, ipsum dolor.</h2>
-                <h6>&#x20B9; 3400.98</h6>
-                <p><del> &#x20B9; 5600.88 </del></p>
+                <h2>{{ item.menu_variant_name }}</h2>
+                <h6>&#x20B9; {{ item.final_price }}</h6>
+                <p>
+                    <del> &#x20B9; {{ item.menu_variant_price_per_unit }} </del>
+                </p>
             </ion-label>
-            <ion-chip color="danger" size="small" slot="end"> 23% OFF </ion-chip>
-            <ion-checkbox slot="end"></ion-checkbox>
+            <ion-chip *ngIf="item.final_offer_percentage !== 0" color="danger" size="small" slot="end"> {{ item.final_offer_percentage }}% OFF </ion-chip>
+            <ion-checkbox [checked]="item.is_selected" slot="end"></ion-checkbox>
         </ion-item>
     </ion-list>
 </ion-content>
@@ -31,14 +33,14 @@
 <ion-footer>
     <ion-toolbar>
         <div class="quantity_adder">
-            <ion-fab-button size="small">
+            <ion-fab-button (click)="decreaseAmount()" size="small">
                 <ion-icon name="remove"></ion-icon>
             </ion-fab-button>
-            <div><input type="number" name="" id="" /></div>
-            <ion-fab-button size="small">
+            <div><input [(ngModel)]="totalAmount" type="number" name="" id="" /></div>
+            <ion-fab-button (click)="increaseAmount()" size="small">
                 <ion-icon name="add"></ion-icon>
             </ion-fab-button>
         </div>
-        <ion-button slot="end" color="tertiary">Add to cart</ion-button>
+        <ion-button (click)="addToCart()" slot="end" color="tertiary">Add to cart</ion-button>
     </ion-toolbar>
 </ion-footer>
