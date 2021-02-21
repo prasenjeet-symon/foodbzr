@@ -1,0 +1,32 @@
+<ion-header [translucent]="true">
+    <ion-toolbar>
+        <ion-title>Deliver now</ion-title>
+        <ion-buttons slot="end">
+            <ion-button (click)="closeModal(false)"> <ion-icon name="close-outline"></ion-icon> </ion-button>
+        </ion-buttons>
+    </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+    <!-- for ios only header  -->
+    <ion-header collapse="condense">
+        <ion-toolbar>
+            <ion-title size="large">Deliver now</ion-title>
+        </ion-toolbar>
+    </ion-header>
+
+    <div class="deliver_now">
+        <div><img src="../../../../../assets/icon/food-delivery.png" alt="" srcset="" /></div>
+        <div>
+            <ion-text><h2>Delivery OTP</h2></ion-text>
+            <ion-text><p>Ask delivery OTP from the user and enter it below</p></ion-text>
+        </div>
+        <div>
+            <ion-input [(ngModel)]="OTP" placeholder="OTP" inputmode="number"></ion-input>
+        </div>
+
+        <div class="submmit_btn">
+            <ion-button (click)="closeModal(true)" color="warning" expand="full"> Hand over </ion-button>
+        </div>
+    </div>
+</ion-content>

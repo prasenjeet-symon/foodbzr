@@ -1,0 +1,19 @@
+<ion-header [translucent]="true">
+    <ion-toolbar>
+        <ion-title>Done</ion-title>
+    </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+    <!-- delivered success -->
+    <div class="delivered_success">
+        <div><img src="../../../../../assets/icon/deliver2.png" alt="" srcset="" /></div>
+        <div>
+            <ion-text color="success"> <h2>Good Job</h2> </ion-text>
+            <ion-text> Package delivered successfully </ion-text>
+        </div>
+        <div>
+            <ion-button (click)="closeModal()" color="danger">Close</ion-button>
+        </div>
+    </div>
+</ion-content>

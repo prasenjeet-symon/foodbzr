@@ -1,4 +1,5 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
+import { IGetOrder } from '@foodbzr/shared/types';
 
 @Component({
     selector: 'foodbzr-delivered-order',
@@ -6,8 +7,9 @@ import { Component, OnInit } from '@angular/core';
     styleUrls: ['./delivered-order.component.scss'],
 })
 export class DeliveredOrderComponent implements OnInit {
+    @Input() order: IGetOrder;
 
     constructor() {}
-    
+
     ngOnInit() {}
 }

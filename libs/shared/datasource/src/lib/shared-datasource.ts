@@ -21,13 +21,21 @@ export { update_partner, update_partner_mobile_number, update_partner_otp, updat
  */
 export { delete_kitchen } from './foodbzr/dao/delete/kitchen.d.dao';
 export { insert_kitchen } from './foodbzr/dao/insert/kitchen.i.dao';
-export { fetch_kitchen_password, fetch_kitchens_of_partner, fetch_kitchen_single, fetch_kitchen_all, fetch_kitchen_in_range, fetch_kitchen_search } from './foodbzr/dao/select/kitchen.s.dao';
+export {
+    fetch_kitchen_password,
+    fetch_kitchens_of_partner,
+    fetch_kitchen_single,
+    fetch_kitchen_all,
+    fetch_kitchen_in_range,
+    fetch_kitchen_search,
+    fetch_kitchen_supported_menus,
+} from './foodbzr/dao/select/kitchen.s.dao';
 export { update_kitchen, update_kitchen_password, update_kitchen_offers, update_kitchen_login_detail, update_kitchen_address } from './foodbzr/dao/update/kitchen.u.dao';
 
 /** menu.table.ts */
 export { delete_menu } from './foodbzr/dao/delete/menu.d.dao';
 export { insert_menu } from './foodbzr/dao/insert/menu.i.dao';
-export { fetch_menu_single, fetch_menus_of_kitchen, fetch_menu_of_regional_food_cat, fetch_menu_search } from './foodbzr/dao/select/menu.s.dao';
+export { fetch_menu_single, fetch_menus_of_kitchen, fetch_menu_of_regional_food_cat, fetch_menu_search , fetch_menu_trending} from './foodbzr/dao/select/menu.s.dao';
 export { update_menu, update_menu_offers, update_menu_category } from './foodbzr/dao/update/menu.u.dao';
 
 /** food_category.table.ts */
@@ -74,7 +82,7 @@ export { update_user_cart, update_user_cart_cooking_instruction } from './foodbz
 /** order.table.ts */
 export {} from './foodbzr/dao/delete/order.d.dao';
 export { insert_order, insert_order_take_order } from './foodbzr/dao/insert/order.i.dao';
-export { fetch_order_single, fetch_order_lifecycle, fetch_order_all, fetch_order_status, fetch_order_pending_dboy, fetch_order_on_way_dboy } from './foodbzr/dao/select/order.s.dao';
+export { fetch_order_single, fetch_order_lifecycle, fetch_order_dboy_report, fetch_order_all, fetch_order_status, fetch_order_pending_dboy, fetch_order_on_way_dboy , fetch_order_of_user} from './foodbzr/dao/select/order.s.dao';
 export {
     update_order_add_otp,
     update_t_order_lifecycle,

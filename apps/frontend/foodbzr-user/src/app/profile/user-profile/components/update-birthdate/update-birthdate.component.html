@@ -1,0 +1,27 @@
+<ion-header [translucent]="true">
+    <ion-toolbar>
+        <ion-title>Update birthdate</ion-title>
+        <ion-buttons slot="end">
+            <ion-button (click)="closeModal(true)" color="secondary">Save</ion-button>
+        </ion-buttons>
+        <ion-buttons slot="end">
+            <ion-button (click)="closeModal(false)"> <ion-icon name="close-outline"></ion-icon> </ion-button>
+        </ion-buttons>
+    </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+    <!-- for ios only header  -->
+    <ion-header collapse="condense">
+        <ion-toolbar>
+            <ion-title size="large">Update birthdate</ion-title>
+        </ion-toolbar>
+    </ion-header>
+
+    <!--  birth date holder -->
+
+    <ion-item class="update_birth">
+        <ion-label>Birth Date</ion-label>
+        <ion-datetime [(ngModel)]="birth_date" placeholder="Select Date"></ion-datetime>
+    </ion-item>
+</ion-content>

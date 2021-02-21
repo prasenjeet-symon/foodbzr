@@ -11,18 +11,20 @@
     <!-- found kitchen serving the menus -->
 
     <ion-list>
-        <ion-list-header>
-            <ion-label color="secondary"> Found 233 kitchen serving the menu <b> Lorem, ipsum dolor. </b> </ion-label>
+        <ion-list-header *ngIf="foundKitchens.length !== 0">
+            <ion-label color="secondary">
+                Found {{ foundKitchens.length }} kitchen serving the menu <b> {{ menu_name }} </b>
+            </ion-label>
         </ion-list-header>
 
-        <ion-item *ngFor="let item of found_kitchens">
+        <ion-item (click)="navKitchenPage(item)" *ngFor="let item of foundKitchens">
             <ion-card>
-                <img src="../../../../assets/icon/food (5).jpg" />
+                <img [src]="item.profile_picture" />
                 <ion-card-header>
-                    <ion-card-subtitle>Destination</ion-card-subtitle>
-                    <ion-card-title>Madison, WI</ion-card-title>
+                    <ion-card-subtitle>{{ item.address }}</ion-card-subtitle>
+                    <ion-card-title>{{ item.kitchen_name }}</ion-card-title>
                 </ion-card-header>
-                <ion-card-content> Lorem, ipsum dolor. , Lorem ipsum dolor sit. , Lorem ipsum dolor sit amet. </ion-card-content>
+                <ion-card-content> </ion-card-content>
             </ion-card>
         </ion-item>
     </ion-list>

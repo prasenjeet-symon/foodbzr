@@ -1,5 +1,6 @@
 import * as moment from 'moment';
 import { Chance } from 'chance';
+import { IGetOrder } from '@foodbzr/shared/types';
 
 export function convert_object_to_sql_object(obj: any) {
     Object.keys(obj).forEach((p) => {
@@ -154,3 +155,69 @@ export const can_apply_offer = (start_datetime: string, current_datetime: string
         return false;
     }
 };
+
+export function convertJsDateToSQL(date_string: string) {
+    const SQL_DATE = moment(new Date(date_string)).format('YYYY-MM-DD HH:mm:ss');
+    return SQL_DATE;
+}
+
+export class DateIterator implements IterableIterator<string> {
+    protected start_moment_date!: moment.Moment;
+    protected end_moment_date!: moment.Moment;
+    protected current_date!: moment.Moment;
+
+    constructor(protected start_date: string, end_date: string) {
+        this.start_moment_date = moment(new Date(start_date));
+        this.end_moment_date = moment(new Date(end_date));
+    }
+
+    public next(): IteratorResult<string> {
+        if (this.current_date) {
+            this.current_date = this.current_date.add('1', 'day');
+        } else {
+            this.current_date = this.start_moment_date;
+        }
+
+        if (this.current_date > this.end_moment_date) {
+            return {
+                done: true,
+                value: '',
+            };
+        } else {
+            return {
+                done: false,
+                value: this.current_date.format('YYYY-MM-DD'),
+            };
+        }
+    }
+
+    [Symbol.iterator](): IterableIterator<string> {
+        return this;
+    }
+}
+
+/** make the order stacked report */
+
+export function makeOrderStackedGraphData(start_date: string, end_date: string, orders: IGetOrder[]) {
+    const date_ite = new DateIterator(start_date, end_date);
+
+    const labels: string[] = [];
+    const delivered_orders_counts: number[] = [];
+    const canceled_orders_counts: number[] = [];
+
+    for (const current_date of date_ite) {
+        const found_items = orders.filter((p) => moment(new Date(p.date_created)).format('YYYY-MM-DD') === current_date);
+        const canceled_orders = found_items.filter((p) => p.delivery_status === 'canceled');
+        const delivered_orders = found_items.filter((p) => p.delivery_status === 'delivered');
+
+        labels.push(current_date);
+        delivered_orders_counts.push(delivered_orders.length);
+        canceled_orders_counts.push(canceled_orders.length);
+    }
+
+    return {
+        labels,
+        delivered_orders_counts,
+        canceled_orders_counts,
+    };
+}

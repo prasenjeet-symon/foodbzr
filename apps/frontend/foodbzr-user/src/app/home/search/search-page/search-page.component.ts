@@ -1,7 +1,7 @@
 import { Component, NgZone, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FoodbzrDatasource, fetch_menu_search, fetch_kitchen_search } from '@foodbzr/datasource';
-import { IGetMenuSearchResult, IGetKitchenSearchResult } from '@foodbzr/shared/types';
+import { IGetMenuSearchResult, IGetKitchenSearchResult, IGetKitchen } from '@foodbzr/shared/types';
 import { daoConfig, DaoLife } from '@sculify/node-room-client';
 
 @Component({
@@ -34,7 +34,6 @@ export class SearchPageComponent implements OnInit {
         this.fetch_menu_search__.observe(this.daosLife).subscribe((val) => {
             this.ngZone.run(() => {
                 this.menuResults = val;
-                console.log(this.menuResults, 'heeo');
             });
         });
 
@@ -43,16 +42,25 @@ export class SearchPageComponent implements OnInit {
         this.fetch_kitchen_search__.observe(this.daosLife).subscribe((val) => {
             this.ngZone.run(() => {
                 this.kitchenResult = val;
-                console.log(this.kitchenResult);
             });
         });
     }
 
     search(search_term: string) {
-        if (search_term) {
+        if (search_term || search_term !== '') {
             /** search the menu */
             this.fetch_kitchen_search__.fetch(`%${search_term}%`).obsData();
             this.fetch_menu_search__.fetch(`%${search_term}%`).obsData();
         }
+    }
+
+    /** nav to kitchen page */
+    navKitchen(kitchen: IGetKitchenSearchResult) {
+        this.router.navigate(['tabs', 'tab1', 'kitchen', kitchen.row_uuid, kitchen.profile_picture, kitchen.partner_row_uuid, kitchen.kitchen_name]);
+    }
+
+    /** nav to kitchens with menus */
+    public navKitchenMenu(menu: IGetMenuSearchResult) {
+        this.router.navigate(['tabs', 'tab1', 'found_kitchen_menu', menu.name]);
     }
 }

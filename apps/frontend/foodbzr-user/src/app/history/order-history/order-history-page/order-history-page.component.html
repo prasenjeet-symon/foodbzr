@@ -1,6 +1,9 @@
 <ion-header [translucent]="true">
     <ion-toolbar>
         <ion-title>Order history</ion-title>
+        <ion-buttons slot="start">
+            <ion-back-button></ion-back-button>
+        </ion-buttons>
     </ion-toolbar>
 </ion-header>
 
@@ -14,73 +17,39 @@
 
     <!-- list all the orders  -->
 
-    <ion-list>
+    <ion-list *ngFor="let order_his of orderHistory">
         <ion-list-header>
-            <ion-label> 2020-02-12 </ion-label>
+            <ion-label> {{ order_his.date }} </ion-label>
         </ion-list-header>
 
         <!-- placed -->
-        <ion-item>
+        <ion-item (click)="navFullDetails(order)" *ngFor="let order of order_his.data">
             <ion-avatar slot="start"><img src="../../../../assets/icon/food (11).jpg" alt="" srcset="" /></ion-avatar>
             <ion-label>
-                <h2>Order id 34456</h2>
-                <p>&#x20B9; 3400.90 <b>( COD )</b></p>
+                <h2>Order id #{{ order.row_id }}</h2>
+                <p>
+                    &#x20B9; {{ order.amount_paid }} <b>( {{ order.pay_type }} )</b>
+                </p>
             </ion-label>
-            <ion-chip color="warning" slot="end">
+            <ion-chip *ngIf="order.delivery_status === 'placed'" color="warning" slot="end">
                 <ion-icon name="time"></ion-icon>
                 <ion-label>Placed</ion-label>
             </ion-chip>
-        </ion-item>
-
-        <!-- cooking -->
-        <ion-item>
-            <ion-avatar slot="start"><img src="../../../../assets/icon/food (11).jpg" alt="" srcset="" /></ion-avatar>
-            <ion-label>
-                <h2>Order id 34456</h2>
-                <p>&#x20B9; 3400.90</p>
-            </ion-label>
-            <ion-chip color="warning" slot="end">
+            <ion-chip *ngIf="order.delivery_status === 'cooking'" color="warning" slot="end">
                 <ion-icon name="cafe"></ion-icon>
                 <ion-label>Cooking</ion-label>
             </ion-chip>
-        </ion-item>
-
-        <!-- on way -->
-        <ion-item>
-            <ion-avatar slot="start"><img src="../../../../assets/icon/food (11).jpg" alt="" srcset="" /></ion-avatar>
-            <ion-label>
-                <h2>Order id 34456</h2>
-                <p>&#x20B9; 3400.90</p>
-            </ion-label>
-            <ion-chip color="secondary" slot="end">
+            <ion-chip *ngIf="order.delivery_status === 'canceled'" color="danger" slot="end">
+                <ion-icon name="close"></ion-icon>
+                <ion-label>Canceled</ion-label>
+            </ion-chip>
+            <ion-chip *ngIf="order.delivery_status === 'on_way'" color="secondary" slot="end">
                 <ion-icon name="bicycle"></ion-icon>
                 <ion-label>On it's way</ion-label>
             </ion-chip>
-        </ion-item>
-
-        <!-- delivered  -->
-        <ion-item>
-            <ion-avatar slot="start"><img src="../../../../assets/icon/food (11).jpg" alt="" srcset="" /></ion-avatar>
-            <ion-label>
-                <h2>Order id 34456</h2>
-                <p>&#x20B9; 3400.90</p>
-            </ion-label>
-            <ion-chip color="success" slot="end">
+            <ion-chip *ngIf="order.delivery_status === 'delivered'" color="success" slot="end">
                 <ion-icon name="checkmark-done"></ion-icon>
                 <ion-label>Delivered</ion-label>
-            </ion-chip>
-        </ion-item>
-
-        <!-- canceled -->
-        <ion-item>
-            <ion-avatar slot="start"><img src="../../../../assets/icon/food (11).jpg" alt="" srcset="" /></ion-avatar>
-            <ion-label>
-                <h2>Order id 34456</h2>
-                <p>&#x20B9; 3400.90</p>
-            </ion-label>
-            <ion-chip color="danger" slot="end">
-                <ion-icon name="close"></ion-icon>
-                <ion-label>Canceled</ion-label>
             </ion-chip>
         </ion-item>
     </ion-list>

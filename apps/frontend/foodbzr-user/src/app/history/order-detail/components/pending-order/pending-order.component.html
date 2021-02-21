@@ -1,44 +1,45 @@
 <div class="kitchen_profile">
-    <img src="../../../../../assets/icon/food (13).jpg" alt="" srcset="" />
+    <img [src]="order.kitchen_profile_picture" alt="" srcset="" />
 </div>
 
 <div class="order_info">
     <ion-card>
         <ion-card-header>
             <ion-card-subtitle>COD</ion-card-subtitle>
-            <ion-card-title> &#x20B9; 456.90</ion-card-title>
+            <ion-card-title> &#x20B9; {{ order.amount_paid }}</ion-card-title>
         </ion-card-header>
         <ion-card-content>
-            
             <div class="info_item">
-                <code>Lorem ipsum dolor sit amet consectetur.</code>
-                <div><b>Lorem, ipsum dolor.</b></div>
+                <code>#{{ order.row_id }}</code>
+                <div><b>Order id</b></div>
             </div>
 
             <div class="info_item">
-                <code>Lorem ipsum dolor sit amet consectetur.</code>
-                <div><b>Lorem, ipsum dolor.</b></div>
+                <code>{{ order.row_uuid }}</code>
+                <div><b> Transaction id </b></div>
             </div>
 
             <div class="info_item">
-                <code>Lorem ipsum dolor sit amet consectetur.</code>
-                <div><b>Lorem, ipsum dolor.</b></div>
+                <code>{{ order.date_created | date: 'short' }}</code>
+                <div><b>Date time</b></div>
             </div>
 
             <div class="info_item">
-                <code>Lorem ipsum dolor sit amet consectetur.</code>
-                <div><b>Lorem, ipsum dolor.</b></div>
+                <code>{{ order.pay_status }}</code>
+                <div><b>Payment status</b></div>
             </div>
-
         </ion-card-content>
     </ion-card>
 </div>
 
 <!-- item tracker -->
-<div class="item_tracker">
+<div *ngFor="let trackerFood of order.lifecycle" class="item_tracker">
     <div>
         <div class="icon_holder">
-            <ion-fab-button color="success" size="small">
+            <ion-fab-button *ngIf="trackerFood.is_done" color="success" size="small">
+                <ion-icon name="checkmark"></ion-icon>
+            </ion-fab-button>
+            <ion-fab-button *ngIf="!trackerFood.is_done" color="light" size="small">
                 <ion-icon name="checkmark"></ion-icon>
             </ion-fab-button>
         </div>
@@ -46,118 +47,48 @@
     </div>
     <div>
         <div class="heading">
-            <ion-text><h6>Order Placed</h6></ion-text>
+            <ion-text *ngIf="trackerFood.name === 'order placed'"><h6>Order Placed</h6></ion-text>
+            <ion-text *ngIf="trackerFood.name === 'order confirmed'"><h6>Order Confirmed</h6></ion-text>
+            <ion-text *ngIf="trackerFood.name === 'cooking'"><h6>Cooking</h6></ion-text>
+            <ion-text *ngIf="trackerFood.name === 'order pickedup'"><h6>Order Pickedup</h6></ion-text>
+            <ion-text *ngIf="trackerFood.name === 'order on its way'"><h6>Order on it's way</h6></ion-text>
+            <ion-text *ngIf="trackerFood.name === 'order delivered'"><h6>Order delivered</h6></ion-text>
         </div>
         <div class="body">
-            <ion-text>
-                <p>Order placed on <b> 12/02/2021 12:34 AM </b></p>
+            <ion-text *ngIf="trackerFood.name === 'order placed'">
+                <p>
+                    Order placed on <b> {{ trackerFood.date_created | date: 'short' }} </b>
+                </p>
             </ion-text>
-        </div>
-    </div>
-</div>
+            <ion-text *ngIf="trackerFood.name === 'order confirmed'">
+                <p>
+                    Order confirmed by the kitchen owner at <b> {{ trackerFood.date_updated | date: 'short' }} </b> . Your OTP to receive the order by the delivery boy is <b>{{ order.otp }}</b>
+                </p>
+            </ion-text>
+            <ion-text *ngIf="trackerFood.name === 'cooking'">
+                <p>Your order is being cooked please seat tight and make yourself ready</p>
+            </ion-text>
+            <div *ngIf="trackerFood.name === 'order pickedup'">
+                <p>Your order is received by the delivery boy.</p>
+                <ion-item *ngIf="order.full_name">
+                    <ion-avatar slot="start"><img [src]="order.profile_picture" alt="" srcset="" /></ion-avatar>
+                    <ion-label>
+                        <h2>{{ order.full_name }}</h2>
+                        <p>+91 {{ order.mobile_number }}</p>
+                    </ion-label>
+                    <ion-chip color="secondary" slot="end">
+                        <ion-icon name="call"></ion-icon>
+                        <ion-label>Call</ion-label>
+                    </ion-chip>
+                </ion-item>
+            </div>
+            <ion-text *ngIf="trackerFood.name === 'order on its way'">
+                <p>Your order is on it's correct path</p>
+            </ion-text>
 
-<div class="item_tracker">
-    <div>
-        <div class="icon_holder">
-            <ion-fab-button color="success" size="small">
-                <ion-icon name="checkmark"></ion-icon>
-            </ion-fab-button>
-        </div>
-        <div class="line_holder"></div>
-    </div>
-    <div>
-        <div class="heading">
-            <ion-text><h6>Order confirmed</h6></ion-text>
-        </div>
-        <div class="body">
-            <p>Order confirmed by the kitchen owner at <b> 12/02/2021 12:34 AM </b> . Your OTP to receive the order by the delivery boy is <b>25436</b></p>
-        </div>
-    </div>
-</div>
-
-<div class="item_tracker">
-    <div>
-        <div class="icon_holder">
-            <ion-fab-button color="light" size="small">
-                <ion-icon name="checkmark"></ion-icon>
-            </ion-fab-button>
-        </div>
-        <div class="line_holder"></div>
-    </div>
-    <div>
-        <div class="heading">
-            <ion-text><h6>Cooking</h6></ion-text>
-        </div>
-        <div class="body">
-            <p>Your order is being cooked please seat tight and make yourself ready</p>
-        </div>
-    </div>
-</div>
-
-<div class="item_tracker">
-    <div>
-        <div class="icon_holder">
-            <ion-fab-button color="light" size="small">
-                <ion-icon name="checkmark"></ion-icon>
-            </ion-fab-button>
-        </div>
-        <div class="line_holder"></div>
-    </div>
-    <div>
-        <div class="heading">
-            <ion-text><h6>Picked Up</h6></ion-text>
-        </div>
-        <div class="body">
-            <p>Your order is received by the delivery boy.</p>
-            <ion-item>
-                <ion-avatar slot="start"><img src="../../../../../assets/icon/food (8).jpg" alt="" srcset="" /></ion-avatar>
-                <ion-label>
-                    <h2>Prasenjeet Symon</h2>
-                    <p>+91 8083371360</p>
-                </ion-label>
-                <ion-chip color="secondary" slot="end">
-                    <ion-icon name="call"></ion-icon>
-                    <ion-label>Call</ion-label>
-                </ion-chip>
-            </ion-item>
-        </div>
-    </div>
-</div>
-
-<div class="item_tracker">
-    <div>
-        <div class="icon_holder">
-            <ion-fab-button color="light" size="small">
-                <ion-icon name="checkmark"></ion-icon>
-            </ion-fab-button>
-        </div>
-        <div class="line_holder"></div>
-    </div>
-    <div>
-        <div class="heading">
-            <ion-text><h6>On it's way</h6></ion-text>
-        </div>
-        <div class="body">
-            <p>Your order is on it's correct path</p>
-        </div>
-    </div>
-</div>
-
-<div class="item_tracker">
-    <div>
-        <div class="icon_holder">
-            <ion-fab-button color="light" size="small">
-                <ion-icon name="checkmark"></ion-icon>
-            </ion-fab-button>
-        </div>
-        <div class="line_holder"></div>
-    </div>
-    <div>
-        <div class="heading">
-            <ion-text><h6>Delivered</h6></ion-text>
-        </div>
-        <div class="body">
-            <p>Your order delivered to you succesfully</p>
+            <ion-text *ngIf="trackerFood.name === 'order delivered'">
+                <p>Your order delivered to you succesfully</p>
+            </ion-text>
         </div>
     </div>
 </div>

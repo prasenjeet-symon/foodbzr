@@ -1,9 +1,11 @@
 import { Component, ElementRef, NgZone, OnInit, ViewChild } from '@angular/core';
 import { google_map_dark_theme } from '@foodbzr/shared/util';
-import { ModalController } from '@ionic/angular';
+import { ModalController, ToastController } from '@ionic/angular';
 import { FoodbzrDatasource, fetch_order_on_way_dboy } from '@foodbzr/datasource';
 import { daoConfig, DaoLife } from '@sculify/node-room-client';
 import { IGetOrderOnWay } from '@foodbzr/shared/types';
+import { DeliverNowComponent } from '../components/deliver-now/deliver-now.component';
+import { DeliveredSuccessComponent } from '../components/delivered-success/delivered-success.component';
 
 declare let google: any;
 
@@ -13,10 +15,13 @@ declare let google: any;
     styleUrls: ['./track-food-page.component.scss'],
 })
 export class TrackFoodPageComponent implements OnInit {
-    daosLife: DaoLife;
+    /** dom selector */
     @ViewChild('map', { static: true }) mapElement: ElementRef<HTMLDivElement>;
+
+    public daosLife: DaoLife;
     public database = {
         fetch_order_on_way_dboy: FoodbzrDatasource.getInstance().fetch_order_on_way_dboy,
+        update_t_order_lifecycle: FoodbzrDatasource.getInstance().update_t_order_lifecycle,
     };
 
     /** daos */
@@ -30,7 +35,7 @@ export class TrackFoodPageComponent implements OnInit {
     private dboy_row_uuid: string;
     public selectedOrder: IGetOrderOnWay;
 
-    constructor(private modal: ModalController, private ngZone: NgZone) {
+    constructor(private modal: ModalController, private ngZone: NgZone, private toast: ToastController) {
         this.daosLife = new DaoLife();
         this.dboy_row_uuid = localStorage.getItem('dboy_row_uuid');
     }
@@ -43,6 +48,7 @@ export class TrackFoodPageComponent implements OnInit {
                 this.allOrdersOnWay = val;
                 if (this.allOrdersOnWay.length !== 0) {
                     this.selectedOrder = val[0];
+                    console.log(this.selectedOrder, 'jeo');
                     this.latitude = this.selectedOrder.latitude;
                     this.longitude = this.selectedOrder.longitude;
                     this.renderMap();
@@ -58,7 +64,6 @@ export class TrackFoodPageComponent implements OnInit {
         let mapOptions = {
             center: latLng,
             zoom: 10,
-            gestureHandling: 'none',
             mapTypeId: google.maps.MapTypeId.ROADMAP,
             styles: google_map_dark_theme,
         };
@@ -83,6 +88,64 @@ export class TrackFoodPageComponent implements OnInit {
     updateMap() {
         this.latitude = this.selectedOrder.latitude;
         this.longitude = this.selectedOrder.longitude;
-        this.renderMap()
+        this.renderMap();
+    }
+
+    /** deliver the order now */
+    public deliverOrderNow() {
+        this.ngZone.run(async () => {
+            const dailogRef = await this.modal.create({
+                component: DeliverNowComponent,
+                componentProps: {},
+            });
+
+            await dailogRef.present();
+
+            const { data } = await dailogRef.onWillDismiss();
+
+            if (data) {
+                const OTP = data;
+
+                if (OTP !== this.selectedOrder.otp) {
+                    const toastRef = await this.toast.create({
+                        header: 'Wrong OTP',
+                        message: 'Entered OTP is wrong please check the otp',
+                        position: 'bottom',
+                        color: 'danger',
+                        buttons: [
+                            {
+                                text: 'Done',
+                                role: 'cancel',
+                                handler: () => {
+                                    console.log('Cancel clicked');
+                                },
+                            },
+                        ],
+                    });
+                    await toastRef.present();
+                    return;
+                }
+
+                /** verify the otp and deliver */
+                const daoLife = new DaoLife();
+                const update_t_order_lifecycle__ = new this.database.update_t_order_lifecycle(daoConfig);
+                update_t_order_lifecycle__.observe(daoLife).subscribe((val) => {
+                    console.log('update the order lifecycle');
+                });
+                (await update_t_order_lifecycle__.fetch('order delivered', this.selectedOrder.row_uuid)).obsData();
+                daoLife.softKill();
+
+                await this.orderDone();
+            }
+        });
+    }
+
+    /** order delivered success */
+    public async orderDone() {
+        const dailogRef = await this.modal.create({
+            component: DeliveredSuccessComponent,
+        });
+
+        dailogRef.present();
     }
 }

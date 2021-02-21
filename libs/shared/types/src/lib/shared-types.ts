@@ -188,7 +188,11 @@ export interface IGetUser {
 }
 
 export interface IGetDBoy {
+    kitchen_name: string;
+    partner_full_name: string;
+    partner_row_uuid: string;
     kitchen_row_uuid: string;
+
     full_name: string;
     mobile_number: string;
     profile_picture: string;
@@ -253,6 +257,9 @@ export interface IFetchOrderLifecycle {
 export type databaseDao<T> = { new (config: IDaoConfig): T };
 
 export interface IGetOrder {
+    group_date: string;
+    kitchen_profile_picture: string;
+    kitchen_name: string;
     row_id: number;
     user_row_uuid: string;
     partner_row_uuid: string;
@@ -551,6 +558,8 @@ export interface IGetMenuSearchResult {
 }
 
 export interface IGetKitchenSearchResult {
+    partner_row_uuid: string;
+    row_uuid: string;
     kitchen_name: string;
     profile_picture: string;
     address: string;
@@ -559,4 +568,37 @@ export interface IGetKitchenSearchResult {
     city: string;
     state: string;
     country: string;
+}
+
+export interface IGetKitchenSearchResultMenu {
+    row_uuid: string;
+    address: string;
+    menu_name: string;
+    partner_row_uuid: string;
+    kitchen_name: string;
+    profile_picture: string;
+    opening_time: string;
+    closing_time: string;
+    open_week_list: number[];
+    street: string;
+    city: string;
+    pincode: string;
+    state: string;
+    country: string;
+    offer_percentage: number;
+    offer_start_datetime: string;
+    offer_end_datetime: string;
+    is_active: is_active;
+}
+
+export interface IGetOrderUser {
+    date: string;
+    data: IGetOrder[];
+}
+
+export interface IGetMenuTrending {
+    menu_name: string;
+    menu_profile_picture: string;
+    menu_row_uuid: string;
+    kitchen_row_uuid: string;
 }

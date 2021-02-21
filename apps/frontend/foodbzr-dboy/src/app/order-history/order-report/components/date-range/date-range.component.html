@@ -1,0 +1,23 @@
+<ion-card>
+    <ion-card-header>
+        <ion-card-title>Date Range</ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+        <ion-item>
+            <ion-label>Start Date</ion-label>
+            <ion-datetime [(ngModel)]="start_date" placeholder="Start Date"></ion-datetime>
+        </ion-item>
+
+        <ion-item>
+            <ion-label>Start Date</ion-label>
+            <ion-datetime [(ngModel)]="end_date" placeholder="End Date"></ion-datetime>
+        </ion-item>
+    </ion-card-content>
+
+    <div class="actions_card">
+        <div></div>
+        <div>
+            <ion-button (click)="closePopover()"> Done </ion-button>
+        </div>
+    </div>
+</ion-card>

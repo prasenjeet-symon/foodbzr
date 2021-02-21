@@ -1,10 +1,14 @@
 <ion-header [translucent]="true">
     <ion-toolbar>
         <ion-title>Detail</ion-title>
+        <ion-buttons slot="start">
+            <ion-back-button></ion-back-button>
+        </ion-buttons>
     </ion-toolbar>
 </ion-header>
 
 <ion-content [fullscreen]="true">
+
     <!-- for ios only header  -->
     <ion-header collapse="condense">
         <ion-toolbar>
@@ -12,7 +16,10 @@
         </ion-toolbar>
     </ion-header>
 
-    <foodbzr-pending-order></foodbzr-pending-order>
-    <!-- <foodbzr-canceled-order></foodbzr-canceled-order> -->
-    <!-- <foodbzr-delivered-order></foodbzr-delivered-order> -->
+    <div *ngIf="orderDetails">
+        <foodbzr-pending-order [order]="orderDetails" *ngIf="orderDetails.delivery_status !== 'canceled' && orderDetails.delivery_status !== 'delivered'"></foodbzr-pending-order>
+        <foodbzr-canceled-order [order]="orderDetails" *ngIf="orderDetails.delivery_status === 'canceled'"></foodbzr-canceled-order>
+        <foodbzr-delivered-order [order]="orderDetails" *ngIf="orderDetails.delivery_status === 'delivered'"></foodbzr-delivered-order>
+    </div>
+    
 </ion-content>

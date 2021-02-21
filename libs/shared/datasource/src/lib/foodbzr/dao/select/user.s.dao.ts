@@ -4,6 +4,7 @@
 
 import { BaseDao, IDaoConfig, Query } from '@sculify/node-room';
 import { IGetUser } from '@foodbzr/shared/types';
+import * as moment from 'moment';
 
 export class fetch_user_single extends BaseDao<IGetUser[]> {
     constructor(config: IDaoConfig) {
@@ -31,7 +32,11 @@ export class fetch_user_single extends BaseDao<IGetUser[]> {
         WHERE row_uuid = :user_row_uuid:
     ;`)
     fetch(user_row_uuid: string) {
-        return this.baseFetch(this.DBData);
+        return this.baseFetch(
+            this.DBData.map((p) => {
+                return { ...p, birth_date: moment(new Date(p.birth_date)).format('YYYY-MM-DD') };
+            })
+        );
     }
 }
 

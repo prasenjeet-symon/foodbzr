@@ -2,10 +2,10 @@
     <ion-toolbar>
         <ion-item slot="start">
             <ion-icon slot="start" name="location"></ion-icon>
-            <ion-label> <h4>Lorem ipsum dolor sit amet consectetur. jkjl jjljllj</h4> </ion-label>
+            <ion-label> <h4>Lorem ipsum dolor sit amet consectetur</h4> </ion-label>
         </ion-item>
         <ion-buttons slot="end">
-            <ion-button> <ion-icon name="search"></ion-icon> </ion-button>
+            <ion-button (click)="navSearch()"> <ion-icon name="search"></ion-icon> </ion-button>
         </ion-buttons>
     </ion-toolbar>
 </ion-header>
@@ -19,11 +19,11 @@
             </ion-list-header>
             <ion-grid>
                 <ion-row>
-                    <ion-col *ngFor="let men of menu" size="4" size-sm="4">
-                        <div class="menu_sugg">
-                            <ion-avatar><img src="../../../../assets/icon/food (13).jpg" alt="" /></ion-avatar>
+                    <ion-col *ngFor="let item of trendingMenus" size="4" size-sm="4">
+                        <div (click)="navToKitchenSearchPage(item)" class="menu_sugg">
+                            <ion-avatar><img [src]="item.menu_profile_picture" alt="" /></ion-avatar>
                             <ion-text color="dark">
-                                <p>Lorem, ipsum dolor.</p>
+                                <p>{{ item.menu_name }}</p>
                             </ion-text>
                         </div>
                     </ion-col>

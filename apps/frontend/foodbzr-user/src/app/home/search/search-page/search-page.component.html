@@ -3,6 +3,8 @@
         <ion-buttons slot="start">
             <ion-back-button></ion-back-button>
         </ion-buttons>
+    </ion-toolbar>
+    <ion-toolbar>
         <ion-searchbar debounce="1000" #seachTerm (ionChange)="search(seachTerm.value)"></ion-searchbar>
     </ion-toolbar>
 </ion-header>
@@ -10,21 +12,21 @@
 <ion-content [fullscreen]="true">
     <!-- found menu item -->
     <ion-list>
-        <ion-list-header>
+        <ion-list-header *ngIf="menuResults.length !== 0">
             <ion-label color="secondary"> {{ menuResults.length }} Menus found </ion-label>
         </ion-list-header>
-        <ion-item *ngFor="let item of menuResults">
+        <ion-item (click)="navKitchenMenu(item)" *ngFor="let item of menuResults">
             <ion-avatar slot="start"><img [src]="item.profile_picture" alt="" srcset="" /></ion-avatar>
             <ion-label> {{ item.name }} </ion-label>
             <ion-icon slot="end" name="chevron-forward"></ion-icon>
         </ion-item>
 
         <!-- kitchen founds -->
-        <ion-list-header>
+        <ion-list-header *ngIf="kitchenResult.length !== 0">
             <ion-label color="secondary">{{ kitchenResult.length }} kitchens found</ion-label>
         </ion-list-header>
 
-        <ion-item *ngFor="let item of kitchenResult">
+        <ion-item (click)="navKitchen(item)" *ngFor="let item of kitchenResult">
             <ion-card>
                 <img [src]="item.profile_picture" />
                 <ion-card-header>

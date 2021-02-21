@@ -1,0 +1,29 @@
+<ion-header [translucent]="true">
+    <ion-toolbar>
+        <ion-title>Update gender</ion-title>
+        <ion-buttons slot="end">
+            <ion-button (click)="closeModal(true)" color="secondary">Save</ion-button>
+        </ion-buttons>
+        <ion-buttons slot="end">
+            <ion-button (click)="closeModal(false)"> <ion-icon name="close-outline"></ion-icon> </ion-button>
+        </ion-buttons>
+    </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+    <!-- for ios only header  -->
+    <ion-header collapse="condense">
+        <ion-toolbar>
+            <ion-title size="large">Update gender</ion-title>
+        </ion-toolbar>
+    </ion-header>
+
+    <ion-item class="update_gender">
+        <ion-label>Gender</ion-label>
+        <ion-select [(ngModel)]="gender">
+            <ion-select-option value="male">Male</ion-select-option>
+            <ion-select-option value="female">Female</ion-select-option>
+            <ion-select-option value="other">Other</ion-select-option>
+        </ion-select>
+    </ion-item>
+</ion-content>

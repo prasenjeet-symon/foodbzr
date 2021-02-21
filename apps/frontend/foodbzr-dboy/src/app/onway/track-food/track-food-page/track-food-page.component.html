@@ -1,31 +1,29 @@
 <ion-header [translucent]="true">
     <ion-toolbar>
-        <ion-title *ngIf="selectedOrder">Order id {{ selectedOrder.row_id }}</ion-title>
-        <ion-item *ngIf="allOrdersOnWay.length !== 0" slot="end">
-            <ion-label>Orders</ion-label>
-            <ion-select (ionChange)="updateMap()" [(ngModel)]="selectedOrder">
-                <ion-select-option *ngFor="let order of allOrdersOnWay" [value]="order">Order id {{ order.row_id }}</ion-select-option>
-            </ion-select>
-        </ion-item>
+        <ion-title *ngIf="selectedOrder">Order id #{{ selectedOrder.row_id }}</ion-title>
     </ion-toolbar>
 </ion-header>
 
 <ion-content [fullscreen]="true">
-    <!-- for ios only header  -->
-    <ion-header collapse="condense">
-        <ion-toolbar>
-            <ion-title size="large">Order id 456</ion-title>
-        </ion-toolbar>
-    </ion-header>
-
-    <div class="ion-page">
+    <div>
         <div #map id="map"></div>
+
+        <!-- change order  -->
+        <div class="change_order_select">
+            <ion-item *ngIf="allOrdersOnWay.length !== 0" slot="end">
+                <ion-label>Orders</ion-label>
+                <ion-select (ionChange)="updateMap()" [(ngModel)]="selectedOrder">
+                    <ion-select-option *ngFor="let order of allOrdersOnWay" [value]="order">Order id {{ order.row_id }}</ion-select-option>
+                </ion-select>
+            </ion-item>
+        </div>
 
         <!-- order actions holder -->
         <div *ngIf="selectedOrder" class="order_actions">
             <ion-card>
                 <ion-card-header>
-                    <ion-card-subtitle color="danger">{{ selectedOrder.pay_type }}</ion-card-subtitle>
+                    <ion-card-subtitle *ngIf="selectedOrder.pay_status === 'pending'" color="danger">{{ selectedOrder.pay_type }} ( {{ selectedOrder.pay_status }})</ion-card-subtitle>
+                    <ion-card-subtitle *ngIf="selectedOrder.pay_status === 'paid'" color="success">{{ selectedOrder.pay_type }} ( {{ selectedOrder.pay_status }})</ion-card-subtitle>
                     <ion-card-title> &#x20B9; {{ selectedOrder.amount_paid }} </ion-card-title>
                 </ion-card-header>
 
@@ -44,7 +42,7 @@
 
                     <!-- deliver button -->
                     <div class="deliver_button">
-                        <ion-button expand="full" color="primary">Deliver Now</ion-button>
+                        <ion-button (click)="deliverOrderNow()" expand="full" color="primary">Deliver Now</ion-button>
                     </div>
                 </ion-card-content>
             </ion-card>

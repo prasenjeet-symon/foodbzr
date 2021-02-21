@@ -13,7 +13,7 @@
     </ion-header>
 
     <!--  list all the pending order -->
-    <ion-list>
+    <ion-list *ngIf="allPendingOrder.length !== 0">
         <ion-list-header>
             <ion-label color="secondary"> Order to deliver </ion-label>
         </ion-list-header>
@@ -44,7 +44,7 @@
     </ion-list>
 
     <!-- order on its way -->
-    <ion-list>
+    <ion-list *ngIf="allOnwayOrders.length !== 0">
         <ion-list-header>
             <ion-label color="secondary"> On it's way </ion-label>
         </ion-list-header>

@@ -3,7 +3,7 @@
  */
 
 import { BaseDao, IDaoConfig, Query } from '@sculify/node-room';
-import { IGetMenu, IGetMenuForCart, IGetMenuSearchResult } from '@foodbzr/shared/types';
+import { IGetMenu, IGetMenuForCart, IGetMenuSearchResult, IGetMenuTrending } from '@foodbzr/shared/types';
 import { find_unique_items, can_apply_offer } from '@foodbzr/shared/util';
 import * as moment from 'moment';
 
@@ -203,6 +203,30 @@ export class fetch_menu_search extends BaseDao<IGetMenuSearchResult[]> {
 
     ;`)
     fetch(search_term: string) {
+        return this.baseFetch(this.DBData);
+    }
+}
+
+/** find the trending menu */
+export class fetch_menu_trending extends BaseDao<IGetMenuTrending[]> {
+    constructor(config: IDaoConfig) {
+        super(config);
+    }
+
+    @Query(`
+        SELECT
+        men.menu_name as menu_name,
+        men.profile_picture as menu_profile_picture,
+        men.row_uuid as menu_row_uuid,
+        kit.row_uuid as kitchen_row_uuid
+
+        FROM menu as men
+        LEFT OUTER JOIN kitchen as kit
+        ON kit.row_uuid = men.kitchen_row_uuid
+        WHERE men.is_active = 'yes'
+        LIMIT 12
+    ;`)
+    fetch(latitude: number, longitude: number) {
         return this.baseFetch(this.DBData);
     }
 }

@@ -1,0 +1,26 @@
+<ion-header [translucent]="true">
+    <ion-toolbar>
+        <ion-title>Update name</ion-title>
+        <ion-buttons slot="end">
+            <ion-button (click)="closeModal(true)" color="secondary">Save</ion-button>
+        </ion-buttons>
+        <ion-buttons slot="end">
+            <ion-button (click)="closeModal(false)"> <ion-icon name="close-outline"></ion-icon> </ion-button>
+        </ion-buttons>
+    </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+    <!-- for ios only header  -->
+    <ion-header collapse="condense">
+        <ion-toolbar>
+            <ion-title size="large">Update name</ion-title>
+        </ion-toolbar>
+    </ion-header>
+
+    <div class="name_editor">
+        <ion-item>
+            <ion-textarea [(ngModel)]="full_name" placeholder="Enter your name"></ion-textarea>
+        </ion-item>
+    </div>
+</ion-content>

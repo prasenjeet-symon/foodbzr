@@ -3,7 +3,7 @@
  */
 
 import { BaseDao, IDaoConfig, Query } from '@sculify/node-room';
-import { IGetKitchen, is_active, IGetKitchenSearchResult } from '@foodbzr/shared/types';
+import { IGetKitchen, is_active, IGetKitchenSearchResult, IGetKitchenSearchResultMenu } from '@foodbzr/shared/types';
 
 export class fetch_kitchen_single extends BaseDao<IGetKitchen[]> {
     constructor(config: IDaoConfig) {
@@ -208,6 +208,8 @@ export class fetch_kitchen_search extends BaseDao<IGetKitchenSearchResult[]> {
     @Query(`
         SELECT 
 
+        row_uuid,
+        partner_row_uuid,
         kitchen_name,
         profile_picture,
         street,
@@ -219,6 +221,47 @@ export class fetch_kitchen_search extends BaseDao<IGetKitchenSearchResult[]> {
         FROM kitchen 
         WHERE kitchen_name LIKE :search_term: AND is_active = 'yes'
    ;`)
+    fetch(search_term: string) {
+        return this.baseFetch(
+            this.DBData.map((p) => {
+                return { ...p, address: `${p.street} ${p.city} ${p.pincode} ${p.state} ${p.country}` };
+            })
+        );
+    }
+}
+
+/** get all the kitchen with supported menus */
+export class fetch_kitchen_supported_menus extends BaseDao<IGetKitchenSearchResultMenu[]> {
+    constructor(config: IDaoConfig) {
+        super(config);
+    }
+
+    @Query(`
+        SELECT
+
+        men.menu_name as menu_name,
+        kit.partner_row_uuid as partner_row_uuid,
+        kit.kitchen_name as kitchen_name,
+        kit.profile_picture as profile_picture,
+        kit.opening_time as opening_time,
+        kit.closing_time as closing_time,
+        kit.open_week_list as open_week_list,
+        kit.street as street,
+        kit.city as city,
+        kit.pincode as pincode,
+        kit.state as state,
+        kit.country as country,
+        kit.offer_percentage as offer_percentage,
+        kit.offer_start_datetime as offer_start_datetime,
+        kit.offer_end_datetime as offer_end_datetime,
+        kit.is_active as is_active,
+        kit.row_uuid as row_uuid
+
+        FROM kitchen as kit
+        LEFT OUTER JOIN menu as men
+        ON men.kitchen_row_uuid = kit.row_uuid
+        WHERE men.menu_name LIKE :search_term: AND kit.is_active = 'yes'
+    ;`)
     fetch(search_term: string) {
         return this.baseFetch(
             this.DBData.map((p) => {

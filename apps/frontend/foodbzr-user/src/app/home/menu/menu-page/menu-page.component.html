@@ -8,15 +8,6 @@
 </ion-header>
 
 <ion-content [fullscreen]="true">
-    <ion-header collapse="condense">
-        <ion-toolbar>
-            <ion-title size="large">Menu</ion-title>
-            <ion-buttons slot="start">
-                <ion-back-button></ion-back-button>
-            </ion-buttons>
-        </ion-toolbar>
-    </ion-header>
-
     <!-- list all the menus to choose from -->
     <ion-list *ngIf="kitchenMenus.length !== 0">
         <ion-list-header>

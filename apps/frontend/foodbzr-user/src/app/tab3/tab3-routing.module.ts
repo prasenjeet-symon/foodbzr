@@ -8,7 +8,7 @@ const routes: Routes = [
         loadChildren: () => import('../history/order-history/order-history.module').then((m) => m.OrderHistoryModule),
     },
     {
-        path: 'details',
+        path: 'details/:order_row_uuid',
         loadChildren: () => import('../history/order-detail/order-detail.module').then((m) => m.OrderDetailModule),
     },
 ];

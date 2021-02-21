@@ -19,7 +19,7 @@ const routes: Routes = [
         loadChildren: () => import('../home/search/search.module').then((m) => m.SearchModule),
     },
     {
-        path: 'found_kitchen_menu',
+        path: 'found_kitchen_menu/:menu_name',
         loadChildren: () => import('../home/found-kitchen-menu/found-kitchen-menu.module').then((m) => m.FoundKitchenMenuModule),
     },
 ];
