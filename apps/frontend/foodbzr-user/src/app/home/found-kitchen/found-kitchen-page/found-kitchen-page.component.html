@@ -1,8 +1,10 @@
 <ion-header [translucent]="true">
     <ion-toolbar>
-        <ion-item slot="start">
+        <ion-item (click)="changeLocation()" slot="start">
             <ion-icon slot="start" name="location"></ion-icon>
-            <ion-label> <h4>Lorem ipsum dolor sit amet consectetur</h4> </ion-label>
+            <ion-label>
+                <h4>{{ deliveryLocation }}</h4>
+            </ion-label>
         </ion-item>
         <ion-buttons slot="end">
             <ion-button (click)="navSearch()"> <ion-icon name="search"></ion-icon> </ion-button>

@@ -1,0 +1,24 @@
+<ion-header [translucent]="true"> </ion-header>
+
+<ion-content [fullscreen]="true">
+    <div class="content_holder">
+        <ion-text>
+            <h2>Enter the code we sent to +91 {{ mobile_number }}</h2>
+        </ion-text>
+        <ion-text><p></p></ion-text>
+
+        <!-- country selector -->
+        <ion-item>
+            <ion-label position="floating">OTP</ion-label>
+            <ion-input #userOtp></ion-input>
+        </ion-item>
+
+        <section class="full-width">
+            <ion-button (click)="verifyOTP(userOtp.value)" [disabled]="!can_click_verify_button" size="large" expand="full" color="secondary">Next</ion-button>
+        </section>
+
+        <div class="resend">
+            <ion-button (click)="resendOTP()" [disabled]="!can_click_resend_button" color="light">Resend code</ion-button>
+        </div>
+    </div>
+</ion-content>

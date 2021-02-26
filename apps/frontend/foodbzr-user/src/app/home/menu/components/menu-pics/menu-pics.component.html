@@ -1,0 +1,27 @@
+<ion-header [translucent]="true">
+    <ion-toolbar>
+        <ion-title>Menu's pics</ion-title>
+        <ion-buttons slot="end">
+            <ion-button (click)="closeModal()"> <ion-icon name="close-outline"></ion-icon> </ion-button>
+        </ion-buttons>
+    </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+    <!-- for ios only header  -->
+    <ion-header collapse="condense">
+        <ion-toolbar>
+            <ion-title size="large">Menu's pics</ion-title>
+        </ion-toolbar>
+    </ion-header>
+
+    <!-- list all the menus pics -->
+
+    <ion-grid>
+        <ion-row>
+            <ion-col *ngFor="let pic of menuPics" size="4">
+                <img class="menu_pic" [src]="pic.thumbnail_uri" alt="" srcset="" />
+            </ion-col>
+        </ion-row>
+    </ion-grid>
+</ion-content>

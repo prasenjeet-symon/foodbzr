@@ -48,4 +48,10 @@ export class KitchenItemComponent implements OnInit {
     navToMenuPage(kitchen: IGetKitchen) {
         this.router.navigate(['kitchen-menu', kitchen.row_uuid, kitchen.profile_picture], { relativeTo: this.activatedRoute });
     }
+
+    navToReportPage(kitchen: IGetKitchen) {
+        this.ngZone.run(() => {
+            this.router.navigate(['tabs', 'tab2', 'kitchen-report', kitchen.row_uuid]);
+        });
+    }
 }

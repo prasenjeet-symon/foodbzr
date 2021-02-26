@@ -11,8 +11,13 @@
     <div class="kitchen_profile_holder">
         <img [src]="profile_picture" alt="" srcset="" />
         <!-- add to fav -->
-        <div class="fav_button">
-            <ion-fab-button color="danger">
+        <div *ngIf="is_fav_kitchen" class="fav_button">
+            <ion-fab-button (click)="removeFromFav()" color="danger">
+                <ion-icon name="heart"></ion-icon>
+            </ion-fab-button>
+        </div>
+        <div *ngIf="!is_fav_kitchen" class="fav_button">
+            <ion-fab-button (click)="addToFavKitchen()" color="light">
                 <ion-icon name="heart"></ion-icon>
             </ion-fab-button>
         </div>

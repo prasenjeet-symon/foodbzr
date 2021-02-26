@@ -3,6 +3,9 @@ import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { IonicModule } from '@ionic/angular';
+import { UpdateBioComponent } from './components/update-bio/update-bio.component';
+import { UpdateGenderComponent } from './components/update-gender/update-gender.component';
+import { UpdateNameComponent } from './components/update-name/update-name.component';
 import { ProfileHomePageComponent } from './profile-home-page/profile-home-page.component';
 
 @NgModule({
@@ -17,7 +20,7 @@ import { ProfileHomePageComponent } from './profile-home-page/profile-home-page.
             },
         ]),
     ],
-    declarations: [ProfileHomePageComponent],
-    exports: [ProfileHomePageComponent],
+    entryComponents: [UpdateBioComponent, UpdateNameComponent, UpdateGenderComponent],
+    declarations: [ProfileHomePageComponent, UpdateBioComponent, UpdateNameComponent, UpdateGenderComponent],
 })
 export class ProfileHomeModule {}

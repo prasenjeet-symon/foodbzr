@@ -1,0 +1,28 @@
+<ion-header [translucent]="true">
+    <ion-toolbar>
+        <ion-title>Update name</ion-title>
+        <ion-buttons slot="end">
+            <ion-button (click)="updateName()" color="secondary">Save</ion-button>
+        </ion-buttons>
+        <ion-buttons slot="end">
+            <ion-button (click)="closeModal()"> <ion-icon name="close-outline"></ion-icon> </ion-button>
+        </ion-buttons>
+    </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+    <!-- for ios only header  -->
+    <ion-header collapse="condense">
+        <ion-toolbar>
+            <ion-title size="large">Update name</ion-title>
+        </ion-toolbar>
+    </ion-header>
+
+    <!-- input holder -->
+    <div class="update_name">
+        <ion-item>
+            <ion-label>Name</ion-label>
+            <ion-input [(ngModel)]="dboy.full_name" inputmode="text"></ion-input>
+        </ion-item>
+    </div>
+</ion-content>

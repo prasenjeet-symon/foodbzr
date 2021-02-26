@@ -84,4 +84,13 @@
             <ion-button (click)="navAddressChoser(kitchen.kitchen.kitchen_row_uuid)" color="success"> Checkout </ion-button>
         </div>
     </ion-card>
+
+    <!-- empty card -->
+    <div *ngIf="allCheckoutItems.length === 0" class="empty_screen">
+        <div><img src="../../../../assets/icon/box.png" alt="" srcset="" /></div>
+        <div>
+            <ion-text color="warning"> <h3>Empty Cart</h3> </ion-text>
+            <p>Once you will add some food for checkout that is appear here</p>
+        </div>
+    </div>
 </ion-content>

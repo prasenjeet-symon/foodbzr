@@ -12,7 +12,7 @@
         </ion-toolbar>
     </ion-header>
 
-    <ion-fab (click)="chooseDateRange()" vertical="bottom" horizontal="end" slot="fixed">
+    <ion-fab *ngIf="orders.length !== 0" (click)="chooseDateRange()" vertical="bottom" horizontal="end" slot="fixed">
         <ion-fab-button>
             <ion-icon name="calendar"></ion-icon>
         </ion-fab-button>
@@ -62,7 +62,7 @@
 
     <!-- list all the orders -->
 
-    <ion-list>
+    <ion-list *ngIf="orders.length !== 0">
         <ion-list-header>
             <ion-label> List </ion-label>
             <ion-item>
@@ -88,4 +88,6 @@
             </ion-chip>
         </ion-item>
     </ion-list>
+
+    <!-- empty screen -->
 </ion-content>

@@ -26,6 +26,9 @@ export class dboy {
     @Column({ dataType: MYSQL_DATATYPE.ENUM(gender_values) })
     private gender: gender;
 
+    @Column({ dataType: MYSQL_DATATYPE.TEXT() })
+    private bio: string;
+
     @Column({ dataType: MYSQL_DATATYPE.ENUM(is_active_values), defaultValue: e_is_active.yes })
     private is_active: is_active;
 

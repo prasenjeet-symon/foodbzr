@@ -37,8 +37,12 @@ export interface IGetOwner {
 }
 
 export interface IGetPartner {
+    row_id: number;
     owner_row_uuid: string;
+    commission: number;
+    last_otp: string;
     is_active: is_active;
+    is_verified: is_active;
     profile_picture: string;
     gender: gender;
     full_name: string;
@@ -194,6 +198,7 @@ export interface IGetDBoy {
     kitchen_row_uuid: string;
 
     full_name: string;
+    bio: string;
     mobile_number: string;
     profile_picture: string;
     gender: gender;
@@ -283,6 +288,57 @@ export interface IGetOrder {
     mobile_number: string;
     latitude: number;
     longitude: number;
+}
+
+export interface IGetOrderStatus {
+    user_full_name: string;
+    user_mobile_number: string;
+    user_profile_picture: string;
+    user_gender: gender;
+
+    kitchen_name: string;
+    kitchen_profile_picture: string;
+    kitchen_street: string;
+    kitchen_pincode: string;
+    kitchen_city: string;
+    kitchen_state: string;
+    kitchen_country: string;
+    kitchen_address: string;
+
+    food_order_row_id: number;
+    user_row_uuid: string;
+    partner_row_uuid: string;
+    kitchen_row_uuid: string;
+    dboy_row_uuid: string;
+    order_address_row_uuid: string;
+
+    food_order_delivery_status: delivery_status;
+    food_order_pay_type: pay_type;
+    food_order_pay_status: pay_status;
+    food_order_otp: string;
+    food_order_amount_paid: number;
+    food_order_bzrcoin_used: number;
+    food_order_delivery_charge: number;
+    food_order_user_saved_amount: number;
+    food_order_lifecycle: IOrderLifeCycle[];
+    food_order_order_menu: OrderMenu[];
+
+    food_order_date_created: string;
+    food_order_date_updated: string;
+    food_order_row_uuid: string;
+
+    dboy_profile_picture: string;
+    dboy_full_name: string;
+    dboy_mobile_number: string;
+
+    delivery_address_street: string;
+    delivery_address_pincode: string;
+    delivery_address_city: string;
+    delivery_address_state: string;
+    delivery_address_country: string;
+    delivery_address_latitude: string;
+    delivery_address_longitude: string;
+    delivery_address: string;
 }
 
 export interface IGetUserCartFull {
@@ -602,3 +658,38 @@ export interface IGetMenuTrending {
     menu_row_uuid: string;
     kitchen_row_uuid: string;
 }
+
+export interface IGetDboyAuth {
+    is_err: boolean;
+    error: string;
+    dboy_row_uuid: string;
+    kitchen_row_uuid: string;
+    otp: string;
+}
+
+export interface IGetUserFavKitchen {
+    partner_row_uuid: string;
+    row_uuid: string;
+    user_row_uuid: string;
+    kitchen_row_uuid: string;
+    profile_picture: string;
+    kitchen_name: string;
+    street: string;
+    city: string;
+    pincode: string;
+    state: string;
+    country: string;
+    latitude: string;
+    longitude: string;
+}
+
+export interface IGetImageBBResponse {
+    pic_uri: string;
+    thumbnail_uri: string;
+    delete_uri: string;
+    mime: string;
+    size: number;
+}
+
+export type foodbzr_entity = 'owner' | 'partner' | 'dboy' | 'user';
+export const foodbzr_entity_values = ['owner', 'partner', 'dboy', 'user'];

@@ -13,6 +13,7 @@ export function generate_menus(amount: number) {
 
     const chance = new Chance();
     const date_created: string = moment(new Date()).format('YYYY-MM-DD HH:mm:ss');
+
     const all_generated_menus: {
         name: string;
         profile_picture: string;
@@ -24,7 +25,9 @@ export function generate_menus(amount: number) {
         bio: string;
     }[] = [];
 
-    for (let index = 0; index < +amount; index++) {
+    const looper = new Array(amount).fill(null);
+
+    for (const item of looper) {
         const menu_name: string = chance.sentence({ words: 3 });
         const profile_picture: string = generate_food_img(1)[0];
         const offer_percentage = chance.natural({ min: 5, max: 30 });

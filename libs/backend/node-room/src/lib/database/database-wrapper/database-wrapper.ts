@@ -173,6 +173,7 @@ export class DatabaseWrapper implements IDatabaseWrapper {
             const is_already_exit = await this.is_instance_already_exit(first_init.label);
             if (is_already_exit) {
                 // just resolve the promise
+                await this.create_table_and_views(first_init.label);
                 await this.retrive_all_prev_instances();
                 first_init.resolve('OK');
             } else {

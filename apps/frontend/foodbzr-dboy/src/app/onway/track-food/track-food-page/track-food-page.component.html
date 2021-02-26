@@ -5,7 +5,7 @@
 </ion-header>
 
 <ion-content [fullscreen]="true">
-    <div>
+    <div *ngIf="selectedOrder">
         <div #map id="map"></div>
 
         <!-- change order  -->
@@ -46,6 +46,17 @@
                     </div>
                 </ion-card-content>
             </ion-card>
+        </div>
+    </div>
+
+    <!-- empty screen -->
+    <div *ngIf="!selectedOrder" class="empty_screen">
+        <div><img src="../../../../assets/icon/street-map.png" alt="" srcset="" /></div>
+        <div>
+            <ion-text color="warning"> <h3>Nothing here</h3> </ion-text>
+        </div>
+        <div>
+            <ion-text><p>Once you will be on the road with order that will appear here</p></ion-text>
         </div>
     </div>
 </ion-content>

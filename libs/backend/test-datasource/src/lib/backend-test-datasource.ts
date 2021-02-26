@@ -51,7 +51,7 @@ async function generate_test_data(daoConfig: IDaoConfig, MYSQL_CONFIG: MYSQLConn
         for (const ins_owner of ins_owners) {
             /** add 10 male partners and 10 female partners */
             /** adding male partners */
-            const gen_10_males_partners = generate_partner(10, 'male');
+            const gen_10_males_partners = generate_partner(2, 'male');
             for (const male_partner of gen_10_males_partners) {
                 await new rootDatabase.insert_partner(daoConfig)
                     .fetch(
@@ -68,7 +68,7 @@ async function generate_test_data(daoConfig: IDaoConfig, MYSQL_CONFIG: MYSQLConn
             }
 
             /** insert 10 female partners */
-            const gen_10_females_partners = generate_partner(10, 'female');
+            const gen_10_females_partners = generate_partner(2, 'female');
             for (const female_partner of gen_10_females_partners) {
                 await new rootDatabase.insert_partner(daoConfig)
                     .fetch(
@@ -82,6 +82,12 @@ async function generate_test_data(daoConfig: IDaoConfig, MYSQL_CONFIG: MYSQLConn
                         female_partner.row_uuid
                     )
                     .asyncData();
+            }
+
+            /** inactive random 5 partner */
+            const partner_to_unverify = [...chance.pickset(gen_10_males_partners, 1), ...chance.pickset(gen_10_females_partners, 3)];
+            for (const del_partner of partner_to_unverify) {
+                await new rootDatabase.delete_partner_verification(daoConfig).fetch('no', del_partner.row_uuid).asyncData();
             }
         }
     })();
@@ -100,7 +106,7 @@ async function generate_test_data(daoConfig: IDaoConfig, MYSQL_CONFIG: MYSQLConn
 
         for (const partner of ins_all_partners) {
             /** insert the 5 kitchen for single partner */
-            const gen_5_kitchens = generate_kitchens(5);
+            const gen_5_kitchens = generate_kitchens(2);
             for (const kitchen of gen_5_kitchens) {
                 /** insert the kitchen */
                 await new rootDatabase.insert_kitchen(daoConfig)
@@ -127,7 +133,7 @@ async function generate_test_data(daoConfig: IDaoConfig, MYSQL_CONFIG: MYSQLConn
                     .asyncData();
             }
             /** delete the 2 random kitchen */
-            const kitchen_to_delete = chance.pickset(gen_5_kitchens, 2);
+            const kitchen_to_delete = chance.pickset(gen_5_kitchens, 1);
             for (const kitchen_to_del of kitchen_to_delete) {
                 await new rootDatabase.delete_kitchen(daoConfig).fetch('no', kitchen_to_del.row_uuid).asyncData();
             }
@@ -144,12 +150,13 @@ async function generate_test_data(daoConfig: IDaoConfig, MYSQL_CONFIG: MYSQLConn
     await (async () => {
         const all_owners = await new rootDatabase.fetch_owner_all(daoConfig).fetch().asyncData();
         for (const owner of all_owners) {
-            const all_partners = await new rootDatabase.fetch_partner_all(daoConfig).fetch().asyncData();
+            /** fetch all the active partners */
+            const all_partners = await new rootDatabase.fetch_partners_of_owner(daoConfig).fetch(owner.row_uuid, 'yes').asyncData();
             for (const partner of all_partners) {
                 const all_kitchens = await new rootDatabase.fetch_kitchens_of_partner(daoConfig).fetch(partner.row_uuid, 'yes').asyncData();
                 for (const kitchen of all_kitchens) {
-                    /** add 10 dboys */
-                    const gen_dboys = generate_dboys(20);
+                    /** add 10 dboys in single kitchen */
+                    const gen_dboys = generate_dboys(2);
                     for (const dboy of gen_dboys) {
                         await new rootDatabase.insert_dboy(daoConfig)
                             .fetch(kitchen.row_uuid, dboy.full_name, dboy.mobile_number, dboy.profile_picture, dboy.gender, dboy.birth_date, dboy.date_created, dboy.row_uuid)
@@ -202,7 +209,7 @@ async function generate_test_data(daoConfig: IDaoConfig, MYSQL_CONFIG: MYSQLConn
         const all_partners = await new rootDatabase.fetch_partner_all(daoConfig).fetch().asyncData();
         for (const partner of all_partners) {
             /** add regional food cats */
-            const all_regional_food_cats = generate_regional_food_category(10);
+            const all_regional_food_cats = generate_regional_food_category(5);
             for (const regional_food_cat of all_regional_food_cats) {
                 await new rootDatabase.insert_regional_food_category(daoConfig)
                     .fetch(
@@ -230,7 +237,7 @@ async function generate_test_data(daoConfig: IDaoConfig, MYSQL_CONFIG: MYSQLConn
     await (async () => {
         const all_partners = await new rootDatabase.fetch_partner_all(daoConfig).fetch().asyncData();
         for (const partner of all_partners) {
-            /** fethc all the regional food cat */
+            /** fethc all the regional food cat and food cat */
             const all_regional_food_cats = await new rootDatabase.fetch_regional_food_category_of_partner(daoConfig).fetch(partner.row_uuid).asyncData();
             const all_food_cats = await new rootDatabase.fetch_food_category_of_partner(daoConfig).fetch(partner.row_uuid).asyncData();
 
@@ -238,7 +245,7 @@ async function generate_test_data(daoConfig: IDaoConfig, MYSQL_CONFIG: MYSQLConn
             const all_kitchens = await new rootDatabase.fetch_kitchens_of_partner(daoConfig).fetch(partner.row_uuid, 'yes').asyncData();
             for (const kitchen of all_kitchens) {
                 /** create the menus */
-                const gen_menus = generate_menus(20);
+                const gen_menus = generate_menus(5);
                 for (const menu of gen_menus) {
                     /** insert the menu */
                     await new rootDatabase.insert_menu(daoConfig)
@@ -279,7 +286,7 @@ async function generate_test_data(daoConfig: IDaoConfig, MYSQL_CONFIG: MYSQLConn
                 const all_menus = await new rootDatabase.fetch_menus_of_kitchen(daoConfig).fetch(kitchen.row_uuid).asyncData();
                 for (const menu of all_menus) {
                     /** gen the size variants */
-                    const generated_menu_size_variants = generate_menu_size_variant(4);
+                    const generated_menu_size_variants = generate_menu_size_variant(2);
                     /** insert the size variant to every menu */
                     for (const size_variant of generated_menu_size_variants) {
                         await new rootDatabase.insert_menu_size_variant(daoConfig)
@@ -307,7 +314,7 @@ async function generate_test_data(daoConfig: IDaoConfig, MYSQL_CONFIG: MYSQLConn
                 const all_menus = await new rootDatabase.fetch_menus_of_kitchen(daoConfig).fetch(kitchen.row_uuid).asyncData();
                 for (const menu of all_menus) {
                     /** generate the pics of the foods */
-                    const food_pics = generate_food_img(25);
+                    const food_pics = generate_food_img(10);
                     const images_to_insert = food_pics.map((p) => {
                         return { pic_uri: p, thumbnail_uri: p, size: '0.001', mime_type: 'jpeg', menu_row_uuid: menu.row_uuid, date_created: date_created, row_uuid: uuid() };
                     });
@@ -329,7 +336,7 @@ async function generate_test_data(daoConfig: IDaoConfig, MYSQL_CONFIG: MYSQLConn
         const all_owner = await new rootDatabase.fetch_owner_all(daoConfig).fetch().asyncData();
         for (const owner of all_owner) {
             /** genrate 40 males and 40 females */
-            const gen_males = generate_users(40, 'male');
+            const gen_males = generate_users(2, 'male');
             for (const male_user of gen_males) {
                 await new rootDatabase.insert_user(daoConfig)
                     .fetch(
@@ -346,7 +353,7 @@ async function generate_test_data(daoConfig: IDaoConfig, MYSQL_CONFIG: MYSQLConn
                     .asyncData();
             }
             /** gen the females user */
-            const gen_females = generate_users(40, 'female');
+            const gen_females = generate_users(2, 'female');
             for (const female_user of gen_females) {
                 await new rootDatabase.insert_user(daoConfig)
                     .fetch(
@@ -364,7 +371,7 @@ async function generate_test_data(daoConfig: IDaoConfig, MYSQL_CONFIG: MYSQLConn
             }
 
             /** delete the 10 users */
-            const user_to_delete = chance.pickset([...gen_females, gen_males], 10);
+            const user_to_delete = chance.pickset([...gen_females, gen_males], 2);
             for (const del_user of user_to_delete) {
                 await new rootDatabase.delete_user(daoConfig).fetch('no', (del_user as any).row_uuid).asyncData();
             }
@@ -393,7 +400,7 @@ async function generate_test_data(daoConfig: IDaoConfig, MYSQL_CONFIG: MYSQLConn
             const state = chance.state();
             const country = chance.country();
 
-            await new rootDatabase.insert_delivery_address(daoConfig).fetch(user.row_uuid, street, pincode, state, country, lati, longi, date_created, uuid()).asyncData();
+            await new rootDatabase.insert_delivery_address(daoConfig).fetch(user.row_uuid, street, pincode, city, state, country, lati, longi, date_created, uuid()).asyncData();
         }
     })();
     console.log('gen ---> users delivery address');
@@ -438,24 +445,27 @@ async function generate_test_data(daoConfig: IDaoConfig, MYSQL_CONFIG: MYSQLConn
     };
 
     await (async () => {
-        const date_maker = new DateMaker('2021-02-01', '2021-02-04');
+        const today_date = moment(new Date());
+        const date_maker = new DateMaker(today_date.clone().subtract(1, 'years').format('YYYY-MM-DD'), today_date.format('YYYY-MM-DD'));
+        
         for (const date_now of date_maker) {
             const current_date = `${date_now} 10:23:23`;
 
             const all_owners = await new rootDatabase.fetch_owner_all(daoConfig).fetch().asyncData();
-            for (const owner of all_owners) {
-                const all_users = await new rootDatabase.fetch_user_all(daoConfig).fetch().asyncData();
+            const all_users = await new rootDatabase.fetch_user_all(daoConfig).fetch().asyncData();
 
-                const all_partners = await new rootDatabase.fetch_partner_all(daoConfig).fetch().asyncData();
+            for (const owner of all_owners) {
+                const all_partners = await new rootDatabase.fetch_partners_of_owner(daoConfig).fetch(owner.row_uuid, 'yes').asyncData();
+
                 for (const partner of all_partners) {
                     /** fetch all food category */
                     const all_food_cats = await new rootDatabase.fetch_food_category_of_partner(daoConfig).fetch(partner.row_uuid).asyncData();
                     const all_regional_food_cats = await new rootDatabase.fetch_regional_food_category_of_partner(daoConfig).fetch(partner.row_uuid).asyncData();
-
                     const all_kitchens = await new rootDatabase.fetch_kitchens_of_partner(daoConfig).fetch(partner.row_uuid, 'yes').asyncData();
+
                     for (const kitchen of all_kitchens) {
-                        const all_dboys = await new rootDatabase.fetch_dboy_of_kitchen(daoConfig).fetch(kitchen.row_uuid).asyncData();
                         const all_menus = await new rootDatabase.fetch_menus_of_kitchen(daoConfig).fetch(kitchen.row_uuid).asyncData();
+                        /** fetch the delivery boy */
                         const menu_to_order = chance.pickset(all_menus, Math.floor(all_menus.length / 2));
                         const menu_orders: OrderMenu[] = [];
 
@@ -463,31 +473,32 @@ async function generate_test_data(daoConfig: IDaoConfig, MYSQL_CONFIG: MYSQLConn
                             const all_menu_variants = await new rootDatabase.fetch_menu_size_variant_of_menu(daoConfig).fetch(menu.row_uuid).asyncData();
                             const menu_variant_to_oder = chance.pickone(all_menu_variants);
                             const amount_to_order = chance.natural({ min: 3, max: 10 });
+
                             let offer_percentage: number = 0;
-                            let offer_make = null;
                             const food_cat = all_food_cats.filter((p) => p.row_uuid === menu.food_category_row_uuid)[0];
                             const regional_food_cat = all_regional_food_cats.filter((p) => p.row_uuid === menu.regional_food_category_row_uuid)[0];
 
                             /** extract the offers */
-                            if (menu_variant_to_oder.offer_percentage !== 0 && can_apply_offer(menu_variant_to_oder.offer_start_datetime, current_date, menu_variant_to_oder.offer_end_datetime)) {
-                                /** we found the offer */
-                                offer_percentage = menu_variant_to_oder.offer_percentage;
-                                offer_make = 'menu_variant';
-                            } else if (menu.offer_percentage !== 0 && can_apply_offer(menu.offer_start_datetime, current_date, menu.offer_end_datetime)) {
-                                offer_percentage = menu.offer_percentage;
-                                offer_make = 'menu';
-                            } else if (kitchen.offer_percentage !== 0 && can_apply_offer(kitchen.offer_start_datetime, current_date, kitchen.offer_end_datetime)) {
-                                offer_percentage = kitchen.offer_percentage;
-                                offer_make = 'kitchen';
-                            } else if (regional_food_cat.offer_percentage !== 0 && can_apply_offer(regional_food_cat.offer_start_datetime, current_date, regional_food_cat.offer_end_datetime)) {
-                                offer_percentage = regional_food_cat.offer_percentage;
-                                offer_make = 'regional_food_category';
-                            } else if (food_cat.offer_percentage !== 0 && can_apply_offer(food_cat.offer_start_datetime, current_date, food_cat.offer_end_datetime)) {
-                                offer_percentage = food_cat.offer_percentage;
-                                offer_make = 'food_category';
+                            if (
+                                menu_variant_to_oder.offer_percentage !== 0 &&
+                                menu_variant_to_oder.is_active === 'yes' &&
+                                can_apply_offer(menu_variant_to_oder.offer_start_datetime, current_date, menu_variant_to_oder.offer_end_datetime)
+                            ) {
+                                offer_percentage = +menu_variant_to_oder.offer_percentage;
+                            } else if (menu.offer_percentage !== 0 && menu.is_active === 'yes' && can_apply_offer(menu.offer_start_datetime, current_date, menu.offer_end_datetime)) {
+                                offer_percentage = +menu.offer_percentage;
+                            } else if (kitchen.offer_percentage !== 0 && kitchen.is_active === 'yes' && can_apply_offer(kitchen.offer_start_datetime, current_date, kitchen.offer_end_datetime)) {
+                                offer_percentage = +kitchen.offer_percentage;
+                            } else if (
+                                regional_food_cat.offer_percentage !== 0 &&
+                                regional_food_cat.is_active === 'yes' &&
+                                can_apply_offer(regional_food_cat.offer_start_datetime, current_date, regional_food_cat.offer_end_datetime)
+                            ) {
+                                offer_percentage = +regional_food_cat.offer_percentage;
+                            } else if (food_cat.offer_percentage !== 0 && food_cat.is_active === 'yes' && can_apply_offer(food_cat.offer_start_datetime, current_date, food_cat.offer_end_datetime)) {
+                                offer_percentage = +food_cat.offer_percentage;
                             } else {
                                 offer_percentage = 0;
-                                offer_make = 'menu_variant';
                             }
 
                             const after_offer_price = menu_variant_to_oder.price_per_unit - (menu_variant_to_oder.price_per_unit * offer_percentage) / 100;
@@ -498,9 +509,8 @@ async function generate_test_data(daoConfig: IDaoConfig, MYSQL_CONFIG: MYSQLConn
                                 menu_row_uuid: menu.row_uuid,
                                 menu_row_name: menu.menu_name,
                                 amount: amount_to_order,
+
                                 cooking_instruction: chance.sentence({ words: 12 }),
-                                offer_percentage: offer_percentage,
-                                offer_maker: offer_make,
                                 original_price: +menu_variant_to_oder.price_per_unit,
                                 after_offer_price: +after_offer_price.toFixed(2),
                                 money_saved: +menu_variant_to_oder.price_per_unit - +after_offer_price.toFixed(2),
@@ -513,7 +523,7 @@ async function generate_test_data(daoConfig: IDaoConfig, MYSQL_CONFIG: MYSQLConn
 
                         /** calculate the payable amount */
                         const maped_price = menu_orders.map((p) => {
-                            return { total_payable_amount: p.after_offer_price * p.amount, total_amount_saved: p.money_saved * p.amount };
+                            return { total_payable_amount: p.after_offer_price * +p.amount, total_amount_saved: p.money_saved * +p.amount };
                         });
 
                         const final_maped_price = maped_price.reduce((prev, current) => {
@@ -521,9 +531,9 @@ async function generate_test_data(daoConfig: IDaoConfig, MYSQL_CONFIG: MYSQLConn
                         });
 
                         const delivery_charge = 0.0;
-                        const seeds = [1, 2, 3, 4, 5];
+                        const tax = 0.0;
+                        const user_ordering = chance.pickset(all_users, 1);
 
-                        const user_ordering = chance.pickset(all_users, chance.integer({ min: 10, max: 34 }));
                         for (const user_order of user_ordering) {
                             const user_address = await new rootDatabase.fetch_delivery_address_of_user(daoConfig).fetch(user_order.row_uuid).asyncData();
 
@@ -536,10 +546,10 @@ async function generate_test_data(daoConfig: IDaoConfig, MYSQL_CONFIG: MYSQLConn
                                     kitchen.row_uuid,
                                     'COD',
                                     'pending',
-                                    final_maped_price.total_payable_amount,
+                                    +final_maped_price.total_payable_amount.toFixed(2),
                                     0,
                                     delivery_charge,
-                                    final_maped_price.total_amount_saved,
+                                    +final_maped_price.total_amount_saved.toFixed(2),
                                     JSON.stringify(get_initial_order_lifecycle()),
                                     JSON.stringify(menu_orders),
                                     user_address[0].row_uuid,
@@ -547,61 +557,6 @@ async function generate_test_data(daoConfig: IDaoConfig, MYSQL_CONFIG: MYSQLConn
                                     order_row_uuid
                                 )
                                 .asyncData();
-                            const seed_number = chance.pickone(seeds);
-                            if (seed_number === 1) {
-                                /** deliver the order */
-                                const dboy_to_delievr = chance.pickone(all_dboys);
-
-                                /** assign the dboy */
-                                await new rootDatabase.update_order_assign_dboy(daoConfig).fetch(dboy_to_delievr.row_uuid, order_row_uuid).asyncData();
-                                await (await new rootDatabase.update_t_order_lifecycle(daoConfig).fetch('order placed', order_row_uuid)).asyncData();
-                                await (await new rootDatabase.update_t_order_lifecycle(daoConfig).fetch('order confirmed', order_row_uuid)).asyncData();
-                                await (await new rootDatabase.update_t_order_lifecycle(daoConfig).fetch('cooking', order_row_uuid)).asyncData();
-                                await (await new rootDatabase.update_t_order_lifecycle(daoConfig).fetch('order pickedup', order_row_uuid)).asyncData();
-                                await (await new rootDatabase.update_t_order_lifecycle(daoConfig).fetch('order on its way', order_row_uuid)).asyncData();
-                                await (await new rootDatabase.update_t_order_lifecycle(daoConfig).fetch('order delivered', order_row_uuid)).asyncData();
-                            } else if (seed_number === 2) {
-                                /** marks as cooking */
-                                const all_dboys = await new rootDatabase.fetch_dboy_of_kitchen(daoConfig).fetch(kitchen.row_uuid).asyncData();
-                                const dboy_to_delievr = chance.pickone(all_dboys);
-
-                                /** assign the dboy */
-                                await new rootDatabase.update_order_assign_dboy(daoConfig).fetch(dboy_to_delievr.row_uuid, order_row_uuid).asyncData();
-
-                                await (await new rootDatabase.update_t_order_lifecycle(daoConfig).fetch('order placed', order_row_uuid)).asyncData();
-                                await (await new rootDatabase.update_t_order_lifecycle(daoConfig).fetch('order confirmed', order_row_uuid)).asyncData();
-                                await (await new rootDatabase.update_t_order_lifecycle(daoConfig).fetch('cooking', order_row_uuid)).asyncData();
-                            } else if (seed_number === 3) {
-                                /** mark the order placed */
-                                await (await new rootDatabase.update_t_order_lifecycle(daoConfig).fetch('order placed', order_row_uuid)).asyncData();
-                            } else if (seed_number === 4) {
-                                /** marks as onits way */
-                                const all_dboys = await new rootDatabase.fetch_dboy_of_kitchen(daoConfig).fetch(kitchen.row_uuid).asyncData();
-                                const dboy_to_delievr = chance.pickone(all_dboys);
-
-                                /** assign the dboy */
-                                await new rootDatabase.update_order_assign_dboy(daoConfig).fetch(dboy_to_delievr.row_uuid, order_row_uuid).asyncData();
-
-                                await (await new rootDatabase.update_t_order_lifecycle(daoConfig).fetch('order placed', order_row_uuid)).asyncData();
-                                await (await new rootDatabase.update_t_order_lifecycle(daoConfig).fetch('order confirmed', order_row_uuid)).asyncData();
-                                await (await new rootDatabase.update_t_order_lifecycle(daoConfig).fetch('cooking', order_row_uuid)).asyncData();
-                                await (await new rootDatabase.update_t_order_lifecycle(daoConfig).fetch('order pickedup', order_row_uuid)).asyncData();
-                                await (await new rootDatabase.update_t_order_lifecycle(daoConfig).fetch('order on its way', order_row_uuid)).asyncData();
-                            } else if (seed_number === 5) {
-                                /** cancel the order */
-                                const all_dboys = await new rootDatabase.fetch_dboy_of_kitchen(daoConfig).fetch(kitchen.row_uuid).asyncData();
-                                const dboy_to_delievr = chance.pickone(all_dboys);
-
-                                /** assign the dboy */
-                                await new rootDatabase.update_order_assign_dboy(daoConfig).fetch(dboy_to_delievr.row_uuid, order_row_uuid).asyncData();
-
-                                await (await new rootDatabase.update_t_order_lifecycle(daoConfig).fetch('order placed', order_row_uuid)).asyncData();
-                                await (await new rootDatabase.update_t_order_lifecycle(daoConfig).fetch('order confirmed', order_row_uuid)).asyncData();
-                                await (await new rootDatabase.update_t_order_lifecycle(daoConfig).fetch('cooking', order_row_uuid)).asyncData();
-                                await (await new rootDatabase.update_t_order_lifecycle(daoConfig).fetch('order pickedup', order_row_uuid)).asyncData();
-                                await (await new rootDatabase.update_t_order_lifecycle(daoConfig).fetch('order on its way', order_row_uuid)).asyncData();
-                                await (await new rootDatabase.update_t_order_lifecycle(daoConfig).fetch('canceled', order_row_uuid)).asyncData();
-                            }
                         }
                     }
                 }
@@ -609,6 +564,37 @@ async function generate_test_data(daoConfig: IDaoConfig, MYSQL_CONFIG: MYSQLConn
         }
     })();
     console.log('gen----> orders');
+
+    /** update the order status */
+    await (async () => {
+        const all_orders = await new rootDatabase.fetch_order_all(daoConfig).fetch().asyncData();
+
+        const order_to_update = chance.pickset(all_orders, Math.floor((all_orders.length * 90) / 100));
+        const order_to_cancel = order_to_update.slice(0, Math.floor(order_to_update.length / 4));
+        const order_to_delivered = order_to_update.slice(Math.floor(order_to_update.length / 4));
+
+        console.log(order_to_update.length, order_to_delivered.length, order_to_cancel.length);
+
+        for (const order of order_to_delivered) {
+            const all_dboys = await new rootDatabase.fetch_dboy_of_kitchen(daoConfig).fetch(order.kitchen_row_uuid).asyncData();
+            const dboy_to_delievr = chance.pickone(all_dboys);
+            await new rootDatabase.update_order_assign_dboy(daoConfig).fetch(dboy_to_delievr.row_uuid, order.row_uuid).asyncData();
+
+            await (await new rootDatabase.update_t_order_lifecycle(daoConfig).fetch('order confirmed then cooking', order.row_uuid)).asyncData();
+            await (await new rootDatabase.update_t_order_lifecycle(daoConfig).fetch('order pickedup then order on its way', order.row_uuid)).asyncData();
+            await (await new rootDatabase.update_t_order_lifecycle(daoConfig).fetch('order delivered', order.row_uuid)).asyncData();
+        }
+
+        for (const order of order_to_cancel) {
+            const all_dboys = await new rootDatabase.fetch_dboy_of_kitchen(daoConfig).fetch(order.kitchen_row_uuid).asyncData();
+            const dboy_to_delievr = chance.pickone(all_dboys);
+            await new rootDatabase.update_order_assign_dboy(daoConfig).fetch(dboy_to_delievr.row_uuid, order.row_uuid).asyncData();
+
+            await (await new rootDatabase.update_t_order_lifecycle(daoConfig).fetch('order confirmed then cooking', order.row_uuid)).asyncData();
+            await (await new rootDatabase.update_t_order_lifecycle(daoConfig).fetch('order pickedup then order on its way', order.row_uuid)).asyncData();
+            await (await new rootDatabase.update_t_order_lifecycle(daoConfig).fetch('canceled', order.row_uuid)).asyncData();
+        }
+    })();
 }
 
 export async function add_test_data(MYSQL_CONFIG: MYSQLConnectionConfig, db_instance_name: string) {

@@ -1,0 +1,17 @@
+.nothing_found {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 45px;
+}
+
+.nothing_found > div:nth-of-type(1) {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.nothing_found > div:nth-of-type(1) > img {
+    width: 40%;
+    height: auto;
+}

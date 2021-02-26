@@ -1,6 +1,7 @@
-import * as moment from 'moment';
-import { Chance } from 'chance';
 import { IGetOrder } from '@foodbzr/shared/types';
+import { Chance } from 'chance';
+import * as moment from 'moment';
+import axios from 'axios';
 
 export function convert_object_to_sql_object(obj: any) {
     Object.keys(obj).forEach((p) => {
@@ -220,4 +221,111 @@ export function makeOrderStackedGraphData(start_date: string, end_date: string, 
         delivered_orders_counts,
         canceled_orders_counts,
     };
+}
+
+/** make the order stacked report money */
+export function makeOrderMoneyStackedGraphData(start_date: string, end_date: string, orders: IGetOrder[]) {
+    const date_ite = new DateIterator(start_date, end_date);
+
+    const labels: string[] = [];
+    const delivered_orders_counts: number[] = [];
+    const canceled_orders_counts: number[] = [];
+
+    for (const current_date of date_ite) {
+        const found_items = orders.filter((p) => moment(new Date(p.date_created)).format('YYYY-MM-DD') === current_date);
+        const canceled_orders = found_items.filter((p) => p.delivery_status === 'canceled');
+        const delivered_orders = found_items.filter((p) => p.delivery_status === 'delivered');
+
+        const reduce_initial_value = { amount_paid: 0 };
+
+        /** sum the money */
+        const total_delivered_amount = delivered_orders
+            .map((p) => {
+                return { amount_paid: p.amount_paid };
+            })
+            .reduce((prev, curr) => {
+                return { amount_paid: +prev.amount_paid + +curr.amount_paid };
+            }, reduce_initial_value).amount_paid;
+
+        const total_canceled_amount = canceled_orders
+            .map((p) => {
+                return { amount_paid: p.amount_paid };
+            })
+            .reduce((prev, curr) => {
+                return { amount_paid: +prev.amount_paid + +curr.amount_paid };
+            }, reduce_initial_value).amount_paid;
+
+        labels.push(current_date);
+        delivered_orders_counts.push(+total_delivered_amount.toFixed(2));
+        canceled_orders_counts.push(+total_canceled_amount.toFixed(2));
+    }
+
+    console.log(delivered_orders_counts, 'JKK');
+
+    return {
+        labels,
+        delivered_orders_counts,
+        canceled_orders_counts,
+    };
+}
+
+/** make the order stacked report money */
+export function makeOrderCommisionStackedGraphData(start_date: string, end_date: string, orders: IGetOrder[], commission: number) {
+    const date_ite = new DateIterator(start_date, end_date);
+
+    const labels: string[] = [];
+    const delivered_orders_counts: number[] = [];
+
+    for (const current_date of date_ite) {
+        // single day
+        const found_items = orders.filter((p) => moment(new Date(p.date_created)).format('YYYY-MM-DD') === current_date);
+        const delivered_orders = found_items.filter((p) => p.delivery_status === 'delivered');
+
+        const reduce_initial_value = { amount_paid: 0 };
+
+        /** sum the money */
+        const total_delivered_amount = delivered_orders
+            .map((p) => {
+                return { amount_paid: p.amount_paid };
+            })
+            .reduce((prev, curr) => {
+                return { amount_paid: +prev.amount_paid + +curr.amount_paid };
+            }, reduce_initial_value).amount_paid;
+
+        const one_day_owner_commision: number = (total_delivered_amount * commission) / 100;
+
+        labels.push(current_date);
+        delivered_orders_counts.push(+one_day_owner_commision.toFixed(2));
+    }
+
+    return {
+        labels,
+        delivered_orders_counts,
+    };
+}
+
+/**
+ * upload the image to imageBB and return the json data back
+ */
+
+export class UploadToImageBB {
+    constructor(private base64Data: any, private apiKey: string) {}
+
+    public async uploadMedia() {
+        try {
+            const uplaodImage = await axios.post(`https://api.imgbb.com/1/upload?key=${this.apiKey}`, {
+                image: this.base64Data,
+            });
+
+            return {
+                pic_uri: uplaodImage.data.data.image.url,
+                thumbnail_uri: uplaodImage.data.data.thumb.url,
+                delete_uri: uplaodImage.data.data.delete_url,
+                mime: uplaodImage.data.data.thumb.mime,
+                size: uplaodImage.data.data.size,
+            };
+        } catch (error) {
+            console.error(error);
+        }
+    }
 }

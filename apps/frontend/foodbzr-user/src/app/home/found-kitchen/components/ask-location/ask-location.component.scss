@@ -1,0 +1,35 @@
+.img_holder {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 45px;
+}
+
+.img_holder img {
+    width: 50%;
+    height: auto;
+    object-fit: cover;
+}
+
+.text_holder {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 0px 50px;
+}
+
+.text_holder ion-text {
+    text-align: center;
+}
+
+.button_holders{
+    padding: 0px 40px;
+}
+
+.button_holders  div{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 15px;
+}

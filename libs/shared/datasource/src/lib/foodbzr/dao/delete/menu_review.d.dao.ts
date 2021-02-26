@@ -11,8 +11,7 @@ export class delete_menu_review extends BaseDao<IModificationDaoStatus> {
     }
 
     @Query(`
-        UPDATE menu_review
-        SET is_active = :is_active:
+        DELETE FROM menu_review
         WHERE row_uuid = :menu_review_row_uuid:
     ;`)
     fetch(is_active: is_active, menu_review_row_uuid: string) {

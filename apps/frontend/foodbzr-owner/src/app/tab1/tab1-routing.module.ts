@@ -3,14 +3,18 @@ import { RouterModule, Routes } from '@angular/router';
 import { Tab1Page } from './tab1.page';
 
 const routes: Routes = [
-  {
-    path: '',
-    component: Tab1Page,
-  }
+    {
+        path: '',
+        loadChildren: () => import('../partner/partner-manager/partner-manager.module').then((m) => m.PartnerManagerModule),
+    },
+    {
+        path: 'report-partner/:partner_row_uuid/:commission',
+        loadChildren: () => import('../partner/partner-report/partner-report.module').then((m) => m.PartnerReportModule),
+    },
 ];
 
 @NgModule({
-  imports: [RouterModule.forChild(routes)],
-  exports: [RouterModule]
+    imports: [RouterModule.forChild(routes)],
+    exports: [RouterModule],
 })
 export class Tab1PageRoutingModule {}

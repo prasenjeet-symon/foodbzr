@@ -16,6 +16,7 @@ export class insert_delivery_address extends BaseDao<IModificationDaoStatus> {
             user_row_uuid,
             street,
             pincode,
+            city,
             state,
             country,
             latitude,
@@ -28,6 +29,7 @@ export class insert_delivery_address extends BaseDao<IModificationDaoStatus> {
             :user_row_uuid:,
             :street:,
             :pincode:,
+            :city:,
             :state:,
             :country:,
             :latitude:,
@@ -36,7 +38,7 @@ export class insert_delivery_address extends BaseDao<IModificationDaoStatus> {
             :row_uuid:
         )
     ;`)
-    fetch(user_row_uuid: string, street: string, pincode: string, state: string, country: string, latitude: number, longitude: number, date_created: string, row_uuid: string) {
+    fetch(user_row_uuid: string, street: string, pincode: string, city: string, state: string, country: string, latitude: number, longitude: number, date_created: string, row_uuid: string) {
         return this.baseFetch(this.DBData);
     }
 }

@@ -1,0 +1,27 @@
+<ion-header [translucent]="true">
+    <ion-toolbar>
+        <ion-buttons slot="end">
+            <ion-button (click)="closeModal()"> <ion-icon name="close-outline"></ion-icon> </ion-button>
+        </ion-buttons>
+    </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+    <div class="img_holder">
+        <img src="../../../../../assets/icon/street-map 45.png" alt="" srcset="" />
+    </div>
+
+    <div class="text_holder">
+        <div>
+            <ion-text><h2>Hi, nice to meet you!</h2></ion-text>
+        </div>
+        <div>
+            <ion-text><p>Set your location to start exploring restaurants arounf you</p></ion-text>
+        </div>
+    </div>
+
+    <div class="button_holders">
+        <ion-button color="warning" size="large" shape="full"> Use current location </ion-button>
+        <div (click)="searchLocation()"><ion-button color="light"> Set your location manually </ion-button></div>
+    </div>
+</ion-content>

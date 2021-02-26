@@ -7,9 +7,11 @@ import { environment } from './environments/environment';
 import { ClientDatabase } from '@sculify/node-room-client';
 import { FoodbzrDatasource } from '@foodbzr/datasource';
 
+import { defineCustomElements } from '@ionic/pwa-elements/loader';
+
 FoodbzrDatasource.initInstance();
 
-const clientDB = new ClientDatabase(FoodbzrDatasource, 'http://localhost:3333', 'foodbzr_database', '5144edde-25b5-4ac5-af27-e4a5d1b1318d', 'online');
+const clientDB = new ClientDatabase(FoodbzrDatasource, 'https://90bc3e853ade.ngrok.io', 'foodbzr_database', '31acb587-9cc0-4338-9cbf-8d898ea50ac5', 'online');
 
 if (environment.production) {
     enableProdMode();
@@ -19,4 +21,5 @@ clientDB.initInstance().then(() => {
     platformBrowserDynamic()
         .bootstrapModule(AppModule)
         .catch((err) => console.error(err));
+    defineCustomElements(window);
 });

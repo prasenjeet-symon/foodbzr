@@ -1,0 +1,70 @@
+<ion-header [translucent]="true">
+    <ion-toolbar>
+        <ion-title>Profile</ion-title>
+    </ion-toolbar>
+</ion-header>
+
+<ion-content *ngIf="ownerData" [fullscreen]="true">
+    <div class="profile_header">
+        <ion-item>
+            <ion-avatar class="profile_avatar" slot="start">
+                <img [src]="ownerData.profile_picture" [alt]="ownerData.full_name" srcset="" />
+            </ion-avatar>
+            <ion-label>
+                <h2>{{ ownerData.full_name }}</h2>
+                <p>
+                    +91 {{ ownerData.mobile_number }}
+                    <ion-icon *ngIf="ownerData.is_verified === 'yes'" color="success" name="checkmark-done-circle"></ion-icon>
+                    <ion-icon *ngIf="ownerData.is_verified === 'no'" color="danger" name="time"></ion-icon>
+                </p>
+            </ion-label>
+        </ion-item>
+        <div class="file_chooser">
+            <ion-fab-button color="secondary"> <ion-icon name="aperture-sharp"></ion-icon> </ion-fab-button>
+        </div>
+    </div>
+
+    <!-- account details -->
+    <div class="account_details">
+        <ion-list>
+            <ion-list-header>
+                <ion-label color="secondary"> Account </ion-label>
+            </ion-list-header>
+
+            <ion-item (click)="updateName()">
+                <ion-label>
+                    <h2>{{ ownerData.full_name }}</h2>
+                    <p>Full Name</p>
+                </ion-label>
+            </ion-item>
+
+            <ion-item>
+                <ion-label>
+                    <h2>{{ ownerData.mobile_number }}</h2>
+                    <p>Mobile Number</p>
+                </ion-label>
+            </ion-item>
+
+            <ion-item (click)="updateGender()">
+                <ion-label>
+                    <h2>{{ ownerData.gender }}</h2>
+                    <p>Gender</p>
+                </ion-label>
+            </ion-item>
+
+            <ion-item>
+                <ion-label>
+                    <h2>{{ ownerData.is_active }}</h2>
+                    <p>Is Active</p>
+                </ion-label>
+            </ion-item>
+
+            <ion-item (click)="updateBio()">
+                <ion-label class="ion-text-wrap">
+                    <h2>{{ ownerData.bio }}</h2>
+                    <p>Bio</p>
+                </ion-label>
+            </ion-item>
+        </ion-list>
+    </div>
+</ion-content>

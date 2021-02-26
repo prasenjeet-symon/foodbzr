@@ -9,6 +9,7 @@ import { CreateKitchenComponent } from './components/create-kitchen/create-kitch
 import { UpdateKitchenComponent } from './components/update-kitchen/update-kitchen.component';
 import { weekMakerPipe } from './pipes/week-maker.pipe';
 import { SearchLocationComponent } from './components/search-location/search-location.component';
+import { KitchenMoreMenuComponent } from './components/kitchen-more-menu/kitchen-more-menu.component';
 
 @NgModule({
     imports: [
@@ -23,7 +24,7 @@ import { SearchLocationComponent } from './components/search-location/search-loc
         ]),
     ],
     providers: [],
-    entryComponents: [CreateKitchenComponent, UpdateKitchenComponent, SearchLocationComponent],
-    declarations: [KitchenPageComponent, CreateKitchenComponent, UpdateKitchenComponent, KitchenItemComponent, weekMakerPipe, SearchLocationComponent],
+    entryComponents: [CreateKitchenComponent, UpdateKitchenComponent, SearchLocationComponent, KitchenMoreMenuComponent],
+    declarations: [KitchenPageComponent, CreateKitchenComponent, UpdateKitchenComponent, KitchenItemComponent, weekMakerPipe, SearchLocationComponent, KitchenMoreMenuComponent],
 })
 export class KitchenModule {}

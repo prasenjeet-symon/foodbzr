@@ -1,0 +1,21 @@
+.graph_holder {
+    padding: 20px 0px 10px 0px;
+}
+
+.date_range {
+    display: flex;
+    align-items: center;
+    // background-color: var(--ion-item-background);
+    justify-content: flex-end;
+}
+
+.date_range > div:nth-of-type(2) {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.list_report {
+    margin-bottom: 25px;
+}

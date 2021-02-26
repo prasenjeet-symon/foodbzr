@@ -24,7 +24,7 @@
                     <img src="../../../../assets/icon/order-food.png" alt="" srcset="" />
                 </ion-avatar>
                 <ion-label class="ion-text-wrap">
-                    <h3>Order id {{ order.row_id }} waiting to delivered</h3>
+                    <h3>Order id #{{ order.row_id }} waiting to delivered</h3>
                 </ion-label>
                 <ion-note slot="end"> {{ order.date_updated | date: 'short' }} </ion-note>
             </ion-item>
@@ -55,7 +55,7 @@
                     <img src="../../../../assets/icon/street-map.png" alt="" srcset="" />
                 </ion-avatar>
                 <ion-label class="ion-text-wrap">
-                    <h3>Order id {{ order.row_id }} on it's correct path</h3>
+                    <h3>Order id #{{ order.row_id }} on it's correct path</h3>
                 </ion-label>
                 <ion-note slot="end"> {{ order.date_updated | date: 'short' }} </ion-note>
             </ion-item>
@@ -73,4 +73,15 @@
             </ion-item-options>
         </ion-item-sliding>
     </ion-list>
+
+    <!--  empty page  -->
+    <div *ngIf="allPendingOrder.length === 0 && allOnwayOrders.length === 0" class="empty_screen">
+        <div><img src="../../../../assets/icon/food-delivery.png" alt="" srcset="" /></div>
+        <div>
+            <ion-text color="warning"> <h3>Nothing here</h3> </ion-text>
+        </div>
+        <div>
+            <ion-text><p>Once you will get the new order it will appear here</p></ion-text>
+        </div>
+    </div>
 </ion-content>

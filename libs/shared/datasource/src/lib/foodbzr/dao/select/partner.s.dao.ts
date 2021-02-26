@@ -113,3 +113,35 @@ export class fetch_partner_all extends BaseDao<IGetPartner[]> {
         return this.baseFetch(this.DBData);
     }
 }
+
+/** fetch the partner for the owner screen */
+
+export class fetch_partner_for_owner extends BaseDao<IGetPartner[]> {
+    constructor(config: IDaoConfig) {
+        super(config);
+    }
+
+    @Query(`
+        SELECT
+
+        row_id,
+        commission,
+        owner_row_uuid,
+        last_otp,
+        is_active,
+        is_verified,
+        profile_picture,
+        gender,
+        full_name,
+        mobile_number,
+        bio,
+        date_created,
+        row_uuid
+
+        FROM partner
+        WHERE owner_row_uuid = :owner_row_uuid:
+    `)
+    fetch(owner_row_uuid: string) {
+        return this.baseFetch(this.DBData);
+    }
+}

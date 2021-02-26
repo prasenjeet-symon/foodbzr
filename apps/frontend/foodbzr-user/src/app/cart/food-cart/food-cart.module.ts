@@ -20,6 +20,5 @@ import { FoodCartPageComponent } from './food-cart-page/food-cart-page.component
     ],
     entryComponents: [CookingInstructionComponent],
     declarations: [FoodCartPageComponent, CookingInstructionComponent],
-    exports: [FoodCartPageComponent],
 })
 export class FoodCartModule {}

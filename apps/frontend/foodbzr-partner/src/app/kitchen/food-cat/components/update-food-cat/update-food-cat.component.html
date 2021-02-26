@@ -1,0 +1,47 @@
+<ion-header [translucent]="true">
+    <ion-toolbar>
+        <ion-title>Update food category</ion-title>
+        <ion-buttons slot="end">
+            <ion-button (click)="closeModal()"> <ion-icon name="close-outline"></ion-icon> </ion-button>
+        </ion-buttons>
+    </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+    <ion-list>
+        <ion-list-header>
+            <ion-label color="secondary"> General </ion-label>
+            <ion-button *ngIf="can_show_save_genral" (click)="updateGeneral()">Save</ion-button>
+        </ion-list-header>
+        <ion-item>
+            <!--  add the cat name  -->
+            <ion-input (ionFocus)="generalFocus()" [(ngModel)]="food_cat_name" placeholder="Food cat name" type="text" inputmode="text"></ion-input>
+        </ion-item>
+
+        <!-- offer info -->
+        <ion-list-header>
+            <ion-label color="secondary"> Offers </ion-label>
+            <ion-button *ngIf="can_show_save_offer" (click)="updateOffer()">Save</ion-button>
+        </ion-list-header>
+        <ion-item>
+            <!--  offer percentage  -->
+            <ion-input (ionFocus)="offerFocus()" [(ngModel)]="offer_percentage" placeholder="Percentage offer" type="number" inputmode="number"></ion-input>
+        </ion-item>
+        <ion-item>
+            <ion-label>Start Date</ion-label>
+            <ion-datetime (ionFocus)="offerFocus()" [(ngModel)]="offer_start_date" value="1990-02-19" placeholder="Select Date"></ion-datetime>
+        </ion-item>
+        <ion-item>
+            <ion-label>Start Time</ion-label>
+            <ion-datetime (ionFocus)="offerFocus()" [(ngModel)]="offer_start_time" display-format="h:mm A" picker-format="h:mm A" value="1990-02-19T07:43Z"></ion-datetime>
+        </ion-item>
+        <ion-item>
+            <ion-label>End Date</ion-label>
+            <ion-datetime (ionFocus)="offerFocus()" [(ngModel)]="offer_end_date" value="1990-02-19" placeholder="Select Date"></ion-datetime>
+        </ion-item>
+        <ion-item>
+            <ion-label>End Time</ion-label>
+            <ion-datetime (ionFocus)="offerFocus()" [(ngModel)]="offer_end_time" display-format="h:mm A" picker-format="h:mm A" value="1990-02-19T07:43Z"></ion-datetime>
+        </ion-item>
+    </ion-list>
+</ion-content>

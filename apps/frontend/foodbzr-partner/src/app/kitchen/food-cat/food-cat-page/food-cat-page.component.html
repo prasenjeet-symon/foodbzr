@@ -1,0 +1,58 @@
+<ion-header [translucent]="true">
+    <ion-toolbar>
+        <ion-title>Food category</ion-title>
+        <ion-buttons slot="start">
+            <ion-back-button></ion-back-button>
+        </ion-buttons>
+    </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+    <!-- for ios only header  -->
+    <ion-header collapse="condense">
+        <ion-toolbar>
+            <ion-title size="large">Food category</ion-title>
+        </ion-toolbar>
+    </ion-header>
+
+    <!-- fav buton to add the new food cat -->
+    <ion-fab vertical="bottom" horizontal="end" slot="fixed">
+        <ion-fab-button (click)="addNewCat()">
+            <ion-icon name="add"></ion-icon>
+        </ion-fab-button>
+    </ion-fab>
+
+    <!-- list all the food cat -->
+    <ion-list>
+        <ion-list-header>
+            <ion-label> Category list </ion-label>
+        </ion-list-header>
+
+        <ion-item-sliding *ngFor="let item of foodCate; trackBy: tracker">
+            <ion-item [disabled]="item.is_active === 'no' ? true : false" href="#">
+                <ion-avatar slot="start"> <img src="../../../../assets/icon/category.png" alt="" srcset="" /> </ion-avatar>
+                <ion-label>
+                    <h2>{{ item.name }}</h2>
+                </ion-label>
+                <ion-chip slot="end" outline color="warning">
+                    <ion-label> {{ item.offer_percentage }} % OFF </ion-label>
+                </ion-chip>
+            </ion-item>
+
+            <ion-item-options side="start">
+                <ion-item-option (click)="inActiveFoodCat(item)" *ngIf="item.is_active === 'yes'" color="danger">
+                    <ion-icon slot="icon-only" name="trash"></ion-icon>
+                </ion-item-option>
+                <ion-item-option (click)="ActiveFoodCat(item)" *ngIf="item.is_active === 'no'" color="warning">
+                    <ion-icon slot="icon-only" name="arrow-undo"></ion-icon>
+                </ion-item-option>
+            </ion-item-options>
+
+            <ion-item-options side="end">
+                <ion-item-option (click)="updateFoodCat(item)" color="secondary">
+                    <ion-icon slot="icon-only" name="create"></ion-icon>
+                </ion-item-option>
+            </ion-item-options>
+        </ion-item-sliding>
+    </ion-list>
+</ion-content>

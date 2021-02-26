@@ -1,4 +1,4 @@
-import { Component, ElementRef, NgZone, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, NgZone, OnInit, ViewChild } from '@angular/core';
 import { fetch_order_dboy_report, FoodbzrDatasource } from '@foodbzr/datasource';
 import { IGetOrder } from '@foodbzr/shared/types';
 import { DaoLife, daoConfig } from '@sculify/node-room-client';
@@ -13,7 +13,7 @@ import * as moment from 'moment';
     templateUrl: './order-report-page.component.html',
     styleUrls: ['./order-report-page.component.scss'],
 })
-export class OrderReportPageComponent implements OnInit {
+export class OrderReportPageComponent implements OnInit, AfterViewInit {
     @ViewChild('orderGraph', { static: true }) orderGraph: ElementRef<HTMLDivElement>;
 
     /** data */
@@ -38,7 +38,12 @@ export class OrderReportPageComponent implements OnInit {
     constructor(private ngZone: NgZone, private popover: PopoverController) {
         this.daosLife = new DaoLife();
         this.dboy_row_uuid = localStorage.getItem('dboy_row_uuid');
+        /** add the start date and end date */
+        this.end_date = moment(new Date()).format('YYYY-MM-DD');
+        this.start_date = moment(new Date()).clone().subtract(3, 'months').format('YYYY-MM-DD');
     }
+
+    ngAfterViewInit() {}
 
     ngOnInit() {
         this.fetch_order_dboy_report__ = new this.database.fetch_order_dboy_report(daoConfig);

@@ -20,6 +20,12 @@ export class partner {
     @Column({ dataType: MYSQL_DATATYPE.ENUM(is_active_values), defaultValue: e_is_active.yes })
     private is_active: is_active;
 
+    @Column({ dataType: MYSQL_DATATYPE.ENUM(is_active_values), defaultValue: e_is_active.no })
+    private is_verified: is_active;
+
+    @Column({ dataType: MYSQL_DATATYPE.DOUBLE(), defaultValue: 0 })
+    private commission: number;
+
     @Column({ dataType: MYSQL_DATATYPE.TEXT() })
     private profile_picture: string;
 

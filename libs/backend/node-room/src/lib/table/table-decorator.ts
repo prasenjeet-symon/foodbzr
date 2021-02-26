@@ -62,8 +62,8 @@ export function Table(config: table_config) {
     });
 
     const columns_string = columns.join(', ');
-    //TODO: create the table if not exit
-    const SQLCreateStatement = ` CREATE TABLE ${prev_table_config.tableName} ( ${columns_string} );`;
+    //TODO: create the table if not exit , there will be problem in user side
+    const SQLCreateStatement = ` CREATE TABLE IF NOT EXISTS ${prev_table_config.tableName} ( ${columns_string} );`;
     return class extends constructor {
       public table_name: string = prev_table_config.tableName;
       private tableCreationQuery: string = SQLCreateStatement;

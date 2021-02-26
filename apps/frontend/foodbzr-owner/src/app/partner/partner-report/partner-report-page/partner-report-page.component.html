@@ -1,0 +1,34 @@
+<ion-header [translucent]="true">
+    <ion-toolbar>
+        <ion-title>Order report</ion-title>
+        <ion-buttons slot="start">
+            <ion-back-button></ion-back-button>
+        </ion-buttons>
+    </ion-toolbar>
+</ion-header>
+
+<ion-content fullscreen>
+    <ion-fab vertical="bottom" horizontal="end" slot="fixed">
+        <ion-fab-button (click)="chooseDateRange()">
+            <ion-icon name="calendar"></ion-icon>
+        </ion-fab-button>
+    </ion-fab>
+
+    <!--  selector  -->
+    <ion-item>
+        <ion-select #viewMode (ionChange)="viewChanging(viewMode.value)" slot="end" [(ngModel)]="visible_report">
+            <ion-select-option value="order_report">Order report </ion-select-option>
+            <ion-select-option value="money_report">Money Report</ion-select-option>
+            <ion-select-option value="owner_earning">Owner Earning Report</ion-select-option>
+        </ion-select>
+    </ion-item>
+
+    <foodbzr-order-report [chooseDate]="chooseSubject.asObservable()" *ngIf="visible_report === 'order_report'" [partner_row_uuid]="partner_row_uuid"></foodbzr-order-report>
+    <foodbzr-money-report [chooseDate]="chooseSubject.asObservable()" *ngIf="visible_report === 'money_report'" [partner_row_uuid]="partner_row_uuid"></foodbzr-money-report>
+    <foodbzr-commision-report
+        [commission]="commission"
+        [chooseDate]="chooseSubject.asObservable()"
+        *ngIf="visible_report === 'owner_earning'"
+        [partner_row_uuid]="partner_row_uuid"
+    ></foodbzr-commision-report>
+</ion-content>

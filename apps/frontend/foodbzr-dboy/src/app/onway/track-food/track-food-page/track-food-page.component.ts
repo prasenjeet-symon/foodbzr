@@ -18,6 +18,7 @@ export class TrackFoodPageComponent implements OnInit {
     /** dom selector */
     @ViewChild('map', { static: true }) mapElement: ElementRef<HTMLDivElement>;
 
+    /** database */
     public daosLife: DaoLife;
     public database = {
         fetch_order_on_way_dboy: FoodbzrDatasource.getInstance().fetch_order_on_way_dboy,
@@ -48,10 +49,11 @@ export class TrackFoodPageComponent implements OnInit {
                 this.allOrdersOnWay = val;
                 if (this.allOrdersOnWay.length !== 0) {
                     this.selectedOrder = val[0];
-                    console.log(this.selectedOrder, 'jeo');
                     this.latitude = this.selectedOrder.latitude;
                     this.longitude = this.selectedOrder.longitude;
                     this.renderMap();
+                } else {
+                    this.selectedOrder = null;
                 }
             });
         });
@@ -146,6 +148,6 @@ export class TrackFoodPageComponent implements OnInit {
             component: DeliveredSuccessComponent,
         });
 
-        dailogRef.present();
+        await dailogRef.present();
     }
 }

@@ -21,6 +21,10 @@ const routes: Routes = [
             },
             {
                 path: 'tab4',
+                loadChildren: () => import('../fav/fav-kitchen/fav-kitchen.module').then((m) => m.FavKitchenModule),
+            },
+            {
+                path: 'tab5',
                 loadChildren: () => import('../profile/user-profile/user-profile.module').then((m) => m.UserProfileModule),
             },
             {
@@ -31,8 +35,12 @@ const routes: Routes = [
         ],
     },
     {
+        path: 'auth',
+        loadChildren: () => import('../auth/auth.module').then((m) => m.AuthModule),
+    },
+    {
         path: '',
-        redirectTo: '/tabs/tab1',
+        redirectTo: 'auth',
         pathMatch: 'full',
     },
 ];

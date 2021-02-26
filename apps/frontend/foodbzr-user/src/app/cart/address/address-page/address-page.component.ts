@@ -82,7 +82,7 @@ export class AddressPageComponent implements OnInit {
         const daoLife = new DaoLife();
         const insert_delivery_address = new this.database.insert_delivery_address(daoConfig);
         insert_delivery_address.observe(daoLife).subscribe((val) => console.log('added new address'));
-        insert_delivery_address.fetch(this.user_row_uuid, street, pincode, state, country, latitude, longitude, date_created, uuid()).obsData();
+        insert_delivery_address.fetch(this.user_row_uuid, street, pincode, city, state, country, latitude, longitude, date_created, uuid()).obsData();
         daoLife.softKill();
     }
 

@@ -1,0 +1,51 @@
+<!-- list order details -->
+<div class="list_report">
+    <ion-list>
+        <ion-list-header>
+            <ion-label> Report </ion-label>
+        </ion-list-header>
+
+        <ion-item>
+            <ion-avatar slot="start">
+                <img src="../../../../assets/icon/order.png" alt="" srcset="" />
+            </ion-avatar>
+            <ion-label>
+                <h2>Your Earning</h2>
+                <p>&#x20B9; {{ delivered_data | sumPositiveNumber }}</p>
+            </ion-label>
+        </ion-item>
+
+        <ion-item class="graph_holder">
+            <canvas #orderGraph></canvas>
+        </ion-item>
+    </ion-list>
+</div>
+
+<!-- list all the orders -->
+
+<ion-list>
+    <ion-list-header>
+        <ion-label> List </ion-label>
+        <ion-item>
+            <ion-select (ionChange)="filterTypeChange()" [(ngModel)]="filterType">
+                <ion-select-option value="all">All</ion-select-option>
+                <ion-select-option value="delivered">Delivered</ion-select-option>
+                <ion-select-option value="canceled">Canceled</ion-select-option>
+            </ion-select>
+        </ion-item>
+    </ion-list-header>
+
+    <ion-item *ngFor="let item of filteredOrders">
+        <ion-avatar slot="start"> <img src="../../../../assets/icon/chef.png" alt="" srcset="" /> </ion-avatar>
+        <ion-label>
+            <h2>Order id #{{ item.row_id }}</h2>
+        </ion-label>
+
+        <ion-chip *ngIf="item.delivery_status === 'delivered'" color="success">
+            <ion-label> Delivered </ion-label>
+        </ion-chip>
+        <ion-chip *ngIf="item.delivery_status === 'canceled'" color="danger">
+            <ion-label> Canceled </ion-label>
+        </ion-chip>
+    </ion-item>
+</ion-list>

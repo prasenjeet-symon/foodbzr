@@ -24,16 +24,20 @@ export class TBaseDao<T> extends LiveData<T> {
     public emitTablesInvolved(tables: string[]) {
         this.tablesInvolved = [...this.tablesInvolved, ...tables];
         /** Emit info to the observer class */
-        this.captureTablesInvolved(this.tablesInvolved);
+        if(this.captureTablesInvolved){
+            this.captureTablesInvolved(this.tablesInvolved);
+        }
     }
 
     public emitQueryType(query_type: query_type) {
         this.child_dao_query_types = [...this.child_dao_query_types, query_type];
         const is_select_type_only = this.child_dao_query_types.filter((p) => p === 'SELECT').length === this.child_dao_query_types.length ? true : false;
-        if (is_select_type_only) {
-            this.captureQueryType('SELECT');
-        } else {
-            this.captureQueryType('TRANSACTION');
+        if(this.captureQueryType){
+            if (is_select_type_only) {
+                this.captureQueryType('SELECT');
+            } else {
+                this.captureQueryType('TRANSACTION');
+            }
         }
     }
 
@@ -44,9 +48,8 @@ export class TBaseDao<T> extends LiveData<T> {
 
     //TODO: pending task make this run on web plus server , see the normal dao
     protected async asyncDao(original_function: any, original_function_ref: any, original_function_args: any[], parent_ref: any) {
-        console.time('time taken for the transaction');
         await original_function.apply(original_function_ref, original_function_args);
-        console.timeEnd('time taken for the transaction');
+
         return this.ModifiedData;
     }
 

@@ -1,10 +1,10 @@
 import { Component, NgZone, OnDestroy, OnInit } from '@angular/core';
 import { fetch_order_status, FoodbzrDatasource } from '@foodbzr/datasource';
-import { IGetOrder, order_lifecycle_state } from '@foodbzr/shared/types';
+import { IGetOrderStatus, order_lifecycle_state } from '@foodbzr/shared/types';
 import { ModalController } from '@ionic/angular';
 import { daoConfig, DaoLife } from '@sculify/node-room-client';
-import { combineLatest } from 'rxjs';
 import { ChooseDboyComponent } from '../choose-dboy/choose-dboy.component';
+import { OrderDetailComponent } from '../order-detail/order-detail.component';
 import { OrderLocationComponent } from '../order-location/order-location.component';
 
 @Component({
@@ -13,10 +13,8 @@ import { OrderLocationComponent } from '../order-location/order-location.compone
     styleUrls: ['./pending-order.component.scss'],
 })
 export class PendingOrderComponent implements OnInit, OnDestroy {
-    private partner_row_uuid: string;
     public daosLife: DaoLife;
-
-    database = {
+    public database = {
         fetch_order_status: FoodbzrDatasource.getInstance().fetch_order_status,
         update_t_order_lifecycle: FoodbzrDatasource.getInstance().update_t_order_lifecycle,
         fetch_dboy_of_kitchen: FoodbzrDatasource.getInstance().fetch_dboy_of_kitchen,
@@ -24,15 +22,16 @@ export class PendingOrderComponent implements OnInit, OnDestroy {
         update_order_remove_dboy: FoodbzrDatasource.getInstance().update_order_remove_dboy,
     };
 
+    /** data */
+    private partner_row_uuid: string;
+    public allOrders: IGetOrderStatus[] = [];
+    public pending_arr: IGetOrderStatus[] = [];
+    public cooking_arr: IGetOrderStatus[] = [];
+    public onitsway_arr: IGetOrderStatus[] = [];
+    public can_show_loading = true;
+
+    /** daos */
     fetch_order_status_pending__: fetch_order_status;
-    fetch_order_status_cooking__: fetch_order_status;
-    fetch_order_status_onitsway__: fetch_order_status;
-
-    can_show_loading = true;
-
-    pending_arr: IGetOrder[] = [];
-    cooking_arr: IGetOrder[] = [];
-    onitsway_arr: IGetOrder[] = [];
 
     constructor(private ngZone: NgZone, private modal: ModalController) {
         this.partner_row_uuid = localStorage.getItem('partner_row_uuid');
@@ -41,36 +40,41 @@ export class PendingOrderComponent implements OnInit, OnDestroy {
 
     ngOnInit() {
         this.can_show_loading = true;
-
         this.fetch_order_status_pending__ = new this.database.fetch_order_status(daoConfig);
-        this.fetch_order_status_cooking__ = new this.database.fetch_order_status(daoConfig);
-        this.fetch_order_status_onitsway__ = new this.database.fetch_order_status(daoConfig);
-
-        const combinedValues$$ = combineLatest(
-            this.fetch_order_status_pending__.observe(this.daosLife),
-            this.fetch_order_status_cooking__.observe(this.daosLife),
-            this.fetch_order_status_onitsway__.observe(this.daosLife)
-        );
-
-        combinedValues$$.subscribe((val) => {
-            this.can_show_loading = false;
+        this.fetch_order_status_pending__.observe(this.daosLife).subscribe((val) => {
             this.ngZone.run(() => {
-                this.pending_arr = val[0];
-                this.cooking_arr = val[1];
-                this.onitsway_arr = val[2];
+                this.allOrders = val;
+                this.sortOrders();
             });
         });
-
-        this.fetch_order_status_pending__.fetch('placed', this.partner_row_uuid).obsData();
-        this.fetch_order_status_cooking__.fetch('cooking', this.partner_row_uuid).obsData();
-        this.fetch_order_status_onitsway__.fetch('on_way', this.partner_row_uuid).obsData();
+        this.fetch_order_status_pending__.fetch(this.partner_row_uuid).obsData();
     }
 
     ngOnDestroy() {
         this.daosLife.softKill();
     }
 
+    /** sort the orders */
+    public sortOrders() {
+        this.pending_arr = this.allOrders.filter((p) => p.food_order_delivery_status === 'placed');
+        this.cooking_arr = this.allOrders.filter((p) => p.food_order_delivery_status === 'cooking');
+        this.onitsway_arr = this.allOrders.filter((p) => p.food_order_delivery_status === 'on_way');
+    }
+
     async changeOrderStatus(status: order_lifecycle_state, order_row_uuid: string) {
+        /** update local */
+        this.allOrders = this.allOrders.map((p) => {
+            if (p.food_order_row_uuid === order_row_uuid) {
+                if (status === 'order confirmed then cooking') {
+                    return { ...p, food_order_delivery_status: 'cooking' };
+                } else if (status === 'canceled') {
+                    return { ...p, food_order_delivery_status: 'canceled' };
+                }
+            } else {
+                return { ...p };
+            }
+        });
+
         const daoLife = new DaoLife();
         const update_t_order_lifecycle_dao = new this.database.update_t_order_lifecycle(daoConfig);
         update_t_order_lifecycle_dao.observe(daoLife).subscribe((val) => console.log('updated the order lifecycle'));
@@ -109,15 +113,25 @@ export class PendingOrderComponent implements OnInit, OnDestroy {
         });
     }
 
-    pendingOrderTracker(index: number, value: IGetOrder) {
-        return value.row_uuid;
+    /** show the order details page */
+    public async openOrderDetailPage(order: IGetOrderStatus) {
+        const dailogRef = await this.modal.create({
+            component: OrderDetailComponent,
+            componentProps: { order },
+        });
+
+        await dailogRef.present();
     }
 
-    cookingOrderTracker(index: number, value: IGetOrder) {
-        return value.row_uuid;
+    pendingOrderTracker(index: number, value: IGetOrderStatus) {
+        return value.food_order_row_uuid;
     }
 
-    onitsWayOrderTracker(index: number, value: IGetOrder) {
-        return value.row_uuid;
+    cookingOrderTracker(index: number, value: IGetOrderStatus) {
+        return value.food_order_row_uuid;
+    }
+
+    onitsWayOrderTracker(index: number, value: IGetOrderStatus) {
+        return value.food_order_row_uuid;
     }
 }

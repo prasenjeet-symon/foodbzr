@@ -19,6 +19,7 @@ export class fetch_dboy_single extends BaseDao<IGetDBoy[]> {
         kit.row_uuid as kitchen_row_uuid,
 
         dboy.full_name as full_name,
+        dboy.bio as bio,
         dboy.mobile_number as mobile_number,
         dboy.profile_picture as profile_picture,
         dboy.gender as gender,
@@ -61,6 +62,7 @@ export class fetch_dboy_of_kitchen extends BaseDao<IGetDBoy[]> {
         mobile_number,
         profile_picture,
         gender,
+        bio,
         is_active,
         is_mobile_verified,
         last_otp,

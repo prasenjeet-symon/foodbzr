@@ -1,9 +1,10 @@
 import { Component, NgZone, OnInit } from '@angular/core';
 import { IGetKitchen } from '@foodbzr/shared/types';
-import { ModalController } from '@ionic/angular';
+import { ModalController, PopoverController } from '@ionic/angular';
 import { CreateKitchenComponent } from '../components/create-kitchen/create-kitchen.component';
 import { UpdateKitchenComponent } from '../components/update-kitchen/update-kitchen.component';
 import { FoodbzrDatasource } from '@foodbzr/datasource';
+import { KitchenMoreMenuComponent } from '../components/kitchen-more-menu/kitchen-more-menu.component';
 
 @Component({
     selector: 'foodbzr-kitchen-page',
@@ -17,14 +18,24 @@ export class KitchenPageComponent implements OnInit {
         update_kitchen_offers: FoodbzrDatasource.getInstance().update_kitchen_offers,
         update_kitchen_login_detail: FoodbzrDatasource.getInstance().update_kitchen_login_detail,
         update_kitchen: FoodbzrDatasource.getInstance().update_kitchen,
-        update_kitchen_address: FoodbzrDatasource.getInstance().update_kitchen_address
+        update_kitchen_address: FoodbzrDatasource.getInstance().update_kitchen_address,
     };
 
-    constructor(private modal: ModalController, private ngZone: NgZone) {
+    constructor(private modal: ModalController, private ngZone: NgZone, private popover: PopoverController) {
         this.partner_row_uuid = localStorage.getItem('partner_row_uuid');
     }
 
     ngOnInit() {}
+
+    /** show kitchen more menu */
+    public async showMoreMenu(ev: any) {
+        const popoverRef = await this.popover.create({
+            component: KitchenMoreMenuComponent,
+            event: ev
+        });
+
+        await popoverRef.present();
+    }
 
     /** Create new kitchen */
     async createKitchen() {

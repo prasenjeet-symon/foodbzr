@@ -24,10 +24,13 @@ export function generate_menu_size_variant(amount: number) {
         row_uuid: string;
         bio: string;
     }[] = [];
-    for (let index = 0; index < +amount; index++) {
+
+    const looper = new Array(+amount).fill(null);
+
+    for (const item of looper) {
         const name: string = chance.sentence({ words: 3 });
         const profile_picture: string = generate_food_img(1)[0];
-        const price_per_unit: number = chance.floating({ min: 100, max: 560, fixed: 2 });
+        const price_per_unit: number = +chance.floating({ min: 100, max: 560, fixed: 2 }).toFixed(2);
         const offer_percentage: number = chance.natural({ min: 5, max: 15 });
         const offer_start_datetime = moment(new Date('2021-01-07 10:30:00')).format('YYYY-MM-DD HH:mm:ss');
         const offer_end_datetime = moment(new Date('2021-01-07 10:30:00')).add(3, 'months').format('YYYY-MM-DD HH:mm:ss');

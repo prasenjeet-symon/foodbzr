@@ -1,0 +1,33 @@
+<ion-header [translucent]="true">
+    <ion-toolbar>
+        <ion-title>Favourite kitchens</ion-title>
+    </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+    <!-- for ios only header  -->
+    <ion-header collapse="condense">
+        <ion-toolbar>
+            <ion-title size="large"> Favourite kitchens</ion-title>
+        </ion-toolbar>
+    </ion-header>
+
+    <!-- list all kitchens -->
+    <ion-list>
+        <ion-list-header>
+            <ion-label color="secondary"> Favourites </ion-label>
+        </ion-list-header>
+
+        <ion-item *ngFor="let item of favKitchens; trackBy: tracker">
+            <ion-avatar (click)="navToKitchenPage(item)" slot="start"><img [src]="item.profile_picture" alt="" srcset="" /></ion-avatar>
+            <ion-label (click)="navToKitchenPage(item)" class="ion-text-wrap">
+                <h2>{{ item.kitchen_name }}</h2>
+                <p>{{ item.street }}, {{ item.city }}, {{ item.pincode }}, {{ item.state }}, {{ item.country }}</p>
+            </ion-label>
+            <ion-chip (click)="removeFromFav(item)" outline color="danger">
+                <ion-icon name="close"></ion-icon>
+                <ion-label>remove</ion-label>
+            </ion-chip>
+        </ion-item>
+    </ion-list>
+</ion-content>

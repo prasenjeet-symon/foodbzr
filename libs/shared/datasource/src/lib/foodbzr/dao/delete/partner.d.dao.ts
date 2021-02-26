@@ -20,3 +20,20 @@ export class delete_partner extends BaseDao<IModificationDaoStatus> {
         return this.baseFetch(this.DBData);
     }
 }
+
+/** remove from the verification stage */
+export class delete_partner_verification extends BaseDao<IModificationDaoStatus> {
+    constructor(config: IDaoConfig) {
+        super(config);
+    }
+
+    @Query(`
+        UPDATE partner
+        SET is_verified = :is_verified:
+        WHERE row_uuid = :partner_row_uuid:
+    ;`)
+    fetch(is_verified: is_active, partner_row_uuid: string) {
+        return this.baseFetch(this.DBData);
+    }
+}
+

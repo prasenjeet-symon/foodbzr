@@ -14,6 +14,18 @@ const routes: Routes = [
         path: 'kitchen-menu-variant/:menu_row_uuid/:menu_profile_picture',
         loadChildren: () => import('../kitchen/menu-variant/menu-variant.module').then((m) => m.MenuVariantModule),
     },
+    {
+        path: 'kitchen-report/:kitchen_row_uuid',
+        loadChildren: () => import('../kitchen/report/report.module').then((m) => m.ReportModule),
+    },
+    {
+        path: 'food-cat',
+        loadChildren: () => import('../kitchen/food-cat/food-cat.module').then((m) => m.FoodCatModule),
+    },
+    {
+        path: 'regional-food-cat',
+        loadChildren: () => import('../kitchen/regional-food-cat/regional-food-cat.module').then((m) => m.RegionalFoodCatModule),
+    },
 ];
 
 @NgModule({

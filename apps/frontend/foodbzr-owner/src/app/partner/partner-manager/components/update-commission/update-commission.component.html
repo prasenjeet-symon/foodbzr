@@ -1,0 +1,16 @@
+<ion-card>
+    <ion-card-header>
+        <ion-card-subtitle> Update partner's per successful order commision in percentage </ion-card-subtitle>
+        <ion-card-title> Update commision </ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+        <ion-item>
+            <ion-label position="stacked">Commission</ion-label>
+            <ion-input [(ngModel)]="prev_commision" [autofocus]="true"></ion-input>
+        </ion-item>
+
+        <div class="actions">
+            <ion-button (click)="saveData()" color="success">Save</ion-button>
+        </div>
+    </ion-card-content>
+</ion-card>

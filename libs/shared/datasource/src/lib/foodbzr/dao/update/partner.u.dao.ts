@@ -3,9 +3,13 @@
  * Partner is trying to login
  */
 
-import { gender, IModificationDaoStatus } from '@foodbzr/shared/types';
-import { BaseDao, IDaoConfig, Query, TBaseDao } from '@sculify/node-room';
-import { fetch_partner_otp } from '../select/partner.s.dao';
+import { gender, IGetPartner, IModificationDaoStatus, is_active } from '@foodbzr/shared/types';
+import { BaseDao, IDaoConfig, Query, TBaseDao, TQuery } from '@sculify/node-room';
+import { fetch_partner_otp, fetch_partner_single } from '../select/partner.s.dao';
+import * as moment from 'moment';
+import { v4 as uuid } from 'uuid';
+import { fetch_owner, fetch_owner_all } from '../select/owner.s.dao';
+import { generate_otp } from '@foodbzr/shared/util';
 
 export class update_partner_otp extends BaseDao<IModificationDaoStatus> {
     constructor(config: IDaoConfig) {
@@ -109,10 +113,7 @@ export class update_partner_bio extends BaseDao<IModificationDaoStatus> {
 
     @Query(`
         UPDATE partner
-
-        SET 
-        bio = :bio:
-
+        SET bio = :bio:
         WHERE row_uuid = :partner_row_uuid:
     ;`)
     fetch(bio: string, partner_row_uuid: string) {
@@ -128,10 +129,7 @@ export class update_partner_name extends BaseDao<IModificationDaoStatus> {
 
     @Query(`
         UPDATE partner
-
-        SET 
-        full_name = :full_name:
-
+        SET full_name = :full_name:
         WHERE row_uuid = :partner_row_uuid:
     ;`)
     fetch(full_name: string, partner_row_uuid: string) {
@@ -155,5 +153,274 @@ export class update_partner_gender extends BaseDao<IModificationDaoStatus> {
     ;`)
     fetch(gender: gender, partner_row_uuid: string) {
         return this.baseFetch(this.DBData);
+    }
+}
+
+/** update partner verification status */
+export class update_partner_verification_status extends BaseDao<IModificationDaoStatus> {
+    constructor(config: IDaoConfig) {
+        super(config);
+    }
+
+    @Query(`
+        UPDATE partner
+
+        SET 
+        is_verified = :is_verified:
+
+        WHERE row_uuid = :partner_row_uuid:
+    ;`)
+    fetch(is_verified: is_active, partner_row_uuid: string) {
+        return this.baseFetch(this.DBData);
+    }
+}
+
+/** update the partner commission */
+export class update_partner_commision extends BaseDao<IModificationDaoStatus> {
+    constructor(config: IDaoConfig) {
+        super(config);
+    }
+
+    @Query(`
+        UPDATE partner
+
+        SET 
+        commission = :commission:
+
+        WHERE row_uuid = :partner_row_uuid:
+    ;`)
+    fetch(commission: number, partner_row_uuid: string) {
+        return this.baseFetch(this.DBData);
+    }
+}
+
+/** auth */
+/**
+ *
+ *
+ *
+ */
+
+/** search the partner with given mobile number */
+class fetch_partner_with_mobile_number extends BaseDao<IGetPartner[]> {
+    constructor(config: IDaoConfig) {
+        super(config);
+    }
+
+    @Query(`
+        SELECT
+
+        owner_row_uuid,
+        is_active,
+        profile_picture,
+        gender,
+        full_name,
+        mobile_number,
+        bio,
+        date_created,
+        row_uuid
+
+        FROM partner
+        WHERE mobile_number = :mobile_number:
+    ;`)
+    fetch(mobile_number: string) {
+        return this.baseFetch(this.DBData);
+    }
+}
+
+/** create new partner with given mobile number */
+class insert_partner_with_mobile extends BaseDao<IModificationDaoStatus> {
+    constructor(config: IDaoConfig) {
+        super(config);
+    }
+
+    @Query(`
+        INSERT INTO partner
+        (
+            mobile_number,
+            date_created,
+            row_uuid,
+            owner_row_uuid,
+            last_otp
+        )
+        VALUES
+        (
+            :mobile_number:
+            :date_created:
+            :row_uuid:
+            :owner_row_uuid:,
+            :last_otp:
+        )
+    ;`)
+    fetch(mobile_number: string, date_created: string, row_uuid: string, owner_row_uuid: string, last_otp: string) {
+        return this.baseFetch(this.DBData);
+    }
+}
+
+interface IGetPartnerAuth {
+    is_err: boolean;
+    error: string;
+    partner_row_uuid: string;
+}
+
+export class update_partner_auth extends TBaseDao<IGetPartnerAuth> {
+    constructor(config: IDaoConfig) {
+        super(config);
+    }
+
+    @TQuery()
+    async fetch(mobile_number: string) {
+        await this.openTransaction();
+
+        try {
+            /** try to find the partner with given mobile number */
+            const date_created = moment(new Date()).format('YYYY-MM-DD HH:mm:ss');
+            const found_partner = await new fetch_partner_with_mobile_number(this.TDaoConfig).fetch(mobile_number).asyncData(this);
+
+            if (found_partner.length === 0) {
+                /** fetch the owner */
+                const all_owner = await new fetch_owner_all(this.TDaoConfig).fetch().asyncData(this);
+                if (all_owner.length === 0) {
+                    throw new Error('owner_not_found');
+                }
+
+                const owner_data = all_owner[0];
+                /** create the new partner with given mobile number */
+                const partner_row_uuid = uuid();
+                const otp_gen = generate_otp(5);
+
+                await new insert_partner_with_mobile(this.TDaoConfig).fetch(mobile_number, date_created, partner_row_uuid, owner_data.row_uuid, otp_gen).asyncData(this);
+
+                /** return the data */
+                await this.closeTransaction();
+                return this.baseFetch({
+                    is_err: false,
+                    error: null,
+                    partner_row_uuid: partner_row_uuid,
+                });
+            }
+
+            const partner_data = found_partner[0];
+            /** found the partner */
+            /** update the otp */
+            const otp_gen = generate_otp(5);
+
+            await new update_partner_otp(this.TDaoConfig).fetch(partner_data.row_uuid, otp_gen).asyncData(this);
+
+            /** return the data */
+
+            await this.closeTransaction();
+            return this.baseFetch({
+                is_err: false,
+                error: null,
+                partner_row_uuid: partner_data.row_uuid,
+            });
+        } catch (error) {
+            await this.rollback();
+            return this.baseFetch({
+                is_err: true,
+                error: error,
+                partner_row_uuid: null,
+            });
+        }
+    }
+}
+
+/** verify the opt */
+
+interface IGetPartnerVerifyOTP {
+    is_err: boolean;
+    error: string;
+    partner_row_uuid: string;
+    owner_row_uuid: string;
+}
+
+export class update_partner_verify_otp extends TBaseDao<IGetPartnerVerifyOTP> {
+    constructor(config: IDaoConfig) {
+        super(config);
+    }
+
+    @TQuery()
+    async fetch(mobile_number: string, partner_row_uuid: string, client_otp: string) {
+        await this.openTransaction();
+
+        try {
+            const found_partner = await new fetch_partner_single(this.TDaoConfig).fetch(partner_row_uuid).asyncData(this);
+            if (found_partner.length === 0) {
+                throw new Error('user_not_found');
+            }
+
+            const partner_data = found_partner[0];
+
+            if (client_otp !== partner_data.last_otp) {
+                throw new Error('wrong_otp');
+            }
+
+            await this.closeTransaction();
+            return this.baseFetch({
+                is_err: false,
+                error: null,
+                partner_row_uuid: partner_data.row_uuid,
+                owner_row_uuid: partner_data.owner_row_uuid,
+            });
+        } catch (error) {
+            await this.rollback();
+            return this.baseFetch({
+                is_err: true,
+                error: error,
+                partner_row_uuid: null,
+                owner_row_uuid: null,
+            });
+        }
+    }
+}
+
+/** resend the otp */
+interface IGetPartnerResendOTP {
+    is_err: boolean;
+    error: string;
+    partner_row_uuid: string;
+}
+
+export class update_partner_resend_otp extends TBaseDao<IGetPartnerResendOTP> {
+    constructor(config: IDaoConfig) {
+        super(config);
+    }
+
+    @TQuery()
+    async fetch(partner_row_uuid: string, mobile_number: string) {
+        await this.openTransaction();
+
+        try {
+            /** fetch the partner details */
+            const found_partner = await new fetch_partner_single(this.TDaoConfig).fetch(partner_row_uuid).asyncData(this);
+            if (found_partner.length === 0) {
+                throw new Error('user_not_found');
+            }
+
+            const partner_data = found_partner[0];
+
+            if (partner_data.mobile_number !== mobile_number) {
+                throw new Error('wrong_mobile_number');
+            }
+
+            /** send the otp and update the DB */
+            const otp_gen = generate_otp(5);
+            await new update_partner_otp(this.TDaoConfig).fetch(partner_row_uuid, otp_gen).asyncData(this);
+
+            await this.closeTransaction();
+            return this.baseFetch({
+                is_err: false,
+                error: null,
+                partner_row_uuid: partner_data.row_uuid,
+            });
+        } catch (error) {
+            await this.rollback();
+            return this.baseFetch({
+                is_err: true,
+                error: error,
+                partner_row_uuid: null,
+            });
+        }
     }
 }

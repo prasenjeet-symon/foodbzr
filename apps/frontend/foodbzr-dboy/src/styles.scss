@@ -25,7 +25,29 @@
 @import '~@ionic/angular/css/text-transformation.css';
 @import '~@ionic/angular/css/flex-utils.css';
 
-
 .popover_with {
     --min-width: 90vw;
+}
+
+.empty_screen {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 45px;
+}
+
+.empty_screen > div:nth-of-type(1) {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.empty_screen > div:nth-of-type(1) > img {
+    width: 40%;
+    height: auto;
+}
+
+.empty_screen > div:nth-of-type(n + 2) {
+    text-align: center;
+    padding: 0px 65px;
 }

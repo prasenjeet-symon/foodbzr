@@ -26,6 +26,9 @@ export class menu_picture {
     @Column({ dataType: MYSQL_DATATYPE.TINYTEXT })
     private mime_type: string;
 
+    @Column({ dataType: MYSQL_DATATYPE.TINYTEXT })
+    private delete_uri: string;
+
     @Column({ dataType: MYSQL_DATATYPE.DATETIME })
     private date_created: string;
 

@@ -1,0 +1,138 @@
+<ion-header [translucent]="true">
+    <ion-toolbar>
+        <ion-title>Partners</ion-title>
+    </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+    <!-- for ios only header  -->
+    <ion-header collapse="condense">
+        <ion-toolbar>
+            <ion-title size="large">Partners</ion-title>
+        </ion-toolbar>
+    </ion-header>
+
+    <!-- list the partners -->
+    <!-- pending partners -->
+    <ion-list>
+        <ion-list-header>
+            <ion-label color="secondary"> Pending </ion-label>
+        </ion-list-header>
+
+        <!-- list all partner pendings -->
+        <ion-item-sliding *ngFor="let item of unVerifiedPartners; trackBy: tracker">
+            <!-- 
+                
+             -->
+            <ion-item>
+                <ion-avatar slot="start">
+                    <img [src]="item.profile_picture" [alt]="item.full_name" srcset="" />
+                </ion-avatar>
+                <ion-label>
+                    <h2>{{ item.full_name }}</h2>
+                    <p>+91 {{ item.mobile_number }}</p>
+                </ion-label>
+                <ion-chip outline color="warning" slot="end">
+                    <ion-icon name="call"></ion-icon>
+                    <ion-label>Call</ion-label>
+                </ion-chip>
+            </ion-item>
+            <!-- 
+
+             -->
+            <ion-item-options side="start">
+                <ion-item-option (click)="unVerifyPartner(item)" color="danger">
+                    <ion-icon slot="icon-only" name="trash"></ion-icon>
+                </ion-item-option>
+            </ion-item-options>
+            <!-- 
+
+             -->
+            <ion-item-options side="end">
+                <ion-item-option (click)="updateVerificationStatus(item, 'yes')" color="success">
+                    <ion-icon slot="icon-only" name="checkmark"></ion-icon>
+                </ion-item-option>
+            </ion-item-options>
+            <!--  -->
+        </ion-item-sliding>
+
+        <ion-list-header>
+            <ion-label color="secondary"> Verified </ion-label>
+        </ion-list-header>
+
+        <ion-item-sliding *ngFor="let item of verifiedPartners; trackBy: tracker">
+            <!-- 
+                
+             -->
+            <ion-item>
+                <ion-avatar slot="start">
+                    <img [src]="item.profile_picture" [alt]="item.full_name" srcset="" />
+                </ion-avatar>
+                <ion-label>
+                    <h2>{{ item.full_name }}</h2>
+                    <p>+91 {{ item.mobile_number }}</p>
+                </ion-label>
+                <ion-chip outline color="success" slot="end">
+                    <ion-icon name="pricetag"></ion-icon>
+                    <ion-label>{{ item.commission }} %</ion-label>
+                </ion-chip>
+            </ion-item>
+            <!-- 
+
+             -->
+            <ion-item-options side="start">
+                <ion-item-option (click)="unVerifyPartner(item)" color="danger">
+                    <ion-icon slot="icon-only" name="trash"></ion-icon>
+                </ion-item-option>
+            </ion-item-options>
+            <!-- 
+
+             -->
+            <ion-item-options side="end">
+                <ion-item-option (click)="updatePartnerCom(item)" color="success">
+                    <ion-icon slot="icon-only" name="pricetag"></ion-icon>
+                </ion-item-option>
+                <ion-item-option (click)="navToReport(item)" color="tertiary">
+                    <ion-icon slot="icon-only" name="analytics"></ion-icon>
+                </ion-item-option>
+            </ion-item-options>
+            <!--  -->
+        </ion-item-sliding>
+
+        <ion-list-header>
+            <ion-label color="secondary"> Rejected </ion-label>
+        </ion-list-header>
+
+        <ion-item-sliding *ngFor="let item of rejectedPartners; trackBy: tracker">
+            <!-- 
+                
+             -->
+            <ion-item>
+                <ion-avatar slot="start">
+                    <img [src]="item.profile_picture" [alt]="item.full_name" srcset="" />
+                </ion-avatar>
+                <ion-label>
+                    <h2>{{ item.full_name }}</h2>
+                    <p>+91 {{ item.mobile_number }}</p>
+                </ion-label>
+                <ion-chip outline color="danger" slot="end">
+                    <ion-icon name="close"></ion-icon>
+                    <ion-label>Rejected</ion-label>
+                </ion-chip>
+            </ion-item>
+            <!-- 
+
+             -->
+            <ion-item-options side="start">
+                <ion-item-option (click)="makePartnerActive(item)" color="warning">
+                    <ion-icon slot="icon-only" name="arrow-undo"></ion-icon>
+                </ion-item-option>
+            </ion-item-options>
+            <!-- 
+
+             -->
+
+            <!--  -->
+        </ion-item-sliding>
+    </ion-list>
+</ion-content>

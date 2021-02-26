@@ -1,0 +1,27 @@
+<ion-header [translucent]="true">
+    <ion-toolbar>
+        <ion-title>Update bio</ion-title>
+        <ion-buttons (click)="updateBio()" slot="end">
+            <ion-button color="secondary">Save</ion-button>
+        </ion-buttons>
+        <ion-buttons (click)="dismissModal()" slot="end">
+            <ion-button> <ion-icon name="close-outline"></ion-icon> </ion-button>
+        </ion-buttons>
+    </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+    <!-- for ios only header  -->
+    <ion-header collapse="condense">
+        <ion-toolbar>
+            <ion-title size="large">Update bio</ion-title>
+        </ion-toolbar>
+    </ion-header>
+
+    <!--  text area -->
+    <div class="bio_holder">
+        <ion-item>
+            <ion-textarea [(ngModel)]="prev_bio" rows="6" cols="20" placeholder="Enter bio here..."></ion-textarea>
+        </ion-item>
+    </div>
+</ion-content>
