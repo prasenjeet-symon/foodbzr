@@ -316,10 +316,14 @@ async function generate_test_data(daoConfig: IDaoConfig, MYSQL_CONFIG: MYSQLConn
                     /** generate the pics of the foods */
                     const food_pics = generate_food_img(10);
                     const images_to_insert = food_pics.map((p) => {
-                        return { pic_uri: p, thumbnail_uri: p, size: '0.001', mime_type: 'jpeg', menu_row_uuid: menu.row_uuid, date_created: date_created, row_uuid: uuid() };
+                        return { pic_uri: p, thumbnail_uri: p, size: '0.001', mime_type: 'jpeg', delete_uri: null, menu_row_uuid: menu.row_uuid, date_created: date_created, row_uuid: uuid() };
                     });
 
-                    await new rootDatabase.insert_multi_menu_picture(daoConfig).fetch(images_to_insert).asyncData();
+                    for (const pic of images_to_insert) {
+                        await new rootDatabase.insert_multi_menu_picture(daoConfig)
+                            .fetch(pic.menu_row_uuid, pic.pic_uri, pic.thumbnail_uri, pic.delete_uri, pic.size, pic.mime_type, pic.date_created, pic.row_uuid)
+                            .asyncData();
+                    }
                 }
             }
         }
@@ -447,7 +451,7 @@ async function generate_test_data(daoConfig: IDaoConfig, MYSQL_CONFIG: MYSQLConn
     await (async () => {
         const today_date = moment(new Date());
         const date_maker = new DateMaker(today_date.clone().subtract(1, 'years').format('YYYY-MM-DD'), today_date.format('YYYY-MM-DD'));
-        
+
         for (const date_now of date_maker) {
             const current_date = `${date_now} 10:23:23`;
 

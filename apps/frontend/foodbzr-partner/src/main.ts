@@ -11,7 +11,7 @@ import { defineCustomElements } from '@ionic/pwa-elements/loader';
 
 FoodbzrDatasource.initInstance();
 
-const clientDB = new ClientDatabase(FoodbzrDatasource, 'https://90bc3e853ade.ngrok.io', 'foodbzr_database', '31acb587-9cc0-4338-9cbf-8d898ea50ac5', 'online');
+const clientDB = new ClientDatabase(FoodbzrDatasource, 'https://a6e227990279.ngrok.io', 'foodbzr_database', '31acb587-9cc0-4338-9cbf-8d898ea50ac5', 'online');
 
 if (environment.production) {
     enableProdMode();
