@@ -17,7 +17,7 @@
             </ion-label>
         </ion-list-header>
 
-        <ion-item (click)="navKitchenPage(item)" *ngFor="let item of foundKitchens">
+        <ion-item lines="full" (click)="navKitchenPage(item)" *ngFor="let item of foundKitchens">
             <ion-card>
                 <img [src]="item.profile_picture" />
                 <ion-card-header>

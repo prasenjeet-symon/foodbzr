@@ -1,5 +1,8 @@
 import { AfterContentInit, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
-import { IonCard, IonSearchbar, ModalController } from '@ionic/angular';
+import { addressFromForAddres } from '@foodbzr/shared/util';
+import { Geolocation } from '@ionic-native/geolocation/ngx';
+import { IonSearchbar, ModalController } from '@ionic/angular';
+
 declare let google: any;
 
 @Component({
@@ -14,7 +17,7 @@ export class SearchLocationComponent implements OnInit, AfterContentInit {
     public lat: number;
     public lng: number;
 
-    constructor(private modal: ModalController) {}
+    constructor(private modal: ModalController, private location: Geolocation) {}
 
     ngOnInit() {}
 
@@ -87,22 +90,48 @@ export class SearchLocationComponent implements OnInit, AfterContentInit {
         });
     }
 
+    /** reverse geocoding with api */
+    public getReverseGeocodingData(lat: number, lng: number) {
+        return new Promise((resolve, reject) => {
+            var latlng = new google.maps.LatLng(lat, lng);
+            // This is making the Geocode request
+            var geocoder = new google.maps.Geocoder();
+            geocoder.geocode({ latLng: latlng }, (results: any, status: any) => {
+                if (status !== google.maps.GeocoderStatus.OK) {
+                    reject(status);
+                }
+
+                var address = results[0].formatted_address;
+                const formatted_address = address.trim();
+                const add = addressFromForAddres(formatted_address, lat, lng);
+                resolve(add);
+            });
+        });
+    }
+
+    /** get the current location */
+    public async getCurrentLocation() {
+        try {
+            /** fetch the cuttent location */
+
+            const loc = await this.location.getCurrentPosition();
+            this.lat = loc.coords.latitude;
+            this.lng = loc.coords.longitude;
+
+            const add = await this.getReverseGeocodingData(this.lat, this.lng);
+            this.modal.dismiss(add);
+        } catch (error) {
+            this.modal.dismiss(null);
+        }
+    }
+
     /** Close the modal  */
     closeModal(should_emit_data: boolean) {
         if (should_emit_data) {
             /** make proper address */
             this.formatted_address = this.formatted_address.trim();
-
-            const comma_separated = this.formatted_address.split(',');
-            const country = comma_separated[comma_separated.length - 1];
-            const pincode_state = comma_separated[comma_separated.length - 2].split(' ');
-            const pincode = pincode_state[pincode_state.length - 1];
-            const state = pincode_state[pincode_state.length - 2];
-
-            const city = comma_separated[comma_separated.length - 3];
-            const street = comma_separated.slice(0, comma_separated.length - 3).join(', ');
-
-            this.modal.dismiss({ country, pincode, state, city, street, lat: this.lat, lng: this.lng });
+            const add = addressFromForAddres(this.formatted_address, this.lat, this.lng);
+            this.modal.dismiss(add);
         } else {
             this.modal.dismiss(null);
         }

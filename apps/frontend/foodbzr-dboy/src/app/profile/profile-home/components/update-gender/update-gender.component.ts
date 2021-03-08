@@ -1,7 +1,7 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { ModalController } from '@ionic/angular';
 import { update_dboy } from '@foodbzr/datasource';
 import { databaseDao, IGetDBoy } from '@foodbzr/shared/types';
+import { ModalController } from '@ionic/angular';
 import { daoConfig, DaoLife } from '@sculify/node-room-client';
 import * as moment from 'moment';
 

@@ -1,9 +1,11 @@
-import { Component, ElementRef, NgZone, OnInit, ViewChild } from '@angular/core';
-import { google_map_dark_theme } from '@foodbzr/shared/util';
-import { ModalController, ToastController } from '@ionic/angular';
-import { FoodbzrDatasource, fetch_order_on_way_dboy } from '@foodbzr/datasource';
-import { daoConfig, DaoLife } from '@sculify/node-room-client';
+import { Component, ElementRef, NgZone, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { fetch_order_on_way_dboy, FoodbzrDatasource } from '@foodbzr/datasource';
 import { IGetOrderOnWay } from '@foodbzr/shared/types';
+import { google_map_dark_theme } from '@foodbzr/shared/util';
+import { CallNumber } from '@ionic-native/call-number/ngx';
+import { ModalController, Platform, ToastController } from '@ionic/angular';
+import { daoConfig, DaoLife, NetworkManager } from '@sculify/node-room-client';
+import { LoadingScreenService } from '../../../loading-screen.service';
 import { DeliverNowComponent } from '../components/deliver-now/deliver-now.component';
 import { DeliveredSuccessComponent } from '../components/delivered-success/delivered-success.component';
 
@@ -14,9 +16,15 @@ declare let google: any;
     templateUrl: './track-food-page.component.html',
     styleUrls: ['./track-food-page.component.scss'],
 })
-export class TrackFoodPageComponent implements OnInit {
-    /** dom selector */
-    @ViewChild('map', { static: true }) mapElement: ElementRef<HTMLDivElement>;
+export class TrackFoodPageComponent implements OnInit, OnDestroy {
+    mapElement: ElementRef<HTMLDivElement>;
+    @ViewChild('map')
+    set appShark(mapElement: ElementRef<HTMLDivElement>) {
+        if (mapElement) {
+            this.mapElement = mapElement;
+            this.renderMap();
+        }
+    }
 
     /** database */
     public daosLife: DaoLife;
@@ -35,29 +43,65 @@ export class TrackFoodPageComponent implements OnInit {
     public longitude: number = 85.1376;
     private dboy_row_uuid: string;
     public selectedOrder: IGetOrderOnWay;
+    public can_show_map = false;
 
-    constructor(private modal: ModalController, private ngZone: NgZone, private toast: ToastController) {
+    /** subscriptions */
+    public networkSubscription: any;
+
+    constructor(private platform: Platform, private loading: LoadingScreenService, private modal: ModalController, private ngZone: NgZone, private toast: ToastController, private call: CallNumber) {
         this.daosLife = new DaoLife();
         this.dboy_row_uuid = localStorage.getItem('dboy_row_uuid');
     }
 
+    ngOnDestroy() {
+        this.daosLife.softKill();
+        if (this.networkSubscription) {
+            this.networkSubscription.unsubscribe();
+        }
+    }
+
     ngOnInit() {
-        /** fetch all on way orders */
-        this.fetch_order_on_way_dboy__ = new this.database.fetch_order_on_way_dboy(daoConfig);
-        this.fetch_order_on_way_dboy__.observe(this.daosLife).subscribe((val) => {
-            this.ngZone.run(() => {
-                this.allOrdersOnWay = val;
-                if (this.allOrdersOnWay.length !== 0) {
-                    this.selectedOrder = val[0];
-                    this.latitude = this.selectedOrder.latitude;
-                    this.longitude = this.selectedOrder.longitude;
-                    this.renderMap();
-                } else {
-                    this.selectedOrder = null;
-                }
-            });
+        this.initScreen();
+
+        this.networkSubscription = NetworkManager.getInstance().reloadCtx.subscribe((val) => {
+            if (val) {
+                this.daosLife.softKill();
+                this.initScreen(false);
+            }
         });
-        this.fetch_order_on_way_dboy__.fetch(this.dboy_row_uuid).obsData();
+    }
+
+    initScreen(can_show_loading = true) {
+        this.platform.ready().then(() => {
+            /** fetch all on way orders */
+            this.fetch_order_on_way_dboy__ = new this.database.fetch_order_on_way_dboy(daoConfig);
+            this.fetch_order_on_way_dboy__.observe(this.daosLife).subscribe((val) => {
+                if (this.loading.dailogRef.isConnected) {
+                    this.loading.dailogRef.dismiss();
+                }
+
+                this.ngZone.run(() => {
+                    this.allOrdersOnWay = val;
+                    if (this.allOrdersOnWay.length !== 0) {
+                        this.selectedOrder = val[0];
+                        this.can_show_map = true;
+                        this.latitude = this.selectedOrder.latitude;
+                        this.longitude = this.selectedOrder.longitude;
+                    } else {
+                        this.can_show_map = false;
+                        this.selectedOrder = null;
+                    }
+                });
+            });
+
+            if (can_show_loading) {
+                this.loading.showLoadingScreen().then(() => {
+                    this.fetch_order_on_way_dboy__.fetch(this.dboy_row_uuid).obsData();
+                });
+            } else {
+                this.fetch_order_on_way_dboy__.fetch(this.dboy_row_uuid).obsData();
+            }
+        });
     }
 
     renderMap() {
@@ -94,52 +138,54 @@ export class TrackFoodPageComponent implements OnInit {
     }
 
     /** deliver the order now */
-    public deliverOrderNow() {
-        this.ngZone.run(async () => {
-            const dailogRef = await this.modal.create({
-                component: DeliverNowComponent,
-                componentProps: {},
-            });
+    public async deliverOrderNow() {
+        const dailogRef = await this.modal.create({
+            component: DeliverNowComponent,
+            componentProps: {},
+        });
 
-            await dailogRef.present();
+        await dailogRef.present();
 
-            const { data } = await dailogRef.onWillDismiss();
+        const { data } = await dailogRef.onWillDismiss();
 
-            if (data) {
-                const OTP = data;
+        if (data) {
+            const OTP = data;
 
-                if (OTP !== this.selectedOrder.otp) {
-                    const toastRef = await this.toast.create({
-                        header: 'Wrong OTP',
-                        message: 'Entered OTP is wrong please check the otp',
-                        position: 'bottom',
-                        color: 'danger',
-                        buttons: [
-                            {
-                                text: 'Done',
-                                role: 'cancel',
-                                handler: () => {
-                                    console.log('Cancel clicked');
-                                },
+            if (+OTP !== +this.selectedOrder.otp) {
+                const toastRef = await this.toast.create({
+                    header: 'Wrong OTP',
+                    message: 'Entered OTP is wrong please check the otp',
+                    position: 'bottom',
+                    color: 'danger',
+                    buttons: [
+                        {
+                            text: 'Done',
+                            role: 'cancel',
+                            handler: () => {
+                                console.log('Cancel clicked');
                             },
-                        ],
-                    });
-                    await toastRef.present();
-                    return;
-                }
+                        },
+                    ],
+                });
+                await toastRef.present();
+                return;
+            }
 
-                /** verify the otp and deliver */
+            /** verify the otp and deliver */
+            this.loading.showLoadingScreen().then(async () => {
                 const daoLife = new DaoLife();
                 const update_t_order_lifecycle__ = new this.database.update_t_order_lifecycle(daoConfig);
                 update_t_order_lifecycle__.observe(daoLife).subscribe((val) => {
-                    console.log('update the order lifecycle');
+                    if (this.loading.dailogRef.isConnected) {
+                        this.loading.dailogRef.dismiss();
+                    }
                 });
                 (await update_t_order_lifecycle__.fetch('order delivered', this.selectedOrder.row_uuid)).obsData();
                 daoLife.softKill();
 
                 await this.orderDone();
-            }
-        });
+            });
+        }
     }
 
     /** order delivered success */
@@ -149,5 +195,12 @@ export class TrackFoodPageComponent implements OnInit {
         });
 
         await dailogRef.present();
+    }
+
+    /** call the number */
+    public callNumber(number: string) {
+        if (this.call.isCallSupported) {
+            this.call.callNumber(number, true);
+        }
     }
 }

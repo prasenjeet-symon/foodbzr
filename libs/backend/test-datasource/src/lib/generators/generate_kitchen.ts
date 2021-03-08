@@ -46,9 +46,9 @@ export function generate_kitchens(amount: number) {
         const city = chance.city();
         const state: string = chance.state();
         const country = chance.country();
-        const start_time = moment(new Date('2020-01-01 10:00:00'));
-        const opening_time = start_time.format('HH:mm:ss');
-        const closing_time = start_time.add(8, 'hour').format('HH:mm:ss');
+        const start_time = moment(new Date('2020-01-01 08:00:00'));
+        const opening_time = start_time.format('YYYY-MM-DD HH:mm:ss');
+        const closing_time = start_time.add(8, 'hour').format('YYYY-MM-DD HH:mm:ss');
         const open_week_list = [1, 2, 3, 4, 5, 6, 7];
         all_gen_kitchens.push({
             kitchen_name,
@@ -66,7 +66,7 @@ export function generate_kitchens(amount: number) {
             open_week_list: JSON.stringify(open_week_list),
             opening_time,
             closing_time,
-            city
+            city,
         });
     }
 

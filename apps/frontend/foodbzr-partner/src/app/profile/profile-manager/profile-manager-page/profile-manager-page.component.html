@@ -8,7 +8,7 @@
     <div class="profile_header">
         <ion-item>
             <ion-avatar slot="start">
-                <img [src]="partnerDetail.profile_picture" [alt]="partnerDetail.full_name" srcset="" />
+                <img [src]="partnerDetail.profile_picture ? partnerDetail.profile_picture : '../../../../assets/images/no_pic.png'" [alt]="partnerDetail.full_name" srcset="" />
             </ion-avatar>
             <ion-label>
                 <h2>{{ partnerDetail.full_name }}</h2>
@@ -16,7 +16,7 @@
             </ion-label>
         </ion-item>
         <div class="file_chooser">
-            <ion-fab-button color="secondary"> <ion-icon name="aperture-sharp"></ion-icon> </ion-fab-button>
+            <ion-fab-button (click)="upload_pic()" color="secondary"> <ion-icon name="aperture-sharp"></ion-icon> </ion-fab-button>
         </div>
     </div>
 
@@ -77,4 +77,21 @@
             </ion-label>
         </ion-item>
     </div>
+
+    <ion-list>
+        <ion-list-header>
+            <ion-label color="secondary"> Setting </ion-label>
+        </ion-list-header>
+
+        <ion-item lines="full">
+            <ion-icon slot="start" name="moon"></ion-icon>
+            <ion-label> Toggle Dark Theme </ion-label>
+            <ion-toggle id="themeToggle" slot="end"></ion-toggle>
+        </ion-item>
+
+        <ion-item lines="full" (click)="logOut()">
+            <ion-icon slot="start" name="log-out"></ion-icon>
+            <ion-label>Log out</ion-label>
+        </ion-item>
+    </ion-list>
 </ion-content>

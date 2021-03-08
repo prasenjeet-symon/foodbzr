@@ -1,10 +1,12 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
+import { CanLoadRouteGuard } from '../main_route.guard';
 import { TabsPage } from './tabs.page';
 
 const routes: Routes = [
     {
         path: 'tabs',
+        canActivate: [CanLoadRouteGuard],
         component: TabsPage,
         children: [
             {
@@ -40,7 +42,7 @@ const routes: Routes = [
     },
     {
         path: '',
-        redirectTo: 'auth',
+        redirectTo: 'tabs',
         pathMatch: 'full',
     },
 ];

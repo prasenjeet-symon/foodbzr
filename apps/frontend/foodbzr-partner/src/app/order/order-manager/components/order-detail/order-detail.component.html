@@ -72,7 +72,7 @@
                     <p>{{ order.user_mobile_number }}</p>
                     <p>{{ order.delivery_address }}</p>
                 </ion-label>
-                <ion-chip outline color="secondary">
+                <ion-chip (click)="callNumberNow(order.user_mobile_number)" outline color="secondary">
                     <ion-icon name="call"></ion-icon>
                     <ion-label>Call</ion-label>
                 </ion-chip>
@@ -91,7 +91,7 @@
                     <h2>{{ order.dboy_full_name }}</h2>
                     <p>{{ order.dboy_mobile_number }}</p>
                 </ion-label>
-                <ion-chip outline color="secondary">
+                <ion-chip (click)="callNumberNow(order.dboy_mobile_number)" outline color="secondary">
                     <ion-icon name="call"></ion-icon>
                     <ion-label>Call</ion-label>
                 </ion-chip>

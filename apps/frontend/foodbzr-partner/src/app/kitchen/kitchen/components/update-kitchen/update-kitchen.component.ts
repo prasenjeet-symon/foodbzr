@@ -1,10 +1,11 @@
 import { Component, Input, NgZone, OnInit } from '@angular/core';
-import { ModalController } from '@ionic/angular';
-import { update_kitchen_offers, update_kitchen_login_detail, update_kitchen, update_kitchen_address } from '@foodbzr/datasource';
+import { update_kitchen, update_kitchen_address, update_kitchen_login_detail, update_kitchen_offers } from '@foodbzr/datasource';
 import { databaseDao, IGetKitchen } from '@foodbzr/shared/types';
+import { ModalController, Platform } from '@ionic/angular';
 import { daoConfig, DaoLife } from '@sculify/node-room-client';
-import { SearchLocationComponent } from '../search-location/search-location.component';
 import * as moment from 'moment';
+import { LoadingScreenService } from '../../../../loading-screen.service';
+import { SearchLocationComponent } from '../search-location/search-location.component';
 
 @Component({
     selector: 'foodbzr-update-kitchen',
@@ -56,11 +57,11 @@ export class UpdateKitchenComponent implements OnInit {
     public latitude: number;
     public longitude: number;
 
-    constructor(private modal: ModalController, private location_modal: ModalController, private ngZOne: NgZone) {}
+    constructor(private modal: ModalController, private location_modal: ModalController, private ngZOne: NgZone, private platform: Platform, private loading: LoadingScreenService) {}
 
     ngOnInit() {
         /** assign the profile pic */
-        this.kitchen_profile_picture = this.kitchen.profile_picture
+        this.kitchen_profile_picture = this.kitchen.profile_picture;
 
         /** assign the prev value of kitchen details */
         this.kitchen_name = this.kitchen.kitchen_name;
@@ -127,13 +128,22 @@ export class UpdateKitchenComponent implements OnInit {
         const closing_time = `2020-01-01 ${moment(new Date(this.closing_time)).format('HH:mm:ss')}`;
         const open_week_list = JSON.stringify(this.open_week_list.map((p) => +p));
 
-        console.log(opening_time, closing_time);
+        this.platform.ready().then(() => {
+            const daoLife = new DaoLife();
+            const update_kitchen__ = new this.database.update_kitchen(daoConfig);
+            update_kitchen__.observe(daoLife).subscribe((val) => {
+                if (this.loading.dailogRef.isConnected) {
+                    this.loading.dailogRef.dismiss();
+                }
+            });
 
-        const daoLife = new DaoLife();
-        const update_kitchen__ = new this.database.update_kitchen(daoConfig);
-        update_kitchen__.observe(daoLife).subscribe((val) => console.log('updated the kitchen details'));
-        update_kitchen__.fetch(this.kitchen_name, opening_time, closing_time, +this.kitchen_radius, open_week_list, this.kitchen.row_uuid).obsData();
-        daoLife.softKill();
+            this.loading.showLoadingScreen().then(() => {
+                update_kitchen__.fetch(this.kitchen_name, opening_time, closing_time, +this.kitchen_radius, open_week_list, this.kitchen.row_uuid).obsData();
+            });
+
+            daoLife.softKill();
+        });
+
         this.can_show_save_button_general_detail = false;
     }
 
@@ -151,11 +161,22 @@ export class UpdateKitchenComponent implements OnInit {
             return;
         }
 
-        const daoLife = new DaoLife();
-        const update_kitchen_login_detail__ = new this.database.update_kitchen_login_detail(daoConfig);
-        update_kitchen_login_detail__.observe(daoLife).subscribe((val) => console.log('updated the kitchen password'));
-        update_kitchen_login_detail__.fetch(this.kitchen_password, this.kitchen_user_id, this.kitchen.row_uuid).obsData();
-        daoLife.softKill();
+        this.platform.ready().then(() => {
+            const daoLife = new DaoLife();
+            const update_kitchen_login_detail__ = new this.database.update_kitchen_login_detail(daoConfig);
+            update_kitchen_login_detail__.observe(daoLife).subscribe((val) => {
+                if (this.loading.dailogRef.isConnected) {
+                    this.loading.dailogRef.dismiss();
+                }
+            });
+
+            this.loading.showLoadingScreen().then(() => {
+                update_kitchen_login_detail__.fetch(this.kitchen_password, this.kitchen_user_id, this.kitchen.row_uuid).obsData();
+            });
+
+            daoLife.softKill();
+        });
+
         this.can_show_save_button_login_detail = false;
     }
 
@@ -174,11 +195,21 @@ export class UpdateKitchenComponent implements OnInit {
         const offer_start_datetime = `${moment(new Date(this.offer_start_date)).format('YYYY-MM-DD')} ${moment(new Date(this.offer_start_time)).format('HH:mm:ss')}`;
         const offer_end_datetime = `${moment(new Date(this.offer_end_date)).format('YYYY-MM-DD')} ${moment(new Date(this.offer_end_time)).format('HH:mm:ss')}`;
 
-        const daoLife = new DaoLife();
-        const update_kitchen_offers__ = new this.database.update_kitchen_offers(daoConfig);
-        update_kitchen_offers__.observe(daoLife).subscribe((val) => console.log('updated the kitchen offers'));
-        update_kitchen_offers__.fetch(this.offer_percentage, offer_start_datetime, offer_end_datetime, this.kitchen.row_uuid).obsData();
-        daoLife.softKill();
+        this.platform.ready().then(() => {
+            const daoLife = new DaoLife();
+            const update_kitchen_offers__ = new this.database.update_kitchen_offers(daoConfig);
+            update_kitchen_offers__.observe(daoLife).subscribe((val) => {
+                if (this.loading.dailogRef.isConnected) {
+                    this.loading.dailogRef.dismiss();
+                }
+            });
+            this.loading.showLoadingScreen().then(() => {
+                update_kitchen_offers__.fetch(this.offer_percentage, offer_start_datetime, offer_end_datetime, this.kitchen.row_uuid).obsData();
+            });
+
+            daoLife.softKill();
+        });
+
         this.can_show_save_button_offer_detail = false;
     }
 
@@ -192,11 +223,17 @@ export class UpdateKitchenComponent implements OnInit {
             return;
         }
 
-        const daoLife = new DaoLife();
-        const update_kitchen_address__ = new this.database.update_kitchen_address(daoConfig);
-        update_kitchen_address__.observe(daoLife).subscribe((val) => console.log('updated the kitchen address'));
-        update_kitchen_address__.fetch(this.street, this.pincode, this.city, this.state, this.country, this.latitude, this.longitude, this.kitchen.row_uuid).obsData();
-        daoLife.softKill();
+        this.platform.ready().then(() => {
+            const daoLife = new DaoLife();
+            const update_kitchen_address__ = new this.database.update_kitchen_address(daoConfig);
+            update_kitchen_address__.observe(daoLife).subscribe((val) => {
+                if (this.loading.dailogRef.isConnected) {
+                    this.loading.dailogRef.dismiss();
+                }
+            });
+            update_kitchen_address__.fetch(this.street, this.pincode, this.city, this.state, this.country, this.latitude, this.longitude, this.kitchen.row_uuid).obsData();
+            daoLife.softKill();
+        });
         this.can_show_save_button_address_detail = false;
     }
 

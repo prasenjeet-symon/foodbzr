@@ -1,8 +1,10 @@
 import { Component, NgZone, OnDestroy, OnInit } from '@angular/core';
 import { fetch_order_status, FoodbzrDatasource } from '@foodbzr/datasource';
 import { IGetOrderStatus, order_lifecycle_state } from '@foodbzr/shared/types';
-import { ModalController } from '@ionic/angular';
-import { daoConfig, DaoLife } from '@sculify/node-room-client';
+import { ModalController, Platform } from '@ionic/angular';
+import { daoConfig, DaoLife, NetworkManager } from '@sculify/node-room-client';
+import { Subscription } from 'rxjs';
+import { LoadingScreenService } from '../../../../loading-screen.service';
 import { ChooseDboyComponent } from '../choose-dboy/choose-dboy.component';
 import { OrderDetailComponent } from '../order-detail/order-detail.component';
 import { OrderLocationComponent } from '../order-location/order-location.component';
@@ -33,25 +35,53 @@ export class PendingOrderComponent implements OnInit, OnDestroy {
     /** daos */
     fetch_order_status_pending__: fetch_order_status;
 
-    constructor(private ngZone: NgZone, private modal: ModalController) {
+    /** subscriptions */
+    public networkSubscription: Subscription;
+
+    constructor(private ngZone: NgZone, private modal: ModalController, private platform: Platform, private loading: LoadingScreenService) {
         this.partner_row_uuid = localStorage.getItem('partner_row_uuid');
         this.daosLife = new DaoLife();
     }
 
     ngOnInit() {
-        this.can_show_loading = true;
-        this.fetch_order_status_pending__ = new this.database.fetch_order_status(daoConfig);
-        this.fetch_order_status_pending__.observe(this.daosLife).subscribe((val) => {
-            this.ngZone.run(() => {
-                this.allOrders = val;
-                this.sortOrders();
-            });
+        this.initScreen();
+        this.networkSubscription = NetworkManager.getInstance().reloadCtx.subscribe((val) => {
+            if (val) {
+                this.daosLife.softKill();
+                this.initScreen(false);
+            }
         });
-        this.fetch_order_status_pending__.fetch(this.partner_row_uuid).obsData();
+    }
+
+    public initScreen(can_show_loading = true) {
+        this.platform.ready().then(() => {
+            this.fetch_order_status_pending__ = new this.database.fetch_order_status(daoConfig);
+            this.fetch_order_status_pending__.observe(this.daosLife).subscribe((val) => {
+                if (this.loading.dailogRef.isConnected) {
+                    this.loading.dailogRef.dismiss();
+                }
+
+                this.ngZone.run(() => {
+                    this.allOrders = val.sort((a, b) => +new Date(b.food_order_date_created) - +new Date(a.food_order_date_created));
+                    this.sortOrders();
+                });
+            });
+
+            if (can_show_loading) {
+                this.loading.showLoadingScreen().then(() => {
+                    this.fetch_order_status_pending__.fetch(this.partner_row_uuid).obsData();
+                });
+            } else {
+                this.fetch_order_status_pending__.fetch(this.partner_row_uuid).obsData();
+            }
+        });
     }
 
     ngOnDestroy() {
         this.daosLife.softKill();
+        if (this.networkSubscription) {
+            this.networkSubscription.unsubscribe();
+        }
     }
 
     /** sort the orders */
@@ -75,11 +105,21 @@ export class PendingOrderComponent implements OnInit, OnDestroy {
             }
         });
 
-        const daoLife = new DaoLife();
-        const update_t_order_lifecycle_dao = new this.database.update_t_order_lifecycle(daoConfig);
-        update_t_order_lifecycle_dao.observe(daoLife).subscribe((val) => console.log('updated the order lifecycle'));
-        (await update_t_order_lifecycle_dao.fetch(status, order_row_uuid)).obsData();
-        daoLife.softKill();
+        this.platform.ready().then(() => {
+            const daoLife = new DaoLife();
+            const update_t_order_lifecycle_dao = new this.database.update_t_order_lifecycle(daoConfig);
+            update_t_order_lifecycle_dao.observe(daoLife).subscribe((val) => {
+                if (this.loading.dailogRef.isConnected) {
+                    this.loading.dailogRef.dismiss();
+                }
+            });
+
+            this.loading.showLoadingScreen().then(async () => {
+                (await update_t_order_lifecycle_dao.fetch(status, order_row_uuid)).obsData();
+            });
+
+            daoLife.softKill();
+        });
     }
 
     /** Show the user location on the google map */

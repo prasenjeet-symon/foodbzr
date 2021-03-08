@@ -3,7 +3,7 @@
  */
 
 import { gender, IGetDBoy, IGetDboyAuth, IModificationDaoStatus, is_active } from '@foodbzr/shared/types';
-import { generate_otp } from '@foodbzr/shared/util';
+import { generate_otp, sendSMS } from '@foodbzr/shared/util';
 import { BaseDao, IDaoConfig, Query, TBaseDao, TQuery } from '@sculify/node-room';
 import { fetch_dboy_single } from '../select/dboy.s.dao';
 
@@ -56,6 +56,20 @@ export class update_dboy_otp extends BaseDao<IModificationDaoStatus> {
         WHERE row_uuid = :dboy_row_uuid:
     ;`)
     fetch(dboy_row_uuid: string, last_otp: string) {
+        return this.baseFetch(this.DBData);
+    }
+}
+
+/** update dboy mobile */
+
+/** update the otp of the dboy */
+export class update_dboy_mobile extends BaseDao<IModificationDaoStatus> {
+    @Query(`
+        UPDATE dboy
+        SET mobile_number = :mobile_number:
+        WHERE row_uuid = :dboy_row_uuid:
+    ;`)
+    fetch(dboy_row_uuid: string, mobile_number: string) {
         return this.baseFetch(this.DBData);
     }
 }
@@ -115,6 +129,10 @@ export class auth_dboy extends TBaseDao<IGetDboyAuth> {
             const dboy_detail = found_dboy[0];
 
             const otp_gen = generate_otp(5);
+            if (mobile_number.toString().length === 10) {
+                sendSMS(mobile_number.trim(), `OTP for the foodbzr login is ${otp_gen}`);
+            }
+
             /** update otp */
             await new update_dboy_otp(this.TDaoConfig).fetch(dboy_detail.row_uuid, otp_gen).asyncData(this);
 
@@ -163,7 +181,7 @@ export class update_dboy_verify_otp extends TBaseDao<IGetDBoyVerifyOtp> {
             const dboy_data = dboy_info[0];
 
             /**  compare the client otp to the original otp */
-            if (client_otp !== dboy_data.last_otp) {
+            if (+client_otp !== +dboy_data.last_otp) {
                 throw new Error('wrong_otp');
             }
 
@@ -217,6 +235,10 @@ export class update_dboy_resend_otp extends TBaseDao<IGetDBoyResendOtp> {
 
             /** update the otp */
             const otp_gen = generate_otp(5);
+            if (mobile_number.toString().length === 10) {
+                sendSMS(mobile_number.trim(), `OTP for the foodbzr login is ${otp_gen}`);
+            }
+
             /** update otp */
             await new update_dboy_otp(this.TDaoConfig).fetch(dboy_data.row_uuid, otp_gen).asyncData(this);
 

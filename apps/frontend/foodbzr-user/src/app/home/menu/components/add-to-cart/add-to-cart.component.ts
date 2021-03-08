@@ -1,18 +1,18 @@
-import { Component, Input, NgZone, OnInit } from '@angular/core';
-import { ModalController } from '@ionic/angular';
-import { IGetMenuForCart } from '@foodbzr/shared/types';
+import { Component, Input, NgZone, OnDestroy, OnInit } from '@angular/core';
 import { fetch_menu_size_variant_for_cart, insert_user_cart } from '@foodbzr/datasource';
-import { databaseDao, IGetMenuVariantForCart } from '@foodbzr/shared/types';
-import { DaoLife, daoConfig } from '@sculify/node-room-client';
-import { v4 as uuid } from 'uuid';
+import { databaseDao, IGetMenuForCart, IGetMenuVariantForCart } from '@foodbzr/shared/types';
+import { ModalController, Platform } from '@ionic/angular';
+import { daoConfig, DaoLife, NetworkManager } from '@sculify/node-room-client';
 import * as moment from 'moment';
+import { v4 as uuid } from 'uuid';
+import { LoadingScreenService } from '../../../../loading-screen.service';
 
 @Component({
     selector: 'foodbzr-add-to-cart',
     templateUrl: './add-to-cart.component.html',
     styleUrls: ['./add-to-cart.component.scss'],
 })
-export class AddToCartComponent implements OnInit {
+export class AddToCartComponent implements OnInit, OnDestroy {
     @Input() user_row_uuid: string;
     @Input() menu: IGetMenuForCart;
     @Input() database: {
@@ -26,34 +26,69 @@ export class AddToCartComponent implements OnInit {
     public totalAmount: number;
     public selectedMenu: IGetMenuVariantForCart;
     public menuSizeVariants: IGetMenuVariantForCart[] = [];
+    public can_show_empty_screen = false;
 
     /** daos */
     fetch_menu_size_variant_for_cart__: fetch_menu_size_variant_for_cart;
 
-    constructor(private modal: ModalController, private ngZone: NgZone) {
+    /** subscriptions */
+    public networkSubscription: any;
+
+    constructor(private loading: LoadingScreenService, private platform: Platform, private modal: ModalController, private ngZone: NgZone) {
         this.daosLife = new DaoLife();
     }
 
     ngOnInit() {
-        this.fetchMenuVariants();
+        this.daosLife.softKill();
+        this.initScreen();
+        this.networkSubscription = NetworkManager.getInstance().reloadCtx.subscribe((val) => {
+            if (val) {
+                this.daosLife.softKill();
+                this.initScreen(false);
+            }
+        });
+    }
+
+    ngOnDestroy() {
+        this.daosLife.softKill();
+        if (this.networkSubscription) {
+            this.networkSubscription.unsubscribe();
+        }
     }
 
     closeModal() {
         this.modal.dismiss();
     }
 
-    fetchMenuVariants() {
-        this.fetch_menu_size_variant_for_cart__ = new this.database.fetch_menu_size_variant_for_cart(daoConfig);
-        this.fetch_menu_size_variant_for_cart__.observe(this.daosLife).subscribe((val) => {
-            this.ngZone.run(() => {
-                this.menuSizeVariants = val;
-                this.itemSelected(val[0]);
-            });
-        });
+    public initScreen(can_show_loading = true) {
+        this.platform.ready().then(() => {
+            this.fetch_menu_size_variant_for_cart__ = new this.database.fetch_menu_size_variant_for_cart(daoConfig);
+            this.fetch_menu_size_variant_for_cart__.observe(this.daosLife).subscribe((val) => {
+                this.ngZone.run(() => {
+                    if (this.loading.dailogRef.isConnected) {
+                        this.loading.dailogRef.dismiss();
+                    }
 
-        setTimeout(() => {
-            this.fetch_menu_size_variant_for_cart__.fetch(this.menu.menu_row_uuid).obsData();
-        }, 50);
+                    if (val.length === 0) {
+                        this.can_show_empty_screen = true;
+                    }
+
+                    this.menuSizeVariants = val;
+
+                    if (val.length !== 0) {
+                        this.itemSelected(val[0]);
+                    }
+                });
+            });
+
+            if (can_show_loading) {
+                this.loading.showLoadingScreen().then(() => {
+                    this.fetch_menu_size_variant_for_cart__.fetch(this.menu.menu_row_uuid).obsData();
+                });
+            } else {
+                this.fetch_menu_size_variant_for_cart__.fetch(this.menu.menu_row_uuid).obsData();
+            }
+        });
     }
 
     itemSelected(item: IGetMenuVariantForCart) {
@@ -90,13 +125,21 @@ export class AddToCartComponent implements OnInit {
     }
 
     addToCart() {
-        const date_created: string = moment(new Date()).format('YYYY-MM-DD HH:mm:ss');
+        this.platform.ready().then(() => {
+            this.loading.showLoadingScreen().then(() => {
+                const date_created: string = moment(new Date()).format('YYYY-MM-DD HH:mm:ss');
 
-        const daoLife = new DaoLife();
-        const insert_user_cart__ = new this.database.insert_user_cart(daoConfig);
-        insert_user_cart__.observe(daoLife).subscribe((val) => console.log('inserted to the cart'));
-        insert_user_cart__.fetch(this.user_row_uuid, this.selectedMenu.menu_variant_row_uuid, this.totalAmount, date_created, uuid()).obsData();
-        daoLife.softKill();
-        this.closeModal();
+                const daoLife = new DaoLife();
+                const insert_user_cart__ = new this.database.insert_user_cart(daoConfig);
+                insert_user_cart__.observe(daoLife).subscribe((val) => {
+                    if (this.loading.dailogRef.isConnected) {
+                        this.loading.dailogRef.dismiss();
+                    }
+                });
+                insert_user_cart__.fetch(this.user_row_uuid, this.selectedMenu.menu_variant_row_uuid, this.totalAmount, date_created, uuid()).obsData();
+                daoLife.softKill();
+                this.closeModal();
+            });
+        });
     }
 }

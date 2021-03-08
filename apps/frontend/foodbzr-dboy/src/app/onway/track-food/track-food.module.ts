@@ -2,7 +2,9 @@ import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
+import { CallNumber } from '@ionic-native/call-number/ngx';
 import { IonicModule } from '@ionic/angular';
+import { LoadingScreenService } from '../../loading-screen.service';
 import { DeliverNowComponent } from './components/deliver-now/deliver-now.component';
 import { DeliveredSuccessComponent } from './components/delivered-success/delivered-success.component';
 import { TrackFoodPageComponent } from './track-food-page/track-food-page.component';
@@ -20,7 +22,7 @@ import { TrackFoodPageComponent } from './track-food-page/track-food-page.compon
         ]),
     ],
     declarations: [TrackFoodPageComponent, DeliverNowComponent, DeliveredSuccessComponent],
-    exports: [],
     entryComponents: [DeliverNowComponent, DeliveredSuccessComponent],
+    providers: [LoadingScreenService, CallNumber],
 })
 export class TrackFoodModule {}

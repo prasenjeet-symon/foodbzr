@@ -17,6 +17,7 @@ export class fetch_delivery_address_of_user extends BaseDao<IGetDeliveryAddress[
         is_active,
         street,
         pincode,
+        city,
         state,
         country,
         latitude,

@@ -1,7 +1,7 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { ModalController } from '@ionic/angular';
 import { update_owner_name } from '@foodbzr/datasource';
 import { databaseDao } from '@foodbzr/shared/types';
+import { ModalController } from '@ionic/angular';
 import { daoConfig, DaoLife } from '@sculify/node-room-client';
 
 @Component({

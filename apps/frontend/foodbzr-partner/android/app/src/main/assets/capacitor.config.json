@@ -1,12 +1,19 @@
 {
-  "appId": "io.ionic.starter",
-  "appName": "foodbzr-partner",
+  "appId": "io.sculify.foodbzr.partner",
+  "appName": "Foodbzr Partner",
   "bundledWebRuntime": false,
   "npmClient": "npm",
   "webDir": "../../../dist/apps/frontend/foodbzr-partner",
   "plugins": {
     "SplashScreen": {
       "launchShowDuration": 0
+    },
+    "PushNotifications": {
+      "presentationOptions": [
+        "badge",
+        "sound",
+        "alert"
+      ]
     }
   },
   "cordova": {}

@@ -7,7 +7,6 @@ import { ModalController } from '@ionic/angular';
     styleUrls: ['./update-bio.component.scss'],
 })
 export class UpdateBioComponent implements OnInit, OnDestroy {
-    
     /** data */
     @Input() bio: string;
 

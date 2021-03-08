@@ -1,0 +1,18 @@
+.first_time_search {
+    margin-top: 65px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.first_time_search > div:nth-of-type(1) {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.first_time_search img {
+    width: 20%;
+    height: auto;
+    object-fit: cover;
+}

@@ -1,7 +1,7 @@
 <ion-header [translucent]="true">
     <ion-toolbar>
         <ion-buttons slot="end">
-            <ion-button (click)="closeModal()"> <ion-icon name="close-outline"></ion-icon> </ion-button>
+            <ion-button (click)="closeModal(null)"> <ion-icon name="close-outline"></ion-icon> </ion-button>
         </ion-buttons>
     </ion-toolbar>
 </ion-header>
@@ -16,12 +16,12 @@
             <ion-text><h2>Hi, nice to meet you!</h2></ion-text>
         </div>
         <div>
-            <ion-text><p>Set your location to start exploring restaurants arounf you</p></ion-text>
+            <ion-text><p>Set your location to start exploring restaurants around you</p></ion-text>
         </div>
     </div>
 
     <div class="button_holders">
-        <ion-button color="warning" size="large" shape="full"> Use current location </ion-button>
+        <ion-button [disabled]="!can_click_fetch_loc" (click)="useCurrentLocation()" color="warning" size="large" shape="full"> Use current location </ion-button>
         <div (click)="searchLocation()"><ion-button color="light"> Set your location manually </ion-button></div>
     </div>
 </ion-content>

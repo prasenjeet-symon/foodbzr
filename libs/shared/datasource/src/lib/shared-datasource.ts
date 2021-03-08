@@ -6,7 +6,16 @@ export { FoodbzrDatasource } from './foodbzr/foodbzr-datasource';
 export { delete_woner } from './foodbzr/dao/delete/owner.d.dao';
 export { insert_owner } from './foodbzr/dao/insert/owner.i.dao';
 export { fetch_owner, fetch_owner_all } from './foodbzr/dao/select/owner.s.dao';
-export { update_owner_otp, update_owner_bio, update_owner_gender, update_owner_name, update_owner_auth, update_owner_resend_otp, update_owner_verify_otp } from './foodbzr/dao/update/owner.u.dao';
+export {
+    update_owner_otp,
+    update_owner_bio,
+    update_owner_gender,
+    update_owner_name,
+    update_owner_auth,
+    update_owner_resend_otp,
+    update_owner_verify_otp,
+    update_owner_mobile,
+} from './foodbzr/dao/update/owner.u.dao';
 
 /**
  * partner.table.ts
@@ -26,6 +35,7 @@ export {
     update_partner_auth,
     update_partner_resend_otp,
     update_partner_verify_otp,
+    update_partner_mobile,
 } from './foodbzr/dao/update/partner.u.dao';
 
 /**
@@ -83,7 +93,7 @@ export { update_menu_review } from './foodbzr/dao/update/menu_review.u.dao';
 export { delete_user } from './foodbzr/dao/delete/user.d.dao';
 export { insert_user } from './foodbzr/dao/insert/user.i.dao';
 export { fetch_user_single, fetch_user_all } from './foodbzr/dao/select/user.s.dao';
-export { update_user, update_user_auth, update_user_resend_otp, update_user_verify_otp } from './foodbzr/dao/update/user.u.dao';
+export { update_user, update_user_auth, update_user_resend_otp, update_user_verify_otp, update_user_mobile } from './foodbzr/dao/update/user.u.dao';
 
 /** user_cart.table.ts */
 export { delete_user_cart } from './foodbzr/dao/delete/user_cart.d.dao';
@@ -106,6 +116,7 @@ export {
     fetch_order_search_partner,
     fetch_order_kitchen_report,
     fetch_order_partner_report,
+    fetch_order_status_for_user,
 } from './foodbzr/dao/select/order.s.dao';
 export {
     update_order_add_otp,
@@ -125,9 +136,9 @@ export { update_delivery_address } from './foodbzr/dao/update/delivery_address.u
 
 /** dboy.table.ts */
 export { delete_dboy } from './foodbzr/dao/delete/dboy.d.dao';
-export { insert_dboy } from './foodbzr/dao/insert/dboy.i.dao';
+export { insert_dboy, insert_dboy_from_partner } from './foodbzr/dao/insert/dboy.i.dao';
 export { fetch_dboy_single, fetch_dboy_of_kitchen } from './foodbzr/dao/select/dboy.s.dao';
-export { update_dboy, update_dboy_verify, auth_dboy, update_dboy_resend_otp, update_dboy_verify_otp } from './foodbzr/dao/update/dboy.u.dao';
+export { update_dboy, update_dboy_verify, auth_dboy, update_dboy_resend_otp, update_dboy_verify_otp, update_dboy_mobile } from './foodbzr/dao/update/dboy.u.dao';
 
 /** user_fav_kitchen */
 export { delete_user_fav_kitchen } from './foodbzr/dao/delete/user_fav_kitchen.d.dao';
@@ -136,3 +147,4 @@ export { fetch_user_fav_kitchen, fetch_user_fav_kitchen_is_fav } from './foodbzr
 
 /** push_message */
 export { insert_push_message } from './foodbzr/dao/insert/push_message.i.dao';
+export { fetch_push_message_fcm_tokens } from './foodbzr/dao/select/push_message.s.dao';

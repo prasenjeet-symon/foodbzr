@@ -5,12 +5,14 @@
 
     <ion-item-sliding *ngFor="let review of allReviews; trackBy: tracker">
         <ion-item>
-            <ion-note slot="end">{{ review.date_created | date: 'short' }}</ion-note>
             <ion-avatar slot="start">
-                <img [src]="review.profile_picture" />
+                <img [src]="review.profile_picture" alt="" />
             </ion-avatar>
             <ion-label text-wrap>
                 <h2>{{ review.full_name }}</h2>
+                <ion-text color="warning">
+                    <h5>{{ review.date_created | date: 'short' }}</h5>
+                </ion-text>
                 <p>{{ review.review }}</p>
             </ion-label>
         </ion-item>

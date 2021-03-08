@@ -3,6 +3,7 @@ import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { IonicModule } from '@ionic/angular';
+import { LoadingScreenService } from '../../loading-screen.service';
 import { OtpTakerPageComponent } from './otp-taker-page/otp-taker-page.component';
 
 @NgModule({
@@ -18,5 +19,6 @@ import { OtpTakerPageComponent } from './otp-taker-page/otp-taker-page.component
         ]),
     ],
     declarations: [OtpTakerPageComponent],
+    providers: [LoadingScreenService],
 })
 export class OtpTakerModule {}

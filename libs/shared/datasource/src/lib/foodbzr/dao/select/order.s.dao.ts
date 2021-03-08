@@ -219,6 +219,88 @@ export class fetch_order_status extends BaseDao<IGetOrderStatus[]> {
     }
 }
 
+/** get the food order detail page for the user */
+export class fetch_order_status_for_user extends BaseDao<IGetOrderStatus[]> {
+    constructor(config: IDaoConfig) {
+        super(config);
+    }
+
+    @Query(`
+        SELECT 
+
+        usr.full_name as user_full_name, 
+        usr.mobile_number as user_mobile_number,
+        usr.profile_picture as user_profile_picture,
+        usr.gender as user_gender,
+
+        kit.kitchen_name as kitchen_name,
+        kit.profile_picture as kitchen_profile_picture,
+        kit.street as kitchen_street,
+        kit.pincode as kitchen_pincode,
+        kit.city as kitchen_city,
+        kit.state as kitchen_state,
+        kit.country as kitchen_country,
+
+        fo.row_id as food_order_row_id,
+        fo.user_row_uuid as user_row_uuid, 
+        fo.partner_row_uuid as partner_row_uuid,
+        fo.kitchen_row_uuid as kitchen_row_uuid,
+        fo.dboy_row_uuid as dboy_row_uuid,
+        fo.order_address_row_uuid as order_address_row_uuid,
+
+        fo.delivery_status as food_order_delivery_status,
+        fo.pay_type as food_order_pay_type,
+        fo.pay_status as food_order_pay_status,
+        fo.otp as food_order_otp,
+        fo.amount_paid as food_order_amount_paid, 
+        fo.bzrcoin_used as food_order_bzrcoin_used,
+        fo.delivery_charge as food_order_delivery_charge,
+        fo.user_saved_amount as food_order_user_saved_amount,
+        fo.lifecycle as food_order_lifecycle,
+        fo.order_menu as food_order_order_menu,
+        
+        fo.date_created as food_order_date_created,
+        fo.date_updated as food_order_date_updated,
+        fo.row_uuid as food_order_row_uuid, 
+
+        db.profile_picture as dboy_profile_picture,
+        db.full_name as dboy_full_name,
+        db.mobile_number as dboy_mobile_number,
+
+        da.street as delivery_address_street,
+        da.pincode as delivery_address_pincode,
+        da.city as delivery_address_city,
+        da.state as delivery_address_state,
+        da.country as delivery_address_country,
+        da.latitude as delivery_address_latitude,
+        da.longitude as delivery_address_longitude
+
+        FROM food_order as fo
+        LEFT OUTER JOIN dboy as db
+        ON db.row_uuid = fo.dboy_row_uuid
+        LEFT OUTER JOIN delivery_address as da
+        ON da.row_uuid = fo.order_address_row_uuid
+        LEFT OUTER JOIN kitchen as kit
+        ON kit.row_uuid = fo.kitchen_row_uuid
+        LEFT OUTER JOIN user as usr
+        ON usr.row_uuid = fo.user_row_uuid
+        WHERE fo.row_uuid = :order_row_uuid:
+    ;`)
+    fetch(order_row_uuid: string) {
+        return this.baseFetch(
+            this.DBData.map((p) => {
+                return {
+                    ...p,
+                    food_order_order_menu: JSON.parse(p.food_order_order_menu as any),
+                    food_order_lifecycle: JSON.parse(p.food_order_lifecycle as any),
+                    kitchen_address: ` ${p.kitchen_street}, ${p.kitchen_city}, ${p.kitchen_pincode}, ${p.kitchen_state}, ${p.kitchen_country} `,
+                    delivery_address: `${p.delivery_address_street}, ${p.delivery_address_city}, ${p.delivery_address_pincode}, ${p.delivery_address_state}, ${p.delivery_address_country}`,
+                };
+            }) as IGetOrderStatus[]
+        );
+    }
+}
+
 /** get all the pending orders of the dboy */
 export class fetch_order_pending_dboy extends BaseDao<IGetOrder[]> {
     constructor(config: IDaoConfig) {
@@ -356,8 +438,10 @@ export class fetch_order_of_user extends BaseDao<IGetOrderUser[]> {
 
         FROM food_order 
         WHERE user_row_uuid = :user_row_uuid:
+        AND DATE(date_created) >= :start_date: 
+        AND DATE(date_created) <= :end_date:
     ;`)
-    fetch(user_row_uuid: string) {
+    fetch(user_row_uuid: string, start_date: string, end_date: string) {
         /** group the order in dates */
         const maped_version = ((this.DBData as unknown) as IGetOrder[]).map((p) => {
             return {

@@ -1,7 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { insert_menu_review } from '@foodbzr/datasource';
 import { databaseDao } from '@foodbzr/shared/types';
-import { daoConfig, DaoLife } from '@sculify/node-room-client';
 
 @Component({
     selector: 'foodbzr-add-review',

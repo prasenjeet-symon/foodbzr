@@ -1,10 +1,11 @@
 import { Component, Input } from '@angular/core';
 import { insert_food_category } from '@foodbzr/datasource';
 import { databaseDao } from '@foodbzr/shared/types';
-import { ModalController } from '@ionic/angular';
+import { ModalController, Platform } from '@ionic/angular';
 import { daoConfig, DaoLife } from '@sculify/node-room-client';
 import * as moment from 'moment';
 import { v4 as uuid } from 'uuid';
+import { LoadingScreenService } from '../../../../loading-screen.service';
 
 @Component({
     selector: 'foodbzr-add-food-cat',
@@ -25,7 +26,7 @@ export class AddFoodCatComponent {
     public offer_end_date: string;
     public offer_end_time: string;
 
-    constructor(private modal: ModalController) {}
+    constructor(private modal: ModalController, private platform: Platform, private loading: LoadingScreenService) {}
 
     /** close the modal */
     public closeModal() {
@@ -44,12 +45,21 @@ export class AddFoodCatComponent {
         const offer_start_datetime = `${moment(new Date(this.offer_start_date)).format('YYYY-MM-DD')} ${moment(new Date(this.offer_start_time)).format('HH:mm:ss')}`;
         const offer_end_datetime = `${moment(new Date(this.offer_end_date)).format('YYYY-MM-DD')} ${moment(new Date(this.offer_end_time)).format('HH:mm:ss')}`;
 
-        const daoLife = new DaoLife();
-        const insert_food_category__ = new this.database.insert_food_category(daoConfig);
-        insert_food_category__.observe(daoLife).subscribe((val) => console.log('inserted the new food cat'));
-        insert_food_category__.fetch(this.food_cat_name, null, this.partner_row_uuid, this.offer_percentage, offer_start_datetime, offer_end_datetime, date_created, uuid()).obsData();
-        daoLife.softKill();
+        this.platform.ready().then(() => {
+            const daoLife = new DaoLife();
+            const insert_food_category__ = new this.database.insert_food_category(daoConfig);
+            insert_food_category__.observe(daoLife).subscribe((val) => {
+                if (this.loading.dailogRef.isConnected) {
+                    this.loading.dailogRef.dismiss();
+                }
+                this.closeModal();
+            });
 
-        this.closeModal();
+            this.loading.showLoadingScreen().then(() => {
+                insert_food_category__.fetch(this.food_cat_name, null, this.partner_row_uuid, this.offer_percentage, offer_start_datetime, offer_end_datetime, date_created, uuid()).obsData();
+            });
+
+            daoLife.softKill();
+        });
     }
 }

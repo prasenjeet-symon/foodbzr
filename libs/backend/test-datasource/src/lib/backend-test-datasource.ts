@@ -1,22 +1,22 @@
-import { IDaoConfig, MYSQLConnectionConfig, QueryServerDatabase } from '@sculify/node-room';
 import { FoodbzrDatasource } from '@foodbzr/datasource';
 import { OrderMenu } from '@foodbzr/shared/types';
-import { generate_owner } from './generators/generate_owner';
-import { generate_partner } from './generators/generate_partner';
-import { generate_kitchens } from './generators/generate_kitchen';
+import { get_initial_order_lifecycle } from '@foodbzr/shared/util';
+import { IDaoConfig, MYSQLConnectionConfig, QueryServerDatabase } from '@sculify/node-room';
 import { Chance } from 'chance';
-import { generate_food_category } from './generators/generate_food_category';
-import { generate_regional_food_category } from './generators/generate_regional_food_category';
-import { generate_menus } from './generators/generate_menu';
-import { generate_menu_size_variant } from './generators/generate_menu_variant';
-import { generate_food_img } from './generators/generate_food_img';
 import * as moment from 'moment';
 import { v4 as uuid } from 'uuid';
-import { generate_users } from './generators/generate_user';
-import { generate_reviews } from './generators/generate_review';
-import { get_initial_order_lifecycle } from '@foodbzr/shared/util';
 import { DateMaker } from './generators/date-iterator';
 import { generate_dboys } from './generators/generate_dboy';
+import { generate_food_category } from './generators/generate_food_category';
+import { generate_food_img } from './generators/generate_food_img';
+import { generate_kitchens } from './generators/generate_kitchen';
+import { generate_menus } from './generators/generate_menu';
+import { generate_menu_size_variant } from './generators/generate_menu_variant';
+import { generate_owner } from './generators/generate_owner';
+import { generate_partner } from './generators/generate_partner';
+import { generate_regional_food_category } from './generators/generate_regional_food_category';
+import { generate_reviews } from './generators/generate_review';
+import { generate_users } from './generators/generate_user';
 
 async function generate_test_data(daoConfig: IDaoConfig, MYSQL_CONFIG: MYSQLConnectionConfig, db_instance_name: string) {
     const rootDatabase = FoodbzrDatasource.getInstance();
@@ -598,6 +598,38 @@ async function generate_test_data(daoConfig: IDaoConfig, MYSQL_CONFIG: MYSQLConn
             await (await new rootDatabase.update_t_order_lifecycle(daoConfig).fetch('order pickedup then order on its way', order.row_uuid)).asyncData();
             await (await new rootDatabase.update_t_order_lifecycle(daoConfig).fetch('canceled', order.row_uuid)).asyncData();
         }
+    })();
+
+    /** order status updated */
+
+    /** change the mobile number */
+    await (async () => {
+        const all_owner = await new rootDatabase.fetch_owner_all(daoConfig).fetch().asyncData();
+
+        /** update owner mobile */
+        await new rootDatabase.update_owner_mobile(daoConfig).fetch(all_owner[0].row_uuid, '9661173222').asyncData();
+
+        /** update the partner mobile */
+        const all_partners = await new rootDatabase.fetch_partner_all(daoConfig).fetch().asyncData();
+
+        await new rootDatabase.update_partner_mobile(daoConfig).fetch('9661173222', all_partners[0].row_uuid).asyncData();
+        await new rootDatabase.update_partner_mobile(daoConfig).fetch('9122229276', all_partners[1].row_uuid).asyncData();
+
+        /** update dboy mobile number */
+        const partner_1_kitchen = await new rootDatabase.fetch_kitchens_of_partner(daoConfig).fetch(all_partners[0].row_uuid, 'yes').asyncData();
+        const partner_2_kitchen = await new rootDatabase.fetch_kitchens_of_partner(daoConfig).fetch(all_partners[1].row_uuid, 'yes').asyncData();
+
+        const one_dboy = await new rootDatabase.fetch_dboy_of_kitchen(daoConfig).fetch(partner_1_kitchen[0].row_uuid).asyncData();
+        const one_dboy_1 = await new rootDatabase.fetch_dboy_of_kitchen(daoConfig).fetch(partner_2_kitchen[0].row_uuid).asyncData();
+
+        await new rootDatabase.update_dboy_mobile(daoConfig).fetch(one_dboy[0].row_uuid, '9661173222').asyncData();
+        await new rootDatabase.update_dboy_mobile(daoConfig).fetch(one_dboy_1[0].row_uuid, '9122229276').asyncData();
+
+        /** update user mobile */
+        const all_users = await new rootDatabase.fetch_user_all(daoConfig).fetch().asyncData();
+
+        await new rootDatabase.update_user_mobile(daoConfig).fetch('9661173222', all_users[0].row_uuid).asyncData();
+        await new rootDatabase.update_user_mobile(daoConfig).fetch('9122229276', all_users[1].row_uuid).asyncData();
     })();
 }
 

@@ -1,19 +1,20 @@
-import { AfterViewInit, Component, ElementRef, NgZone, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, NgZone, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { fetch_order_dboy_report, FoodbzrDatasource } from '@foodbzr/datasource';
 import { IGetOrder } from '@foodbzr/shared/types';
-import { DaoLife, daoConfig } from '@sculify/node-room-client';
-import { Chart } from 'chart.js';
 import { makeOrderStackedGraphData } from '@foodbzr/shared/util';
-import { PopoverController } from '@ionic/angular';
-import { DateRangeComponent } from '../components/date-range/date-range.component';
+import { Platform, PopoverController } from '@ionic/angular';
+import { daoConfig, DaoLife, NetworkManager } from '@sculify/node-room-client';
+import { Chart } from 'chart.js';
 import * as moment from 'moment';
+import { LoadingScreenService } from '../../../loading-screen.service';
+import { DateRangeComponent } from '../components/date-range/date-range.component';
 
 @Component({
     selector: 'foodbzr-order-report-page',
     templateUrl: './order-report-page.component.html',
     styleUrls: ['./order-report-page.component.scss'],
 })
-export class OrderReportPageComponent implements OnInit, AfterViewInit {
+export class OrderReportPageComponent implements OnInit, AfterViewInit, OnDestroy {
     @ViewChild('orderGraph', { static: true }) orderGraph: ElementRef<HTMLDivElement>;
 
     /** data */
@@ -35,7 +36,10 @@ export class OrderReportPageComponent implements OnInit, AfterViewInit {
     /** daos */
     fetch_order_dboy_report__: fetch_order_dboy_report;
 
-    constructor(private ngZone: NgZone, private popover: PopoverController) {
+    /** subscriptions */
+    public networkSubscription: any;
+
+    constructor(private ngZone: NgZone, private popover: PopoverController, private platform: Platform, private loading: LoadingScreenService) {
         this.daosLife = new DaoLife();
         this.dboy_row_uuid = localStorage.getItem('dboy_row_uuid');
         /** add the start date and end date */
@@ -45,24 +49,52 @@ export class OrderReportPageComponent implements OnInit, AfterViewInit {
 
     ngAfterViewInit() {}
 
+    ngOnDestroy() {
+        if (this.networkSubscription) {
+            this.networkSubscription.unsubscribe();
+        }
+        this.daosLife.softKill();
+    }
+
     ngOnInit() {
-        this.fetch_order_dboy_report__ = new this.database.fetch_order_dboy_report(daoConfig);
-        this.fetch_order_dboy_report__.observe(this.daosLife).subscribe((val) => {
-            this.ngZone.run(() => {
-                this.orders = val;
-                this.filterType = 'all';
-                this.filteredOrders = val;
-
-                /** render the graph */
-                const data = makeOrderStackedGraphData(this.start_date, this.end_date, val);
-                this.labels = data.labels;
-                this.delivered_data = data.delivered_orders_counts;
-                this.canceled_data = data.canceled_orders_counts;
-                this.renderGraph();
-            });
+        this.initScreen();
+        this.networkSubscription = NetworkManager.getInstance().reloadCtx.subscribe((val) => {
+            if (val) {
+                this.initScreen(false);
+            }
         });
+    }
 
-        this.fetch_order_dboy_report__.fetch(this.dboy_row_uuid, this.start_date, this.end_date).obsData();
+    public initScreen(can_show_loading = true) {
+        this.platform.ready().then(() => {
+            this.fetch_order_dboy_report__ = new this.database.fetch_order_dboy_report(daoConfig);
+            this.fetch_order_dboy_report__.observe(this.daosLife).subscribe((val) => {
+                if (this.loading.dailogRef.isConnected) {
+                    this.loading.dailogRef.dismiss();
+                }
+
+                this.ngZone.run(() => {
+                    this.orders = val;
+                    this.filterType = 'all';
+                    this.filteredOrders = val;
+
+                    /** render the graph */
+                    const data = makeOrderStackedGraphData(this.start_date, this.end_date, val);
+                    this.labels = data.labels;
+                    this.delivered_data = data.delivered_orders_counts;
+                    this.canceled_data = data.canceled_orders_counts;
+                    this.renderGraph();
+                });
+            });
+
+            if (can_show_loading) {
+                this.loading.showLoadingScreen().then(() => {
+                    this.fetch_order_dboy_report__.fetch(this.dboy_row_uuid, this.start_date, this.end_date).obsData();
+                });
+            } else {
+                this.fetch_order_dboy_report__.fetch(this.dboy_row_uuid, this.start_date, this.end_date).obsData();
+            }
+        });
     }
 
     /** render the graph  */
@@ -132,7 +164,9 @@ export class OrderReportPageComponent implements OnInit, AfterViewInit {
                 this.start_date = final_sql_start_date;
                 this.end_date = final_sql_end_date;
 
-                this.fetch_order_dboy_report__.fetch(this.dboy_row_uuid, this.start_date, this.end_date).obsData();
+                this.loading.showLoadingScreen().then(() => {
+                    this.fetch_order_dboy_report__.fetch(this.dboy_row_uuid, this.start_date, this.end_date).obsData();
+                });
             }
         }
     }

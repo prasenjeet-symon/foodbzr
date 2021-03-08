@@ -7,7 +7,7 @@ const routes: Routes = [
         loadChildren: () => import('../home/found-kitchen/found-kitchen.module').then((m) => m.FoundKitchenModule),
     },
     {
-        path: 'kitchen/:kitchen_row_uuid/:profile_picture/:partner_row_uuid/:name',
+        path: 'kitchen/:kitchen_row_uuid/:profile_picture/:partner_row_uuid/:name/:address',
         loadChildren: () => import('../home/kitchen/kitchen.module').then((m) => m.KitchenModule),
     },
     {

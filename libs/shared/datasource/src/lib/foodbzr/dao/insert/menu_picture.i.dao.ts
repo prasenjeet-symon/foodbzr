@@ -2,15 +2,15 @@
  * Add new picture multiple at at time
  */
 import { IModificationDaoStatus, IGetImageBBResponse } from '@foodbzr/shared/types';
-import { IDaoConfig, MIBaseDao, MIQuery, TBaseDao, TQuery } from '@sculify/node-room';
+import { BaseDao, IDaoConfig, MIBaseDao, MIQuery, Query, TBaseDao, TQuery } from '@sculify/node-room';
 import { UploadToImageBB } from '@foodbzr/shared/util';
 
-export class insert_multi_menu_picture extends MIBaseDao<IModificationDaoStatus> {
+export class insert_multi_menu_picture extends BaseDao<IModificationDaoStatus> {
     constructor(config: IDaoConfig) {
         super(config);
     }
 
-    @MIQuery(`
+    @Query(`
         INSERT INTO menu_picture
         (
             menu_row_uuid,

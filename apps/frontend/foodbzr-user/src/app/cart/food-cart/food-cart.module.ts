@@ -3,6 +3,7 @@ import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { IonicModule } from '@ionic/angular';
+import { LoadingScreenService } from '../../loading-screen.service';
 import { CookingInstructionComponent } from './components/cooking-instruction/cooking-instruction.component';
 import { FoodCartPageComponent } from './food-cart-page/food-cart-page.component';
 
@@ -18,6 +19,7 @@ import { FoodCartPageComponent } from './food-cart-page/food-cart-page.component
             },
         ]),
     ],
+    providers: [LoadingScreenService],
     entryComponents: [CookingInstructionComponent],
     declarations: [FoodCartPageComponent, CookingInstructionComponent],
 })

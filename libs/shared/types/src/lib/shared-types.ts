@@ -78,6 +78,7 @@ export interface IGetKitchen {
     date_created: string;
     date_updated: string;
     row_uuid: string;
+    address: string;
 }
 
 export interface IGetMenu {
@@ -386,6 +387,7 @@ export interface IGetDeliveryAddress {
     street: string;
     pincode: string;
     state: string;
+    city: string;
     country: string;
     latitude: number;
     longitude: number;
@@ -681,6 +683,7 @@ export interface IGetUserFavKitchen {
     country: string;
     latitude: string;
     longitude: string;
+    address: string;
 }
 
 export interface IGetImageBBResponse {
@@ -693,3 +696,21 @@ export interface IGetImageBBResponse {
 
 export type foodbzr_entity = 'owner' | 'partner' | 'dboy' | 'user';
 export const foodbzr_entity_values = ['owner', 'partner', 'dboy', 'user'];
+
+export interface IGetPushAddress {
+    entity: foodbzr_entity;
+    entity_row_uuid: string;
+    push_address: string;
+    date_created: string;
+    date_updated: string;
+    row_uuid: string;
+}
+
+export enum PUSH_MESSAGE_TYPE {
+    new_order = 'NEW ORDER RECEIVED',
+    order_canceled = 'ORDER CANCELED',
+    order_confirmed = 'ORDER CONFIRMED',
+    order_pickedup = 'ORDER PICKEDUP',
+    order_delivered = 'ORDER DELIVERED',
+    order_cooking = 'ORDER COOKING',
+}

@@ -3,11 +3,12 @@ import { ActivatedRoute } from '@angular/router';
 import { fetch_order_kitchen_report, FoodbzrDatasource } from '@foodbzr/datasource';
 import { IGetOrder } from '@foodbzr/shared/types';
 import { makeOrderMoneyStackedGraphData } from '@foodbzr/shared/util';
-import { PopoverController } from '@ionic/angular';
-import { daoConfig, DaoLife } from '@sculify/node-room-client';
+import { Platform, PopoverController } from '@ionic/angular';
+import { daoConfig, DaoLife, NetworkManager } from '@sculify/node-room-client';
 import { Chart } from 'chart.js';
 import * as moment from 'moment';
 import { Observable, Subscription } from 'rxjs';
+import { LoadingScreenService } from '../../../../loading-screen.service';
 import { SumPositiveNumberPipe } from '../../pipes/sum-positive-number.pipe';
 import { DateRangeComponent } from '../date-range/date-range.component';
 
@@ -45,7 +46,10 @@ export class MoneyReportComponent implements OnInit, OnDestroy {
     /** daos */
     fetch_order_kitchen_report__: fetch_order_kitchen_report;
 
-    constructor(private ngZone: NgZone, private activatedRoute: ActivatedRoute, private popover: PopoverController) {
+    /** subscriptions */
+    public networkSubscription: Subscription;
+
+    constructor(private ngZone: NgZone, private activatedRoute: ActivatedRoute, private popover: PopoverController, private loading: LoadingScreenService, private platform: Platform) {
         this.partner_row_uuid = localStorage.getItem('partner_row_uuid');
         this.daosLife = new DaoLife();
     }
@@ -59,22 +63,55 @@ export class MoneyReportComponent implements OnInit, OnDestroy {
         this.end_date = moment(new Date()).format('YYYY-MM-DD');
         this.start_date = moment(new Date()).subtract(3, 'months').format('YYYY-MM-DD');
 
-        this.fetch_order_kitchen_report__ = new this.database.fetch_order_kitchen_report(daoConfig);
-        this.fetch_order_kitchen_report__.observe(this.daosLife).subscribe((val) => {
-            this.ngZone.run(() => {
-                this.orders = val;
-                this.filterType = 'all';
-                this.filteredOrders = val;
-
-                /** render the graph */
-                const data = makeOrderMoneyStackedGraphData(this.start_date, this.end_date, val);
-                this.labels = data.labels;
-                this.delivered_data = data.delivered_orders_counts;
-                this.canceled_data = data.canceled_orders_counts;
-                this.renderGraph();
-            });
+        this.initScreen();
+        this.networkSubscription = NetworkManager.getInstance().reloadCtx.subscribe((val) => {
+            if (val) {
+                this.daosLife.softKill();
+                this.initScreen(false);
+            }
         });
-        this.fetch_order_kitchen_report__.fetch(this.kitchen_row_uuid, this.start_date, this.end_date).obsData();
+    }
+
+    ngOnDestroy() {
+        this.daosLife.softKill();
+        if (this.dateChangeObs$) {
+            this.dateChangeObs$.unsubscribe();
+        }
+        if (this.networkSubscription) {
+            this.networkSubscription.unsubscribe();
+        }
+    }
+
+    public initScreen(can_show_loading = true) {
+        this.platform.ready().then(() => {
+            this.fetch_order_kitchen_report__ = new this.database.fetch_order_kitchen_report(daoConfig);
+            this.fetch_order_kitchen_report__.observe(this.daosLife).subscribe((val) => {
+                this.ngZone.run(() => {
+                    this.orders = val;
+                    this.filterType = 'all';
+                    this.filteredOrders = val;
+
+                    /** render the graph */
+                    const data = makeOrderMoneyStackedGraphData(this.start_date, this.end_date, val);
+                    this.labels = data.labels;
+                    this.delivered_data = data.delivered_orders_counts;
+                    this.canceled_data = data.canceled_orders_counts;
+                    this.renderGraph();
+
+                    if (this.loading.dailogRef.isConnected) {
+                        this.loading.dailogRef.dismiss();
+                    }
+                });
+            });
+
+            if (can_show_loading) {
+                this.loading.showLoadingScreen().then(() => {
+                    this.fetch_order_kitchen_report__.fetch(this.kitchen_row_uuid, this.start_date, this.end_date).obsData();
+                });
+            } else {
+                this.fetch_order_kitchen_report__.fetch(this.kitchen_row_uuid, this.start_date, this.end_date).obsData();
+            }
+        });
     }
 
     /** render the graph  */
@@ -144,15 +181,10 @@ export class MoneyReportComponent implements OnInit, OnDestroy {
                 this.start_date = final_sql_start_date;
                 this.end_date = final_sql_end_date;
 
-                this.fetch_order_kitchen_report__.fetch(this.kitchen_row_uuid, this.start_date, this.end_date).obsData();
+                this.loading.showLoadingScreen().then(() => {
+                    this.fetch_order_kitchen_report__.fetch(this.kitchen_row_uuid, this.start_date, this.end_date).obsData();
+                });
             }
-        }
-    }
-
-    ngOnDestroy() {
-        this.daosLife.softKill();
-        if (this.dateChangeObs$) {
-            this.dateChangeObs$.unsubscribe();
         }
     }
 }

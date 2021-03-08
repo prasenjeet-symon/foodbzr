@@ -1,10 +1,11 @@
 import { Component, NgZone, OnInit } from '@angular/core';
-import { IGetKitchen } from '@foodbzr/shared/types';
-import { ModalController, PopoverController } from '@ionic/angular';
-import { CreateKitchenComponent } from '../components/create-kitchen/create-kitchen.component';
-import { UpdateKitchenComponent } from '../components/update-kitchen/update-kitchen.component';
 import { FoodbzrDatasource } from '@foodbzr/datasource';
+import { IGetKitchen } from '@foodbzr/shared/types';
+import { ModalController, Platform, PopoverController } from '@ionic/angular';
+import { LoadingScreenService } from '../../../loading-screen.service';
+import { CreateKitchenComponent } from '../components/create-kitchen/create-kitchen.component';
 import { KitchenMoreMenuComponent } from '../components/kitchen-more-menu/kitchen-more-menu.component';
+import { UpdateKitchenComponent } from '../components/update-kitchen/update-kitchen.component';
 
 @Component({
     selector: 'foodbzr-kitchen-page',
@@ -12,7 +13,6 @@ import { KitchenMoreMenuComponent } from '../components/kitchen-more-menu/kitche
     styleUrls: ['./kitchen-page.component.scss'],
 })
 export class KitchenPageComponent implements OnInit {
-    public partner_row_uuid: string;
     public database = {
         insert_kitchen: FoodbzrDatasource.getInstance().insert_kitchen,
         update_kitchen_offers: FoodbzrDatasource.getInstance().update_kitchen_offers,
@@ -20,8 +20,9 @@ export class KitchenPageComponent implements OnInit {
         update_kitchen: FoodbzrDatasource.getInstance().update_kitchen,
         update_kitchen_address: FoodbzrDatasource.getInstance().update_kitchen_address,
     };
+    public partner_row_uuid: string;
 
-    constructor(private modal: ModalController, private ngZone: NgZone, private popover: PopoverController) {
+    constructor(private modal: ModalController, private ngZone: NgZone, private popover: PopoverController, private platform: Platform, private loading: LoadingScreenService) {
         this.partner_row_uuid = localStorage.getItem('partner_row_uuid');
     }
 
@@ -31,7 +32,7 @@ export class KitchenPageComponent implements OnInit {
     public async showMoreMenu(ev: any) {
         const popoverRef = await this.popover.create({
             component: KitchenMoreMenuComponent,
-            event: ev
+            event: ev,
         });
 
         await popoverRef.present();

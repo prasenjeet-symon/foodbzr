@@ -125,8 +125,11 @@ export class ExecuteDaoOnline {
 
     /**
      * Dispose the connected connection to the database MYSQL
+     * Note that if given instance uuid hold single mysql connection , hence do not disconnect the connection
      */
-    public disconnect_mysql_connection = () => {};
+    public disconnect_mysql_connection = () => {
+        // this.connectionMYSQL.dispose_connection();
+    };
 
     private assignGetDaoMethod = () => {
         if (this.childDatabaseName) {
@@ -253,7 +256,7 @@ class ManageLiveData {
                          * For the update pupose
                          */
                         if (this.modification_done) {
-                            console.log('modification happens', this.included_table_names,this.query_type)
+                            console.log('modification happens', this.included_table_names, this.query_type);
                             this.modification_done(this.included_table_names);
                         }
 

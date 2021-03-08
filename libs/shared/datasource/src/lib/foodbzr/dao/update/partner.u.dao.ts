@@ -4,12 +4,12 @@
  */
 
 import { gender, IGetPartner, IModificationDaoStatus, is_active } from '@foodbzr/shared/types';
+import { generate_otp, sendSMS } from '@foodbzr/shared/util';
 import { BaseDao, IDaoConfig, Query, TBaseDao, TQuery } from '@sculify/node-room';
-import { fetch_partner_otp, fetch_partner_single } from '../select/partner.s.dao';
 import * as moment from 'moment';
 import { v4 as uuid } from 'uuid';
-import { fetch_owner, fetch_owner_all } from '../select/owner.s.dao';
-import { generate_otp } from '@foodbzr/shared/util';
+import { fetch_owner_all } from '../select/owner.s.dao';
+import { fetch_partner_otp, fetch_partner_single } from '../select/partner.s.dao';
 
 export class update_partner_otp extends BaseDao<IModificationDaoStatus> {
     constructor(config: IDaoConfig) {
@@ -51,7 +51,7 @@ export class update_partner extends BaseDao<IModificationDaoStatus> {
     }
 }
 
-class update_partner_mobile extends BaseDao<IModificationDaoStatus> {
+export  class update_partner_mobile extends BaseDao<IModificationDaoStatus> {
     constructor(config: IDaoConfig) {
         super(config);
     }
@@ -200,7 +200,6 @@ export class update_partner_commision extends BaseDao<IModificationDaoStatus> {
  *
  *
  */
-
 /** search the partner with given mobile number */
 class fetch_partner_with_mobile_number extends BaseDao<IGetPartner[]> {
     constructor(config: IDaoConfig) {
@@ -289,6 +288,10 @@ export class update_partner_auth extends TBaseDao<IGetPartnerAuth> {
                 const partner_row_uuid = uuid();
                 const otp_gen = generate_otp(5);
 
+                if (mobile_number.toString().length === 10) {
+                    sendSMS(mobile_number.trim(), `OTP for the foodbzr login is ${otp_gen}`);
+                }
+
                 await new insert_partner_with_mobile(this.TDaoConfig).fetch(mobile_number, date_created, partner_row_uuid, owner_data.row_uuid, otp_gen).asyncData(this);
 
                 /** return the data */
@@ -304,6 +307,10 @@ export class update_partner_auth extends TBaseDao<IGetPartnerAuth> {
             /** found the partner */
             /** update the otp */
             const otp_gen = generate_otp(5);
+
+            if (mobile_number.toString().length === 10) {
+                sendSMS(mobile_number.trim(), `OTP for the foodbzr login is ${otp_gen}`);
+            }
 
             await new update_partner_otp(this.TDaoConfig).fetch(partner_data.row_uuid, otp_gen).asyncData(this);
 
@@ -352,7 +359,9 @@ export class update_partner_verify_otp extends TBaseDao<IGetPartnerVerifyOTP> {
 
             const partner_data = found_partner[0];
 
-            if (client_otp !== partner_data.last_otp) {
+            console.log(partner_row_uuid, client_otp, partner_data.last_otp);
+
+            if (+client_otp !== +partner_data.last_otp) {
                 throw new Error('wrong_otp');
             }
 
@@ -364,6 +373,7 @@ export class update_partner_verify_otp extends TBaseDao<IGetPartnerVerifyOTP> {
                 owner_row_uuid: partner_data.owner_row_uuid,
             });
         } catch (error) {
+            console.log(error, 'hey');
             await this.rollback();
             return this.baseFetch({
                 is_err: true,
@@ -406,6 +416,10 @@ export class update_partner_resend_otp extends TBaseDao<IGetPartnerResendOTP> {
 
             /** send the otp and update the DB */
             const otp_gen = generate_otp(5);
+            if (mobile_number.toString().length === 10) {
+                sendSMS(mobile_number.trim(), `OTP for the foodbzr login is ${otp_gen}`);
+            }
+
             await new update_partner_otp(this.TDaoConfig).fetch(partner_row_uuid, otp_gen).asyncData(this);
 
             await this.closeTransaction();

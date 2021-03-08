@@ -1,4 +1,5 @@
 import { AfterContentInit, Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { addressFromForAddres } from '@foodbzr/shared/util';
 import { IonSearchbar, ModalController } from '@ionic/angular';
 declare let google: any;
 
@@ -13,6 +14,8 @@ export class SearchLocationComponent implements OnInit, AfterContentInit {
     public formatted_address: string;
     public lat: number;
     public lng: number;
+    public map: any;
+    public marker: any;
 
     constructor(private modal: ModalController) {}
 
@@ -23,7 +26,7 @@ export class SearchLocationComponent implements OnInit, AfterContentInit {
     }
 
     public async initMap() {
-        const map = new google.maps.Map(this.googleMap.nativeElement, {
+        this.map = new google.maps.Map(this.googleMap.nativeElement, {
             center: { lat: 25.5941, lng: 85.1376 },
             zoom: 13,
         });
@@ -31,7 +34,7 @@ export class SearchLocationComponent implements OnInit, AfterContentInit {
         const options = {
             componentRestrictions: { country: 'in' },
             fields: ['formatted_address', 'geometry', 'name', 'adr_address'],
-            origin: map.getCenter(),
+            origin: this.map.getCenter(),
             strictBounds: false,
             types: ['establishment'],
         };
@@ -40,7 +43,7 @@ export class SearchLocationComponent implements OnInit, AfterContentInit {
         const autocomplete = new google.maps.places.Autocomplete(nativeSearchBar, options);
 
         /** bind the autocomplete to map */
-        autocomplete.bindTo('bounds', map);
+        autocomplete.bindTo('bounds', this.map);
 
         /** create the info wind */
         const infowindowContent = document.getElementById('infowindow-content') as HTMLElement;
@@ -48,14 +51,14 @@ export class SearchLocationComponent implements OnInit, AfterContentInit {
         infowindow.setContent(infowindowContent);
 
         /** marker */
-        const marker = new google.maps.Marker({
-            map,
+        this.marker = new google.maps.Marker({
+            map: this.map,
             anchorPoint: new google.maps.Point(0, -29),
         });
 
         autocomplete.addListener('place_changed', () => {
             infowindow.close();
-            marker.setVisible(false);
+            this.marker.setVisible(false);
 
             const place = autocomplete.getPlace();
             this.formatted_address = place.formatted_address;
@@ -68,13 +71,13 @@ export class SearchLocationComponent implements OnInit, AfterContentInit {
             }
 
             if (place.geometry.viewport) {
-                map.fitBounds(place.geometry.viewport);
+                this.map.fitBounds(place.geometry.viewport);
             } else {
-                map.setCenter(place.geometry.location);
-                map.setZoom(17);
+                this.map.setCenter(place.geometry.location);
+                this.map.setZoom(17);
             }
-            marker.setPosition(place.geometry.location);
-            marker.setVisible(true);
+            this.marker.setPosition(place.geometry.location);
+            this.marker.setVisible(true);
             this.lat = place.geometry.location.lat();
             this.lng = place.geometry.location.lng();
 
@@ -83,7 +86,7 @@ export class SearchLocationComponent implements OnInit, AfterContentInit {
             infowindowContent.children['place-name'].textContent = place.name;
             infowindowContent.children['place-address'].textContent = place.formatted_address;
 
-            infowindow.open(map, marker);
+            infowindow.open(this.map, this.marker);
         });
     }
 
@@ -92,17 +95,8 @@ export class SearchLocationComponent implements OnInit, AfterContentInit {
         if (should_emit_data) {
             /** make proper address */
             this.formatted_address = this.formatted_address.trim();
-
-            const comma_separated = this.formatted_address.split(',');
-            const country = comma_separated[comma_separated.length - 1];
-            const pincode_state = comma_separated[comma_separated.length - 2].split(' ');
-            const pincode = pincode_state[pincode_state.length - 1];
-            const state = pincode_state[pincode_state.length - 2];
-
-            const city = comma_separated[comma_separated.length - 3];
-            const street = comma_separated.slice(0, comma_separated.length - 3).join(', ');
-
-            this.modal.dismiss({ country, pincode, state, city, street, lat: this.lat, lng: this.lng });
+            const add = addressFromForAddres(this.formatted_address, this.lat, this.lng);
+            this.modal.dismiss(add);
         } else {
             this.modal.dismiss(null);
         }

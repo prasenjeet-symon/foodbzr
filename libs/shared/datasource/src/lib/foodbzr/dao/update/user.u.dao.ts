@@ -3,7 +3,7 @@
  */
 
 import { gender, IGetUser, IModificationDaoStatus } from '@foodbzr/shared/types';
-import { generate_otp } from '@foodbzr/shared/util';
+import { generate_otp, sendSMS } from '@foodbzr/shared/util';
 import { BaseDao, IDaoConfig, Query, TBaseDao, TQuery } from '@sculify/node-room';
 import * as moment from 'moment';
 import { v4 as uuid } from 'uuid';
@@ -29,6 +29,24 @@ export class update_user extends BaseDao<IModificationDaoStatus> {
         WHERE row_uuid = :user_row_uuid:
     ;`)
     fetch(full_name: string, mobile_number: string, profile_picture: string, bio: string, gender: gender, birth_date: string, user_row_uuid: string) {
+        return this.baseFetch(this.DBData);
+    }
+}
+
+/** update user info */
+export class update_user_mobile extends BaseDao<IModificationDaoStatus> {
+    constructor(config: IDaoConfig) {
+        super(config);
+    }
+
+    @Query(`
+        UPDATE user 
+        SET
+        mobile_number = :mobile_number:
+
+        WHERE row_uuid = :user_row_uuid:
+    ;`)
+    fetch(mobile_number: string, user_row_uuid: string) {
         return this.baseFetch(this.DBData);
     }
 }
@@ -151,6 +169,11 @@ export class update_user_auth extends TBaseDao<IGetUserAuth> {
                 }
                 const owner_data = found_owner[0];
                 const otp_gen = generate_otp(5);
+
+                if (mobile_number.toString().length === 10) {
+                    sendSMS(mobile_number.trim(), `OTP for the foodbzr login is ${otp_gen}`);
+                }
+
                 await new insert_user_with_mobile(this.TDaoConfig).fetch(owner_data.row_uuid, mobile_number, otp_gen, date_created, user_row_uuid).asyncData(this);
 
                 await this.closeTransaction();
@@ -165,6 +188,10 @@ export class update_user_auth extends TBaseDao<IGetUserAuth> {
             const user_data = found_user[0];
 
             const gen_otp = generate_otp(5);
+            if (mobile_number.toString().length === 10) {
+                sendSMS(mobile_number.trim(), `OTP for the foodbzr login is ${gen_otp}`);
+            }
+
             await new update_user_otp(this.TDaoConfig).fetch(gen_otp, user_data.row_uuid).asyncData(this);
 
             await this.closeTransaction();
@@ -208,7 +235,7 @@ export class update_user_verify_otp extends TBaseDao<IGetUserAuthVerifyOTP> {
 
             const user_data = found_user[0];
 
-            if (user_data.last_otp !== client_otp) {
+            if (+user_data.last_otp !== +client_otp) {
                 throw new Error('wrong_otp');
             }
 
@@ -263,6 +290,10 @@ export class update_user_resend_otp extends TBaseDao<IGetUserAuthResendOTP> {
 
             /** update the otp */
             const otp_gen = generate_otp(5);
+            if (mobile_number.toString().length === 10) {
+                sendSMS(mobile_number.trim(), `OTP for the foodbzr login is ${otp_gen}`);
+            }
+
             await new update_user_otp(this.TDaoConfig).fetch(otp_gen, user_data.row_uuid).asyncData(this);
 
             await this.closeTransaction();

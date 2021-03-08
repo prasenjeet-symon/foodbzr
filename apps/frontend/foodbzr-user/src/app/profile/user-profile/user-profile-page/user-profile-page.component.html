@@ -11,9 +11,7 @@
             <ion-avatar><img [src]="userDetails.profile_picture" alt="" srcset="" /></ion-avatar>
         </div>
         <div>
-            <ion-text
-                ><h3>{{ userDetails.full_name }}</h3></ion-text
-            >
+            <h3>{{ userDetails.full_name }}</h3>
         </div>
         <div>
             <ion-text>+91 {{ userDetails.mobile_number }}</ion-text>
@@ -70,6 +68,23 @@
                 <h2>{{ userDetails.bio }}</h2>
                 <p>Bio</p>
             </ion-label>
+        </ion-item>
+    </ion-list>
+
+    <ion-list>
+        <ion-list-header>
+            <ion-label color="secondary"> Setting </ion-label>
+        </ion-list-header>
+
+        <ion-item lines="full">
+            <ion-icon slot="start" name="moon"></ion-icon>
+            <ion-label> Toggle Dark Theme </ion-label>
+            <ion-toggle id="themeToggle" slot="end"></ion-toggle>
+        </ion-item>
+
+        <ion-item lines="full" (click)="logOut()">
+            <ion-icon slot="start" name="log-out"></ion-icon>
+            <ion-label>Log out</ion-label>
         </ion-item>
     </ion-list>
 </ion-content>

@@ -41,5 +41,29 @@ export class MYSQLManager {
     public static getInstance = () => {
         return MYSQLManager.instance;
     };
+}
 
+/** nodejs module only */
+
+export class NodeJsModules {
+    private static instance: NodeJsModules;
+    public nodeModule: any;
+
+    private constructor(nodeModule: any) {
+        this.nodeModule = nodeModule;
+    }
+
+    public getModule(name: string) {
+        return this.nodeModule[name];
+    }
+
+    public static initInstance = (nodeModule: any) => {
+        if (!NodeJsModules.instance) {
+            NodeJsModules.instance = new NodeJsModules(nodeModule);
+        }
+    };
+
+    public static getInstance = () => {
+        return NodeJsModules.instance;
+    };
 }

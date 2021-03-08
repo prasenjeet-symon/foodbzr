@@ -1,12 +1,12 @@
-import { IGetOrder, IModificationDaoStatus, pay_status, pay_type } from '@foodbzr/shared/types';
+import { IGetOrder, IModificationDaoStatus, OrderMenu, pay_status, pay_type, PUSH_MESSAGE_TYPE } from '@foodbzr/shared/types';
+import { find_unique_items, get_initial_order_lifecycle, send_push_message } from '@foodbzr/shared/util';
 import { BaseDao, IDaoConfig, Query, TBaseDao, TQuery } from '@sculify/node-room';
-import { fetch_user_cart_for_checkout } from '../select/user_cart.s.dao';
-import { OrderMenu } from '@foodbzr/shared/types';
 import * as moment from 'moment';
 import { v4 as uuid } from 'uuid';
-import { get_initial_order_lifecycle } from '@foodbzr/shared/util';
-import { fetch_order_single } from '../select/order.s.dao';
 import { delete_user_cart } from '../delete/user_cart.d.dao';
+import { fetch_order_single } from '../select/order.s.dao';
+import { fetch_push_message_fcm_tokens } from '../select/push_message.s.dao';
+import { fetch_user_cart_for_checkout } from '../select/user_cart.s.dao';
 
 /**
  * Add new order
@@ -145,6 +145,50 @@ export class insert_order_take_order extends TBaseDao<IGetOrder[]> {
             /** del the user cart */
             for (const cart_item of found_user_cart.orders) {
                 await new delete_user_cart(this.TDaoConfig).fetch(cart_item.user_cart_row_uuid).asyncData(this);
+            }
+
+            /** send the push message */
+            /**
+             * Send the push to user
+             */
+            const userPushInfo = await new fetch_push_message_fcm_tokens(this.TDaoConfig).fetch('user', user_row_uuid).asyncData(this);
+            if (userPushInfo.length !== 0) {
+                const heading = `Order received`;
+                const body = `Order with order id #${order_row_uuid} received by us. Thankyou for choosing us.`;
+                const data = {
+                    order_row_uuid: order_row_uuid,
+                    type: PUSH_MESSAGE_TYPE.new_order,
+                    kitchen_row_uuid: kitchen_row_uuid,
+                    user_row_uuid: user_row_uuid,
+                };
+                send_push_message(
+                    heading,
+                    body,
+                    'https://img.freepik.com/free-vector/people-ordering-food-cafe-online_74855-5913.jpg?size=626&ext=jpg',
+                    data,
+                    find_unique_items(userPushInfo, 'push_address').map((p) => p.push_address)
+                );
+            }
+
+            /** send the push message to kitchens owner */
+            const partner_row_uuid = found_user_cart.kitchen.kitchen_partner_row_uuid;
+            const partnerPush = await new fetch_push_message_fcm_tokens(this.TDaoConfig).fetch('partner', partner_row_uuid).asyncData(this);
+            if (partnerPush.length !== 0) {
+                const heading = `Order received`;
+                const body = `New order with order id #${order_row_uuid} received by us.`;
+                const data = {
+                    order_row_uuid: order_row_uuid,
+                    type: PUSH_MESSAGE_TYPE.new_order,
+                    kitchen_row_uuid: kitchen_row_uuid,
+                    user_row_uuid: user_row_uuid,
+                };
+                send_push_message(
+                    heading,
+                    body,
+                    'https://img.freepik.com/free-vector/people-ordering-food-cafe-online_74855-5913.jpg?size=626&ext=jpg',
+                    data,
+                    find_unique_items(partnerPush, 'push_address').map((p) => p.push_address)
+                );
             }
 
             await this.closeTransaction();

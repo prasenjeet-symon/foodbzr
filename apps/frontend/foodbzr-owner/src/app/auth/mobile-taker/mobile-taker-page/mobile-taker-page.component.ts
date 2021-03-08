@@ -1,8 +1,10 @@
 import { Component, NgZone, OnInit } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Router } from '@angular/router';
 import { FoodbzrDatasource } from '@foodbzr/datasource';
-import { ToastController, ViewWillEnter } from '@ionic/angular';
+import { is_pure_number } from '@foodbzr/shared/util';
+import { Platform, ToastController, ViewWillEnter } from '@ionic/angular';
 import { daoConfig, DaoLife } from '@sculify/node-room-client';
+import { LoadingScreenService } from '../../../loading-screen.service';
 
 @Component({
     selector: 'foodbzr-mobile-taker-page',
@@ -18,7 +20,7 @@ export class MobileTakerPageComponent implements OnInit, ViewWillEnter {
     public mobile_number: string;
     public can_click_next_button = true;
 
-    constructor(private toast: ToastController, private router: Router, private activatedRoute: ActivatedRoute, private ngZone: NgZone) {}
+    constructor(private toast: ToastController, private router: Router, private ngZone: NgZone, private platform: Platform, private loading: LoadingScreenService) {}
 
     ngOnInit() {}
 
@@ -30,38 +32,37 @@ export class MobileTakerPageComponent implements OnInit, ViewWillEnter {
 
     /** request otp */
     public async requestOtp() {
+        /** hide the button that click */
         this.can_click_next_button = false;
 
-        // if (this.mobile_number.toString().length !== 10 || !is_pure_number(this.mobile_number)) {
-        //     this.printToastMessage('Wrong mobile number');
-        //     return;
-        // }
+        if (this.mobile_number.toString().length !== 10 || !is_pure_number(this.mobile_number)) {
+            this.printToastMessage('Wrong mobile number');
+            return;
+        }
 
-        const daoLife = new DaoLife();
-        const update_owner_auth__ = new this.database.update_owner_auth(daoConfig);
-        /**
-         *
-         *
-         */
-        update_owner_auth__.observe(daoLife).subscribe((val) => {
-            const data = val;
-            if (data.is_err) {
-                this.can_click_next_button = true;
-                this.printToastMessage(data.error);
-                return;
-            }
+        this.platform.ready().then(() => {
+            this.loading.showLoadingScreen().then(async () => {
+                const daoLife = new DaoLife();
+                const update_owner_auth__ = new this.database.update_owner_auth(daoConfig);
+                update_owner_auth__.observe(daoLife).subscribe((val) => {
+                    if (this.loading.dailogRef.isConnected) {
+                        this.loading.dailogRef.dismiss();
+                    }
 
-            this.can_click_next_button = true;
-            /**  nav to otp screen */
-            this.navOtpScreen(data.owner_row_uuid, this.mobile_number);
+                    if (val.is_err) {
+                        this.can_click_next_button = true;
+                        this.printToastMessage(val.error);
+                        return;
+                    }
+
+                    this.can_click_next_button = true;
+                    /**  nav to otp screen */
+                    this.navOtpScreen(val.owner_row_uuid, this.mobile_number);
+                });
+                (await update_owner_auth__.fetch(this.mobile_number)).obsData();
+                daoLife.softKill();
+            });
         });
-        /**
-         *
-         *
-         */
-        (await update_owner_auth__.fetch(this.mobile_number)).obsData();
-
-        daoLife.softKill();
     }
 
     /** print the toast message */

@@ -19,10 +19,12 @@
 
     <ion-list>
         <!-- add new address -->
-        <ion-item class="add_new_address" (click)="chooseAddress()">
+        <ion-item class="add_new_address">
             <ion-icon slot="start" name="location"> </ion-icon>
             <ion-label> <h2>Add new address</h2> </ion-label>
-            <ion-button slot="end"> <ion-icon name="add"></ion-icon> </ion-button>
+
+            <ion-button (click)="getCurrentPosition()" slot="end"> <ion-icon name="location"></ion-icon> </ion-button>
+            <ion-button (click)="chooseAddress()" slot="end"> <ion-icon name="add"></ion-icon> </ion-button>
         </ion-item>
 
         <ion-item (click)="addressSelected(address)" [disabled]="address.is_active === 'yes' ? false : true" *ngFor="let address of allAddress; trackBy: tracker">
@@ -37,7 +39,7 @@
     </ion-list>
 
     <ion-fab vertical="bottom" horizontal="end" slot="fixed">
-        <ion-fab-button (click)="goToPayMode()" color="secondary">
+        <ion-fab-button *ngIf="selectedAddress" (click)="goToPayMode()" color="secondary">
             <ion-icon name="arrow-forward-circle"></ion-icon>
         </ion-fab-button>
     </ion-fab>

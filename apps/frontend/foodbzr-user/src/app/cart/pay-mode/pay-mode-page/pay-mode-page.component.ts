@@ -1,10 +1,11 @@
-import { Component, NgZone, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { ModalController } from '@ionic/angular';
-import { OrderDoneComponent } from '../components/order-done/order-done.component';
-import { insert_order_take_order, FoodbzrDatasource } from '@foodbzr/datasource';
-import { daoConfig, DaoLife } from '@sculify/node-room-client';
+import { FoodbzrDatasource } from '@foodbzr/datasource';
 import { IGetOrder } from '@foodbzr/shared/types';
+import { ModalController, Platform } from '@ionic/angular';
+import { daoConfig, DaoLife } from '@sculify/node-room-client';
+import { LoadingScreenService } from '../../../loading-screen.service';
+import { OrderDoneComponent } from '../components/order-done/order-done.component';
 
 @Component({
     selector: 'foodbzr-pay-mode-page',
@@ -13,8 +14,7 @@ import { IGetOrder } from '@foodbzr/shared/types';
 })
 export class PayModePageComponent implements OnInit {
     /** data */
-    public selectedPayMode: 'COD' = 'COD';
-    public isSelected: boolean;
+    public selectedPayMode: 'COD';
     public kitchen_row_uuid: string;
     public delivery_address_row_uuid: string;
     public user_row_uuid: string;
@@ -23,19 +23,27 @@ export class PayModePageComponent implements OnInit {
         insert_order_take_order: FoodbzrDatasource.getInstance().insert_order_take_order,
     };
 
-    constructor(private modal: ModalController, private ngZone: NgZone, private activatedRoute: ActivatedRoute, private router: Router) {
+    constructor(
+        private platform: Platform,
+        private loadingScreen: LoadingScreenService,
+        private modal: ModalController,
+        private activatedRoute: ActivatedRoute,
+        private router: Router
+    ) {
         this.user_row_uuid = localStorage.getItem('user_row_uuid');
     }
 
     ngOnInit() {
-        this.ngZone.run(() => {
-            this.activatedRoute.paramMap.subscribe((val) => {
-                if (val.has('kitchen_row_uuid') && val.has('delivery_address_row_uuid')) {
-                    this.delivery_address_row_uuid = val.get('delivery_address_row_uuid');
-                    this.kitchen_row_uuid = val.get('kitchen_row_uuid');
-                }
-            });
+        this.activatedRoute.paramMap.subscribe((val) => {
+            if (val.has('kitchen_row_uuid') && val.has('delivery_address_row_uuid')) {
+                this.delivery_address_row_uuid = val.get('delivery_address_row_uuid');
+                this.kitchen_row_uuid = val.get('kitchen_row_uuid');
+            }
         });
+    }
+
+    public payModeSelecting(mode: any) {
+        this.selectedPayMode = mode;
     }
 
     async orderDone(order: IGetOrder) {
@@ -49,21 +57,29 @@ export class PayModePageComponent implements OnInit {
 
         await dailogRef.present();
 
-        dailogRef.onWillDismiss().then(() => {
-            this.router.navigate(['tabs', 'tab2'], { replaceUrl: true });
-        });
+        await dailogRef.onWillDismiss();
+        this.router.navigate(['tabs', 'tab2'], { replaceUrl: true });
     }
 
     async makeNewOrder() {
-        const daoLife = new DaoLife();
+        this.platform.ready().then(() => {
+            this.loadingScreen.showLoadingScreen().then(async (ref) => {
+                const daoLife = new DaoLife();
+                const insert_order_take_order = new this.database.insert_order_take_order(daoConfig);
+                insert_order_take_order.observe(daoLife).subscribe((val) => {
+                    if (ref.isConnected) {
+                        ref.dismiss();
+                    }
 
-        const insert_order_take_order = new this.database.insert_order_take_order(daoConfig);
-        insert_order_take_order.observe(daoLife).subscribe((val) => {
-            if (val.length !== 0) {
-                this.orderDone(val[0]);
-            }
+                    if (val.length !== 0) {
+                        this.orderDone(val[0]);
+                    }
+                });
+
+                (await insert_order_take_order.fetch(this.user_row_uuid, this.kitchen_row_uuid, this.selectedPayMode, this.delivery_address_row_uuid)).obsData();
+
+                daoLife.softKill();
+            });
         });
-        (await insert_order_take_order.fetch(this.user_row_uuid, this.kitchen_row_uuid, this.selectedPayMode, this.delivery_address_row_uuid)).obsData();
-        daoLife.softKill();
     }
 }

@@ -1,8 +1,9 @@
 import { Component, Input, NgZone, OnDestroy, OnInit } from '@angular/core';
 import { delete_menu_review, fetch_menu_reviews_of_menu, insert_menu_review, update_menu_review } from '@foodbzr/datasource';
 import { databaseDao, IGetMenuReview } from '@foodbzr/shared/types';
-import { ModalController } from '@ionic/angular';
-import { DaoLife, daoConfig } from '@sculify/node-room-client';
+import { ModalController, Platform } from '@ionic/angular';
+import { daoConfig, DaoLife, NetworkManager } from '@sculify/node-room-client';
+import { LoadingScreenService } from '../../../../loading-screen.service';
 import { AddCommentComponent } from '../add-comment/add-comment.component';
 import { UpdateCommentComponent } from '../update-comment/update-comment.component';
 
@@ -32,24 +33,53 @@ export class CommentsComponent implements OnInit, OnDestroy {
     /** daos */
     fetch_menu_reviews_of_menu__: fetch_menu_reviews_of_menu;
 
-    constructor(private ngZone: NgZone, private modal: ModalController, private modal_1: ModalController) {
+    /** subscriptions */
+    public networkSubscription: any;
+
+    constructor(private ngZone: NgZone, private modal: ModalController, private modal_1: ModalController, private platform: Platform, private loading: LoadingScreenService) {
         this.user_row_uuid = localStorage.getItem('user_row_uuid');
         this.daosLife = new DaoLife();
     }
 
     ngOnInit() {
-        this.fetch_menu_reviews_of_menu__ = new this.database.fetch_menu_reviews_of_menu(daoConfig);
-        this.fetch_menu_reviews_of_menu__.observe(this.daosLife).subscribe((val) => {
-            this.ngZone.run(() => {
-                this.comments = val;
-                this.changeCommnets(this.option_value);
-            });
+        this.initScreen();
+        this.networkSubscription = NetworkManager.getInstance().reloadCtx.subscribe((val) => {
+            if (val) {
+                this.daosLife.softKill();
+                this.initScreen(false);
+            }
         });
-        this.fetch_menu_reviews_of_menu__.fetch(this.menu_row_uuid).obsData();
+    }
+
+    public initScreen(can_show_loading = true) {
+        this.platform.ready().then(() => {
+            this.fetch_menu_reviews_of_menu__ = new this.database.fetch_menu_reviews_of_menu(daoConfig);
+            this.fetch_menu_reviews_of_menu__.observe(this.daosLife).subscribe((val) => {
+                this.ngZone.run(() => {
+                    if (this.loading.dailogRef.isConnected) {
+                        this.loading.dailogRef.dismiss();
+                    }
+
+                    this.comments = val;
+                    this.changeCommnets(this.option_value);
+                });
+            });
+
+            if (can_show_loading) {
+                this.loading.showLoadingScreen().then(() => {
+                    this.fetch_menu_reviews_of_menu__.fetch(this.menu_row_uuid).obsData();
+                });
+            } else {
+                this.fetch_menu_reviews_of_menu__.fetch(this.menu_row_uuid).obsData();
+            }
+        });
     }
 
     ngOnDestroy() {
         this.daosLife.softKill();
+        if (this.networkSubscription) {
+            this.networkSubscription.unsubscribe();
+        }
     }
 
     /** tracker */
@@ -64,11 +94,19 @@ export class CommentsComponent implements OnInit, OnDestroy {
 
     /** delete comment */
     public deleteComment(comment: IGetMenuReview) {
-        const daoLife = new DaoLife();
-        const delete_menu_review = new this.database.delete_menu_review(daoConfig);
-        delete_menu_review.observe(daoLife).subscribe((val) => console.log('deleted the menu revi'));
-        delete_menu_review.fetch('no', comment.row_uuid).obsData();
-        daoLife.softKill();
+        this.platform.ready().then(() => {
+            this.loading.showLoadingScreen().then(() => {
+                const daoLife = new DaoLife();
+                const delete_menu_review = new this.database.delete_menu_review(daoConfig);
+                delete_menu_review.observe(daoLife).subscribe((val) => {
+                    if (this.loading.dailogRef.isConnected) {
+                        this.loading.dailogRef.dismiss();
+                    }
+                });
+                delete_menu_review.fetch('no', comment.row_uuid).obsData();
+                daoLife.softKill();
+            });
+        });
     }
 
     /** comments options changing */

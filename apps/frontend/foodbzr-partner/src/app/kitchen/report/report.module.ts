@@ -8,6 +8,7 @@ import { OrderReportComponent } from './components/order-report/order-report.com
 import { SumPositiveNumberPipe } from './pipes/sum-positive-number.pipe';
 import { DateRangeComponent } from './components/date-range/date-range.component';
 import { MoneyReportComponent } from './components/money-report/money-report.component';
+import { LoadingScreenService } from '../../loading-screen.service';
 
 @NgModule({
     imports: [
@@ -21,6 +22,7 @@ import { MoneyReportComponent } from './components/money-report/money-report.com
             },
         ]),
     ],
+    providers: [LoadingScreenService],
     entryComponents: [DateRangeComponent],
     declarations: [ReportPageComponent, OrderReportComponent, SumPositiveNumberPipe, DateRangeComponent, MoneyReportComponent],
 })

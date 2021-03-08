@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { FcmService } from '../../../fcm.service';
 
 @Component({
     selector: 'foodbzr-order-manager-page',
@@ -6,7 +7,9 @@ import { Component, OnInit } from '@angular/core';
     templateUrl: './order-manager-page.component.html',
 })
 export class OrderManagerPageComponent implements OnInit {
-    constructor() {}
+    constructor(private fcm: FcmService) {
+        this.fcm.initPush();
+    }
 
     ngOnInit() {}
 }

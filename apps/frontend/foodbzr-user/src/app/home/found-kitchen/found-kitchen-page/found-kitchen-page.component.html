@@ -1,6 +1,6 @@
 <ion-header [translucent]="true">
     <ion-toolbar>
-        <ion-item (click)="changeLocation()" slot="start">
+        <ion-item lines="full" (click)="changeLocation()" slot="start">
             <ion-icon slot="start" name="location"></ion-icon>
             <ion-label>
                 <h4>{{ deliveryLocation }}</h4>
@@ -43,7 +43,7 @@
                 >
             </ion-list-header>
 
-            <ion-item *ngFor="let kitchen of foundKitchens">
+            <ion-item lines="full" *ngFor="let kitchen of foundKitchens">
                 <ion-card (click)="navKitchenPage(kitchen)">
                     <img [src]="kitchen.profile_picture" />
                     <ion-card-header>

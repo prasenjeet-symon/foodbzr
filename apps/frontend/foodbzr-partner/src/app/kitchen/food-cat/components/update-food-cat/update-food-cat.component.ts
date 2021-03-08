@@ -1,9 +1,10 @@
 import { Component, Input, OnDestroy, OnInit } from '@angular/core';
-import { databaseDao, IGetFoodCategory } from '@foodbzr/shared/types';
 import { update_food_category } from '@foodbzr/datasource';
+import { databaseDao, IGetFoodCategory } from '@foodbzr/shared/types';
+import { ModalController, Platform } from '@ionic/angular';
 import { daoConfig, DaoLife } from '@sculify/node-room-client';
-import { ModalController } from '@ionic/angular';
 import * as moment from 'moment';
+import { LoadingScreenService } from '../../../../loading-screen.service';
 
 @Component({
     selector: 'foodbzr-update-food-cat',
@@ -28,7 +29,7 @@ export class UpdateFoodCatComponent implements OnInit, OnDestroy {
     public can_show_save_genral = false;
     public can_show_save_offer = false;
 
-    constructor(private modal: ModalController) {}
+    constructor(private modal: ModalController, private platform: Platform, private loading: LoadingScreenService) {}
 
     ngOnInit() {
         /** set the initial value */
@@ -55,11 +56,22 @@ export class UpdateFoodCatComponent implements OnInit, OnDestroy {
         const offer_end_datetime = `${moment(new Date(this.offer_end_date)).format('YYYY-MM-DD')} ${moment(new Date(this.offer_end_time)).format('HH:mm:ss')}`;
 
         /** update the item */
-        const daoLife = new DaoLife();
-        const update_food_category__ = new this.database.update_food_category(daoConfig);
-        update_food_category__.observe(daoLife).subscribe((val) => console.log('updated the food category'));
-        update_food_category__.fetch(this.food_cat_name, null, this.offer_percentage, offer_start_datetime, offer_end_datetime, this.food_cat.row_uuid).obsData();
-        daoLife.softKill();
+        this.platform.ready().then(() => {
+            const daoLife = new DaoLife();
+            const update_food_category__ = new this.database.update_food_category(daoConfig);
+            update_food_category__.observe(daoLife).subscribe((val) => {
+                if (this.loading.dailogRef.isConnected) {
+                    this.loading.dailogRef.dismiss();
+                }
+            });
+
+            this.loading.showLoadingScreen().then(() => {
+                update_food_category__.fetch(this.food_cat_name, null, this.offer_percentage, offer_start_datetime, offer_end_datetime, this.food_cat.row_uuid).obsData();
+            });
+
+            daoLife.softKill();
+        });
+
         this.can_show_save_offer = false;
     }
 
@@ -73,18 +85,27 @@ export class UpdateFoodCatComponent implements OnInit, OnDestroy {
         const offer_start_datetime = `${moment(new Date(this.offer_start_date)).format('YYYY-MM-DD')} ${moment(new Date(this.offer_start_time)).format('HH:mm:ss')}`;
         const offer_end_datetime = `${moment(new Date(this.offer_end_date)).format('YYYY-MM-DD')} ${moment(new Date(this.offer_end_time)).format('HH:mm:ss')}`;
 
-        /** update the item */
-        const daoLife = new DaoLife();
-        const update_food_category__ = new this.database.update_food_category(daoConfig);
-        update_food_category__.observe(daoLife).subscribe((val) => console.log('updated the food category'));
-        update_food_category__.fetch(this.food_cat_name, null, this.offer_percentage, offer_start_datetime, offer_end_datetime, this.food_cat.row_uuid).obsData();
-        daoLife.softKill();
+        this.platform.ready().then(() => {
+            /** update the item */
+            const daoLife = new DaoLife();
+            const update_food_category__ = new this.database.update_food_category(daoConfig);
+            update_food_category__.observe(daoLife).subscribe((val) => {
+                if (this.loading.dailogRef.isConnected) {
+                    this.loading.dailogRef.dismiss();
+                }
+            });
+
+            this.loading.showLoadingScreen().then(() => {
+                update_food_category__.fetch(this.food_cat_name, null, this.offer_percentage, offer_start_datetime, offer_end_datetime, this.food_cat.row_uuid).obsData();
+            });
+
+            daoLife.softKill();
+        });
 
         this.can_show_save_genral = false;
     }
 
     generalFocus() {
-        
         this.can_show_save_genral = true;
     }
 

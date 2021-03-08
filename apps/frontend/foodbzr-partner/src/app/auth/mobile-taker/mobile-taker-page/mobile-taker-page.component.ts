@@ -1,8 +1,9 @@
 import { Component, NgZone, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { FoodbzrDatasource } from '@foodbzr/datasource';
-import { ToastController, ViewWillEnter } from '@ionic/angular';
+import { Platform, ToastController, ViewWillEnter } from '@ionic/angular';
 import { daoConfig, DaoLife } from '@sculify/node-room-client';
+import { LoadingScreenService } from '../../../loading-screen.service';
 
 @Component({
     selector: 'foodbzr-mobile-taker-page',
@@ -18,7 +19,14 @@ export class MobileTakerPageComponent implements OnInit, ViewWillEnter {
     public mobile_number: string;
     public can_click_next_button = true;
 
-    constructor(private toast: ToastController, private router: Router, private activatedRoute: ActivatedRoute, private ngZone: NgZone) {}
+    constructor(
+        private toast: ToastController,
+        private router: Router,
+        private activatedRoute: ActivatedRoute,
+        private ngZone: NgZone,
+        private platform: Platform,
+        private loading: LoadingScreenService
+    ) {}
 
     ngOnInit() {}
 
@@ -37,32 +45,28 @@ export class MobileTakerPageComponent implements OnInit, ViewWillEnter {
         //     return;
         // }
 
-        const daoLife = new DaoLife();
-        const update_partner_auth__ = new this.database.update_partner_auth(daoConfig);
-        /**
-         *
-         *
-         */
-        update_partner_auth__.observe(daoLife).subscribe((val) => {
-            const data = val;
-            if (data.is_err) {
+        this.platform.ready().then(() => {
+            const daoLife = new DaoLife();
+            const update_partner_auth__ = new this.database.update_partner_auth(daoConfig);
+            update_partner_auth__.observe(daoLife).subscribe((val) => {
+                if (this.loading.dailogRef.isConnected) {
+                    this.loading.dailogRef.dismiss();
+                }
                 this.can_click_next_button = true;
-                this.printToastMessage(data.error);
-                return;
-            }
+                const data = val;
+                if (data.is_err) {
+                    this.printToastMessage(data.error);
+                    return;
+                }
+                /**  nav to otp screen */
+                this.navOtpScreen(data.partner_row_uuid, this.mobile_number);
+            });
 
-            this.can_click_next_button = true;
-            
-            /**  nav to otp screen */
-            this.navOtpScreen(data.partner_row_uuid, this.mobile_number);
+            this.loading.showLoadingScreen().then(async () => {
+                (await update_partner_auth__.fetch(this.mobile_number)).obsData();
+            });
+            daoLife.softKill();
         });
-        /**
-         *
-         *
-         */
-        (await update_partner_auth__.fetch(this.mobile_number)).obsData();
-
-        daoLife.softKill();
     }
 
     /** print the toast message */

@@ -4,6 +4,7 @@ import { FoodbzrDatasource } from '@foodbzr/datasource';
 import { is_pure_number } from '@foodbzr/shared/util';
 import { ToastController } from '@ionic/angular';
 import { daoConfig, DaoLife } from '@sculify/node-room-client';
+import { LoadingScreenService } from '../../../loading-screen.service';
 
 @Component({
     selector: 'foodbzr-otp-taker-page',
@@ -22,16 +23,14 @@ export class OtpTakerPageComponent implements OnInit, OnDestroy {
     public can_click_verify_button = true;
     public can_click_resend_button = false;
 
-    constructor(private activatedRoute: ActivatedRoute, private router: Router, private ngZone: NgZone, private toast: ToastController) {}
+    constructor(private activatedRoute: ActivatedRoute, private router: Router, private ngZone: NgZone, private toast: ToastController, private loading: LoadingScreenService) {}
 
     ngOnInit() {
-        this.ngZone.run(() => {
-            this.activatedRoute.paramMap.subscribe((param) => {
-                if (param.has('dboy_row_uuid') && param.has('mobile_number')) {
-                    this.dboy_row_uuid = param.get('dboy_row_uuid');
-                    this.mobile_number = param.get('mobile_number');
-                }
-            });
+        this.activatedRoute.paramMap.subscribe((param) => {
+            if (param.has('dboy_row_uuid') && param.has('mobile_number')) {
+                this.dboy_row_uuid = param.get('dboy_row_uuid');
+                this.mobile_number = param.get('mobile_number');
+            }
         });
 
         this.resendOTPCounter();
@@ -61,42 +60,54 @@ export class OtpTakerPageComponent implements OnInit, OnDestroy {
             return;
         }
 
-        const daoLife = new DaoLife();
-        const update_dboy_verify_otp__ = new this.database.update_dboy_verify_otp(daoConfig);
-        update_dboy_verify_otp__.observe(daoLife).subscribe((val) => {
-            if (val.is_err) {
-                /** print the message */
-                this.can_click_verify_button = true;
-                this.printToastMessage(val.error);
-                return;
-            }
+        this.loading.showLoadingScreen().then(async () => {
+            const daoLife = new DaoLife();
+            const update_dboy_verify_otp__ = new this.database.update_dboy_verify_otp(daoConfig);
+            update_dboy_verify_otp__.observe(daoLife).subscribe((val) => {
+                if (this.loading.dailogRef.isConnected) {
+                    this.loading.dailogRef.dismiss();
+                }
 
-            /** set the local storage */
-            localStorage.setItem('dboy_row_uuid', val.dboy_row_uuid);
-            /** nav to main tab */
-            this.can_click_verify_button = true;
-            this.navToMainPage();
+                if (val.is_err) {
+                    /** print the message */
+                    this.can_click_verify_button = true;
+                    this.printToastMessage(val.error);
+                    return;
+                }
+
+                /** set the local storage */
+                localStorage.setItem('dboy_row_uuid', val.dboy_row_uuid);
+                /** nav to main tab */
+                this.can_click_verify_button = true;
+                this.navToMainPage();
+            });
+            (await update_dboy_verify_otp__.fetch(this.dboy_row_uuid, otp_user)).obsData();
+            daoLife.softKill();
         });
-        (await update_dboy_verify_otp__.fetch(this.dboy_row_uuid, otp_user)).obsData();
-        daoLife.softKill();
     }
 
     /** resend the otp */
     public async resendOTP() {
         this.resendOTPCounter();
         /** resend the otp */
-        const daoLife = new DaoLife();
-        const update_dboy_resend_otp__ = new this.database.update_dboy_resend_otp(daoConfig);
-        update_dboy_resend_otp__.observe(daoLife).subscribe((val) => {
-            if (val.is_err) {
-                this.printToastMessage(val.error);
-                return;
-            }
+        this.loading.showLoadingScreen().then(async () => {
+            const daoLife = new DaoLife();
+            const update_dboy_resend_otp__ = new this.database.update_dboy_resend_otp(daoConfig);
+            update_dboy_resend_otp__.observe(daoLife).subscribe((val) => {
+                if (this.loading.dailogRef.isConnected) {
+                    this.loading.dailogRef.dismiss();
+                }
 
-            this.printToastMessage(`OTP sent to your mobile +91 ${this.mobile_number}`);
+                if (val.is_err) {
+                    this.printToastMessage(val.error);
+                    return;
+                }
+
+                this.printToastMessage(`OTP sent to your mobile +91 ${this.mobile_number}`);
+            });
+            (await update_dboy_resend_otp__.fetch(this.mobile_number, this.dboy_row_uuid)).obsData();
+            daoLife.softKill();
         });
-        (await update_dboy_resend_otp__.fetch(this.mobile_number, this.dboy_row_uuid)).obsData();
-        daoLife.softKill();
     }
 
     /** resend otp counter */

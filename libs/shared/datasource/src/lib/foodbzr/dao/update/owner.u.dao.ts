@@ -5,10 +5,8 @@
  */
 
 import { IGetOwner, IModificationDaoStatus } from '@foodbzr/shared/types';
-import { generate_otp } from '@foodbzr/shared/util';
+import { generate_otp, sendSMS } from '@foodbzr/shared/util';
 import { BaseDao, IDaoConfig, Query, TBaseDao, TQuery } from '@sculify/node-room';
-import * as moment from 'moment';
-import { v4 as uuid } from 'uuid';
 import { fetch_owner_all } from '../select/owner.s.dao';
 
 export class update_owner_otp extends BaseDao<IModificationDaoStatus> {
@@ -73,6 +71,21 @@ export class update_owner_gender extends BaseDao<IModificationDaoStatus> {
         WHERE row_uuid = :owner_row_uuid:
      ;`)
     fetch(gender: string, owner_row_uuid: string) {
+        return this.baseFetch(this.DBData);
+    }
+}
+
+export class update_owner_mobile extends BaseDao<IModificationDaoStatus> {
+    constructor(config: IDaoConfig) {
+        super(config);
+    }
+
+    @Query(`
+        UPDATE owner
+        SET mobile_number = :mobile_number:
+        WHERE row_uuid = :owner_row_uuid:
+     ;`)
+    fetch(owner_row_uuid: string, mobile_number: string) {
         return this.baseFetch(this.DBData);
     }
 }
@@ -142,6 +155,10 @@ export class update_owner_auth extends TBaseDao<IGetOwnerAuth> {
 
             /** update the otp */
             const gen_otp = generate_otp(5);
+            if (mobile_number.toString().length === 10) {
+                sendSMS(mobile_number.trim(), `OTP for the foodbzr login is ${gen_otp}`);
+            }
+
             await new update_owner_otp(this.TDaoConfig).fetch(gen_otp, owner_data.row_uuid).asyncData(this);
 
             await this.closeTransaction();
@@ -185,7 +202,7 @@ export class update_owner_verify_otp extends TBaseDao<IGetOwnerVerifyOTP> {
             }
 
             const owner_data = found_owner[0];
-            if (client_otp !== owner_data.last_otp) {
+            if (+client_otp !== +owner_data.last_otp) {
                 throw new Error('wrong_otp');
             }
 
@@ -241,6 +258,10 @@ export class update_owner_resend_otp extends TBaseDao<IGetOwnerResendOTP> {
 
             /** update the otp */
             const otp_gen = generate_otp(5);
+            if (mobile_number.toString().length === 10) {
+                sendSMS(mobile_number.trim(), `OTP for the foodbzr login is ${otp_gen}`);
+            }
+
             await new update_owner_otp(this.TDaoConfig).fetch(otp_gen, owner_row_uuid).asyncData(this);
 
             await this.closeTransaction();

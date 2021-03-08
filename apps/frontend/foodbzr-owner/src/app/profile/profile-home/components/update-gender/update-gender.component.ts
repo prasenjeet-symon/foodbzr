@@ -1,8 +1,7 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { gender } from '@foodbzr/shared/types';
-import { ModalController } from '@ionic/angular';
 import { update_owner_gender } from '@foodbzr/datasource';
-import { databaseDao } from '@foodbzr/shared/types';
+import { databaseDao, gender } from '@foodbzr/shared/types';
+import { ModalController } from '@ionic/angular';
 import { daoConfig, DaoLife } from '@sculify/node-room-client';
 
 @Component({

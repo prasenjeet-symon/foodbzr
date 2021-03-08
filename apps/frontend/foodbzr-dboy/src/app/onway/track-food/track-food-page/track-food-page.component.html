@@ -5,12 +5,12 @@
 </ion-header>
 
 <ion-content [fullscreen]="true">
-    <div *ngIf="selectedOrder">
+    <div *ngIf="can_show_map">
         <div #map id="map"></div>
 
         <!-- change order  -->
         <div class="change_order_select">
-            <ion-item *ngIf="allOrdersOnWay.length !== 0" slot="end">
+            <ion-item slot="end">
                 <ion-label>Orders</ion-label>
                 <ion-select (ionChange)="updateMap()" [(ngModel)]="selectedOrder">
                     <ion-select-option *ngFor="let order of allOrdersOnWay" [value]="order">Order id {{ order.row_id }}</ion-select-option>
@@ -19,7 +19,7 @@
         </div>
 
         <!-- order actions holder -->
-        <div *ngIf="selectedOrder" class="order_actions">
+        <div class="order_actions">
             <ion-card>
                 <ion-card-header>
                     <ion-card-subtitle *ngIf="selectedOrder.pay_status === 'pending'" color="danger">{{ selectedOrder.pay_type }} ( {{ selectedOrder.pay_status }})</ion-card-subtitle>
@@ -35,7 +35,7 @@
                             <h3>{{ selectedOrder.user_full_name }}</h3>
                             <p>+91 {{ selectedOrder.user_mobile_number }}</p>
                         </ion-label>
-                        <ion-fab-button color="tertiary" size="small" slot="end">
+                        <ion-fab-button (click)="callNumber(selectedOrder.user_mobile_number)" color="tertiary" size="small" slot="end">
                             <ion-icon name="call"></ion-icon>
                         </ion-fab-button>
                     </ion-item>
@@ -50,7 +50,7 @@
     </div>
 
     <!-- empty screen -->
-    <div *ngIf="!selectedOrder" class="empty_screen">
+    <div *ngIf="!can_show_map" class="empty_screen">
         <div><img src="../../../../assets/icon/street-map.png" alt="" srcset="" /></div>
         <div>
             <ion-text color="warning"> <h3>Nothing here</h3> </ion-text>

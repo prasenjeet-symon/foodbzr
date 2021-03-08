@@ -13,4 +13,10 @@
     font-size: 22px;
     text-align: center;
     outline-width: 0px;
+    background-color: var(--ion-card-background);
+    color: var(--ion-text-color);
+}
+
+.cart_item {
+    background-color: var(--ion-card-background);
 }

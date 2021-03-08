@@ -1,10 +1,11 @@
 import { Component, Input, NgZone, OnInit } from '@angular/core';
-import { ModalController } from '@ionic/angular';
-import { databaseDao } from '@foodbzr/shared/types';
 import { insert_kitchen } from '@foodbzr/datasource';
+import { databaseDao } from '@foodbzr/shared/types';
+import { ModalController, Platform } from '@ionic/angular';
 import { daoConfig, DaoLife } from '@sculify/node-room-client';
 import * as moment from 'moment';
 import { v4 as uuid } from 'uuid';
+import { LoadingScreenService } from '../../../../loading-screen.service';
 import { SearchLocationComponent } from '../search-location/search-location.component';
 
 @Component({
@@ -39,7 +40,7 @@ export class CreateKitchenComponent implements OnInit {
     public latitude: number;
     public longitude: number;
 
-    constructor(private modal: ModalController, private ngZone: NgZone, private location_modal: ModalController) {}
+    constructor(private modal: ModalController, private ngZone: NgZone, private location_modal: ModalController, private platform: Platform, private loading: LoadingScreenService) {}
 
     ngOnInit() {}
 
@@ -96,32 +97,38 @@ export class CreateKitchenComponent implements OnInit {
         const kitchen_user_id = this.kitchen_user_id ? this.kitchen_user_id : '1234';
         const kitchen_password = this.kitchen_password ? this.kitchen_password : '1234';
 
-        const daoLife = new DaoLife();
-        const insert_kitchen__ = new this.database.insert_kitchen(daoConfig);
-        insert_kitchen__.observe(daoLife).subscribe((val) => console.log('inserted the new kitchen'));
-        insert_kitchen__
-            .fetch(
-                this.partner_row_uuid,
-                kitchen_user_id,
-                kitchen_password,
-                kitchen_name,
-                kitchen_profile_picture,
-                kitchen_radius,
-                this.latitude,
-                this.longitude,
-                opening_time,
-                closing_time,
-                open_week_list,
-                this.street,
-                this.pincode,
-                this.city,
-                this.state,
-                this.country,
-                date_created,
-                uuid()
-            )
-            .obsData();
-        daoLife.softKill();
-        this.closeModal();
+        this.platform.ready().then(() => {
+            const daoLife = new DaoLife();
+            const insert_kitchen__ = new this.database.insert_kitchen(daoConfig);
+            insert_kitchen__.observe(daoLife).subscribe((val) => {
+                if (this.loading.dailogRef.isConnected) {
+                    this.loading.dailogRef.dismiss();
+                }
+                this.closeModal();
+            });
+            insert_kitchen__
+                .fetch(
+                    this.partner_row_uuid,
+                    kitchen_user_id,
+                    kitchen_password,
+                    kitchen_name,
+                    kitchen_profile_picture,
+                    kitchen_radius,
+                    this.latitude,
+                    this.longitude,
+                    opening_time,
+                    closing_time,
+                    open_week_list,
+                    this.street,
+                    this.pincode,
+                    this.city,
+                    this.state,
+                    this.country,
+                    date_created,
+                    uuid()
+                )
+                .obsData();
+            daoLife.softKill();
+        });
     }
 }

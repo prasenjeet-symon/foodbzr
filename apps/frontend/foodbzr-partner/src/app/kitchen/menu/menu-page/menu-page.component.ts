@@ -1,10 +1,11 @@
 import { Component, NgZone, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { ModalController } from '@ionic/angular';
-import { CreateMenuComponent } from '../components/create-menu/create-menu.component';
-import { UpdateMenuComponent } from '../components/update-menu/update-menu.component';
 import { FoodbzrDatasource } from '@foodbzr/datasource';
 import { IGetMenu } from '@foodbzr/shared/types';
+import { ModalController, Platform } from '@ionic/angular';
+import { LoadingScreenService } from '../../../loading-screen.service';
+import { CreateMenuComponent } from '../components/create-menu/create-menu.component';
+import { UpdateMenuComponent } from '../components/update-menu/update-menu.component';
 
 @Component({
     selector: 'foodbzr-menu-page',
@@ -25,18 +26,16 @@ export class MenuPageComponent implements OnInit {
         update_menu_offers: FoodbzrDatasource.getInstance().update_menu_offers,
     };
 
-    constructor(private modal: ModalController, private activatedRoute: ActivatedRoute, private ngZone: NgZone) {
+    constructor(private modal: ModalController, private activatedRoute: ActivatedRoute, private ngZone: NgZone, private platform: Platform, private loading: LoadingScreenService) {
         this.partner_row_uuid = localStorage.getItem('partner_row_uuid');
     }
 
     ngOnInit() {
-        this.ngZone.run(() => {
-            this.activatedRoute.paramMap.subscribe((param) => {
-                if (param.has('kitchen_row_uuid') && param.has('profile_picture')) {
-                    this.kitchen_row_uuid = param.get('kitchen_row_uuid');
-                    this.kitchen_profile_picture = param.get('profile_picture');
-                }
-            });
+        this.activatedRoute.paramMap.subscribe((param) => {
+            if (param.has('kitchen_row_uuid') && param.has('profile_picture')) {
+                this.kitchen_row_uuid = param.get('kitchen_row_uuid');
+                this.kitchen_profile_picture = param.get('profile_picture');
+            }
         });
     }
 

@@ -19,7 +19,7 @@
 
     <ion-grid>
         <ion-row>
-            <ion-col *ngFor="let pic of menuPics" size="4">
+            <ion-col (click)="showPic(pic.pic_uri)" *ngFor="let pic of menuPics" size="4">
                 <img class="menu_pic" [src]="pic.thumbnail_uri" alt="" srcset="" />
             </ion-col>
         </ion-row>

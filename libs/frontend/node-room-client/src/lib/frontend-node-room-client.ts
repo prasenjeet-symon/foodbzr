@@ -1,2 +1,2 @@
-export { ClientDatabase, daoConfig, DaoLife } from './client-database';
+export { ClientDatabase, daoConfig, DaoLife, NetworkManager } from './client-database';
 export { DaoManager } from './dao-manager';

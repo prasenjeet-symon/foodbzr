@@ -17,17 +17,17 @@
 
     <!-- list all pay mode -->
     <ion-list class="pay_list">
-        <ion-item>
+        <ion-item (click)="selectedPayMode === 'COD' ? payModeSelecting(null) : payModeSelecting('COD')">
             <ion-avatar slot="start"> <img src="../../../../assets/icon/cash-on-delivery.png" alt="" srcset="" /> </ion-avatar>
             <ion-label>
                 <h2>COD</h2>
                 <p>Pay at the time of delivery</p>
             </ion-label>
-            <ion-checkbox [(ngModel)]="isSelected" [checked]="selectedPayMode === 'COD'" slot="end"></ion-checkbox>
+            <ion-checkbox [checked]="selectedPayMode === 'COD'" slot="end"></ion-checkbox>
         </ion-item>
     </ion-list>
 
-    <ion-fab *ngIf="isSelected" vertical="bottom" horizontal="end" slot="fixed">
+    <ion-fab *ngIf="selectedPayMode" vertical="bottom" horizontal="end" slot="fixed">
         <ion-fab-button (click)="makeNewOrder()" color="secondary">
             <ion-icon name="checkmark-done"></ion-icon>
         </ion-fab-button>

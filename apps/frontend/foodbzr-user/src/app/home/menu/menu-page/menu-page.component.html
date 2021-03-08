@@ -10,18 +10,14 @@
 <ion-content [fullscreen]="true">
     <!-- list all the menus to choose from -->
     <ion-list *ngIf="kitchenMenus.length !== 0">
-        <ion-list-header>
-            <ion-label color="secondary"> Menus </ion-label>
-        </ion-list-header>
-
         <ion-item-sliding *ngFor="let menu of kitchenMenus; trackBy: tracker">
             <ion-item>
                 <ion-avatar slot="start">
                     <img [src]="menu.menu_profile_picture" [alt]="menu.menu_menu_name" srcset="" />
                 </ion-avatar>
-                <ion-label>
+                <ion-label class="ion-text-wrap">
                     <h2>{{ menu.menu_menu_name }}</h2>
-                    <h3>&#x20B9; {{ menu.final_price }}</h3>
+                    <h5>&#x20B9; {{ menu.final_price }}</h5>
                     <p>
                         <del> &#x20B9; {{ menu.menu_variant_price_per_unit }}</del>
                     </p>
@@ -45,7 +41,7 @@
     </ion-list>
 
     <!-- empty menus -->
-    <div *ngIf="kitchenMenus.length === 0" class="empty_screen">
+    <div *ngIf="can_show_empty_screen" class="empty_screen">
         <div><img src="../../../../assets/icon/box.png" alt="" srcset="" /></div>
         <div>
             <ion-text color="danger"> <h2>Nothing here</h2> </ion-text>

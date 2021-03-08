@@ -1,7 +1,8 @@
 <ion-list>
     <!-- section name -->
     <ion-list-header>
-        <ion-label color="secondary">Delivery Boys</ion-label>
+        <ion-label slot="start" color="secondary">Delivery Boys</ion-label>
+        <ion-button (click)="initDboy()" slot="end" color="secondary"> Add </ion-button>
     </ion-list-header>
 
     <ion-item-sliding *ngFor="let dboy of allDboys">
@@ -11,7 +12,7 @@
                 <ion-icon name="call"></ion-icon>
             </ion-chip>
             <ion-avatar slot="start">
-                <img [src]="dboy.profile_picture" [alt]="dboy.full_name" srcset="" />
+                <img [src]="dboy.profile_picture ? dboy.profile_picture : '../../../../../assets/images/no_pic.png'" [alt]="dboy.full_name" srcset="" />
             </ion-avatar>
             <ion-label>
                 <h3>{{ dboy.full_name }}</h3>

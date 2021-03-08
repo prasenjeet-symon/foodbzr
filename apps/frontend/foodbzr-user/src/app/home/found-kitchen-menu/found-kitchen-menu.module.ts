@@ -3,6 +3,7 @@ import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { IonicModule } from '@ionic/angular';
+import { LoadingScreenService } from '../../loading-screen.service';
 import { FoundKitchenMenuPageComponent } from './found-kitchen-menu-page/found-kitchen-menu-page.component';
 
 @NgModule({
@@ -17,6 +18,7 @@ import { FoundKitchenMenuPageComponent } from './found-kitchen-menu-page/found-k
             },
         ]),
     ],
+    providers: [LoadingScreenService],
     declarations: [FoundKitchenMenuPageComponent],
 })
 export class FoundKitchenMenuModule {}

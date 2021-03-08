@@ -1,10 +1,9 @@
-import { Component, Input, NgZone, OnInit } from '@angular/core';
-import { IGetMenuSizeVariant } from '@foodbzr/shared/types';
-import { ModalController } from '@ionic/angular';
+import { Component, Input, NgZone, OnDestroy, OnInit } from '@angular/core';
 import { update_menu_size_variant, update_menu_size_variant_offer } from '@foodbzr/datasource';
-import { DaoLife, daoConfig } from '@sculify/node-room-client';
-import { databaseDao } from '@foodbzr/shared/types';
+import { databaseDao, IGetMenuSizeVariant } from '@foodbzr/shared/types';
 import { is_pure_number } from '@foodbzr/shared/util';
+import { ModalController } from '@ionic/angular';
+import { daoConfig, DaoLife } from '@sculify/node-room-client';
 import * as moment from 'moment';
 
 @Component({
@@ -12,7 +11,7 @@ import * as moment from 'moment';
     templateUrl: './update-menu-variant.component.html',
     styleUrls: ['./update-menu-variant.component.scss'],
 })
-export class UpdateMenuVariantComponent implements OnInit {
+export class UpdateMenuVariantComponent implements OnInit, OnDestroy {
     @Input() partner_row_uuid: string;
     @Input() menu_row_uuid: string;
     @Input() menu_variant: IGetMenuSizeVariant;
@@ -52,6 +51,8 @@ export class UpdateMenuVariantComponent implements OnInit {
         this.offer_end_date = moment(new Date(this.menu_variant.offer_end_datetime)).toLocaleString();
         this.offer_end_time = moment(new Date(this.menu_variant.offer_end_datetime)).toLocaleString();
     }
+
+    ngOnDestroy() {}
 
     /** close the modal */
     closeModal() {

@@ -1,1 +1,6 @@
-{"name":"frontend-foodbzr-owner","devDependencies":{"@capacitor/cli":"^2.4.5"}}
+{
+  "name": "frontend-foodbzr-owner",
+  "devDependencies": {
+    "@capacitor/cli": "^2.4.5"
+  }
+}

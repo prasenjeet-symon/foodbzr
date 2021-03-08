@@ -67,4 +67,21 @@
             </ion-item>
         </ion-list>
     </div>
+
+    <ion-list>
+        <ion-list-header>
+            <ion-label color="secondary"> Setting </ion-label>
+        </ion-list-header>
+
+        <ion-item lines="full">
+            <ion-icon slot="start" name="moon"></ion-icon>
+            <ion-label> Toggle Dark Theme </ion-label>
+            <ion-toggle id="themeToggle" slot="end"></ion-toggle>
+        </ion-item>
+
+        <ion-item lines="full" (click)="logOut()">
+            <ion-icon slot="start" name="log-out"></ion-icon>
+            <ion-label>Log out</ion-label>
+        </ion-item>
+    </ion-list>
 </ion-content>

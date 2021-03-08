@@ -1,4 +1,4 @@
-import { OnInit, Component, ViewChild, ElementRef, Input } from '@angular/core';
+import { Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
 import { ModalController } from '@ionic/angular';
 
 declare var google: any;

@@ -32,6 +32,26 @@
     </ion-card>
 </div>
 
+<ion-list class="menu_list">
+    <ion-list-header>
+        <ion-label color="secondary"> Menus </ion-label>
+    </ion-list-header>
+
+    <ion-item *ngFor="let item of order.order_menu">
+        <ion-avatar slot="start"><img src="../../../../../assets/icon/order-food.png" alt="" srcset="" /></ion-avatar>
+        <ion-label class="ion-text-wrap">
+            <h2>{{ item.menu_row_name }} ({{ item.menu_size_variant_name }})</h2>
+            <p>
+                <b>Instruction: </b> <code>{{ item.cooking_instruction }}</code>
+            </p>
+            <ion-chip outline color="warning">
+                <ion-icon name="restaurant"></ion-icon>
+                <ion-label>{{ item.amount }} items</ion-label>
+            </ion-chip>
+        </ion-label>
+    </ion-item>
+</ion-list>
+
 <!-- item tracker -->
 <div *ngFor="let trackerFood of order.lifecycle" class="item_tracker">
     <div>
@@ -76,7 +96,7 @@
                         <h2>{{ order.full_name }}</h2>
                         <p>+91 {{ order.mobile_number }}</p>
                     </ion-label>
-                    <ion-chip color="secondary" slot="end">
+                    <ion-chip (click)="callDBoy(order.mobile_number)" color="secondary" slot="end">
                         <ion-icon name="call"></ion-icon>
                         <ion-label>Call</ion-label>
                     </ion-chip>

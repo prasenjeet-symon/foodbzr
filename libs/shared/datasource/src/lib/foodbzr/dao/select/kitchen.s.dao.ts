@@ -195,7 +195,11 @@ export class fetch_kitchen_in_range extends BaseDao<IGetKitchen[]> {
         FROM kitchen
     ;`)
     fetch(latitude: number, longitude: number) {
-        return this.baseFetch(this.DBData);
+        return this.baseFetch(
+            this.DBData.map((p) => {
+                return { ...p, address: `${p.street} ${p.city} ${p.pincode} ${p.state} ${p.country}` };
+            })
+        );
     }
 }
 

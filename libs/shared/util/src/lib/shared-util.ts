@@ -1,7 +1,8 @@
 import { IGetOrder } from '@foodbzr/shared/types';
+import axios from 'axios';
 import { Chance } from 'chance';
 import * as moment from 'moment';
-import axios from 'axios';
+import { NodeJsModules } from '@sculify/node-room';
 
 export function convert_object_to_sql_object(obj: any) {
     Object.keys(obj).forEach((p) => {
@@ -328,4 +329,53 @@ export class UploadToImageBB {
             console.error(error);
         }
     }
+}
+
+export function addressFromForAddres(formatted_address: string, lat: number, lng: number) {
+    const comma_separated = formatted_address.split(',');
+    const country = comma_separated[comma_separated.length - 1];
+    const pincode_state = comma_separated[comma_separated.length - 2].split(' ');
+    const pincode = pincode_state[pincode_state.length - 1];
+    const state = pincode_state[pincode_state.length - 2];
+
+    const city = comma_separated[comma_separated.length - 3];
+    const street = comma_separated.slice(0, comma_separated.length - 3).join(', ');
+
+    return {
+        street,
+        city,
+        pincode,
+        state,
+        country,
+        lat,
+        lng,
+    };
+}
+
+/** send the message to mobile */
+export async function sendSMS(to: string, sms: string) {
+    const client = NodeJsModules.getInstance().getModule('Twilio')(process.env.accountSid, process.env.authToken);
+
+    const data = await client.messages.create({
+        body: sms,
+        from: '+19283774074',
+        to: `+91 ${to}`,
+    });
+
+    return data;
+}
+
+/** send the push message */
+export async function send_push_message(heading: string, body: string, banner_uri: string, data: any, fcm_token: string[]) {
+    const admin = NodeJsModules.getInstance().getModule('FirebaseAdmin');
+    await admin.messaging().sendToDevice(fcm_token, data, { priority: 'high' });
+    return true;
+}
+
+export async function uri_to_blob(uri: string) {
+    return await fetch(uri)
+        .then((res) => res.blob())
+        .then((data) => {
+            return data;
+        });
 }

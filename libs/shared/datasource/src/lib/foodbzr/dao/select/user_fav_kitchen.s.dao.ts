@@ -33,7 +33,11 @@ export class fetch_user_fav_kitchen extends BaseDao<IGetUserFavKitchen[]> {
         WHERE usr_kit.user_row_uuid = :user_row_uuid:
     ;`)
     fetch(user_row_uuid: string) {
-        return this.baseFetch(this.DBData);
+        return this.baseFetch(
+            this.DBData.map((p) => {
+                return { ...p, address: `${p.street}, ${p.city}, ${p.pincode}, ${p.state}, ${p.country}` };
+            })
+        );
     }
 }
 

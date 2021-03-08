@@ -3,6 +3,7 @@ import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { IonicModule } from '@ionic/angular';
+import { LoadingScreenService } from '../../loading-screen.service';
 import { KitchenPageComponent } from './kitchen-page/kitchen-page.component';
 
 @NgModule({
@@ -17,6 +18,7 @@ import { KitchenPageComponent } from './kitchen-page/kitchen-page.component';
             },
         ]),
     ],
+    providers: [LoadingScreenService],
     declarations: [KitchenPageComponent],
     exports: [],
 })

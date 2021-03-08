@@ -1,9 +1,10 @@
 import { Component, NgZone, OnInit } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
+import { Router } from '@angular/router';
 import { FoodbzrDatasource } from '@foodbzr/datasource';
 import { is_pure_number } from '@foodbzr/shared/util';
-import { ToastController, ViewWillEnter } from '@ionic/angular';
+import { Platform, ToastController, ViewWillEnter } from '@ionic/angular';
 import { daoConfig, DaoLife } from '@sculify/node-room-client';
+import { LoadingScreenService } from '../../../loading-screen.service';
 
 @Component({
     selector: 'foodbzr-mobile-taker-page',
@@ -17,52 +18,49 @@ export class MobileTakerPageComponent implements OnInit, ViewWillEnter {
 
     /** data */
     public mobile_number: string;
-    public can_click_next_button = true;
 
-    constructor(private toast: ToastController, private router: Router, private activatedRoute: ActivatedRoute, private ngZone: NgZone) {}
+    constructor(private toast: ToastController, private router: Router, private ngZone: NgZone, private loading: LoadingScreenService, private platform: Platform) {}
 
-    ngOnInit() {}
-
-    ionViewWillEnter() {
+    ngOnInit() {
         if (this.isAuth()) {
             this.navToMainScreen();
         }
     }
 
+    ionViewWillEnter() {}
+
     /** request otp */
     public async requestOtp() {
-        this.can_click_next_button = false;
+        if (this.mobile_number.toString().length !== 10 || !is_pure_number(this.mobile_number)) {
+            this.printToastMessage('Wrong mobile number');
+            return;
+        }
 
-        // if (this.mobile_number.toString().length !== 10 || !is_pure_number(this.mobile_number)) {
-        //     this.printToastMessage('Wrong mobile number');
-        //     return;
-        // }
+        this.platform.ready().then(() => {
+            const daoLife = new DaoLife();
+            const update_user_auth = new this.database.update_user_auth(daoConfig);
+            update_user_auth.observe(daoLife).subscribe((val) => {
+                if (this.loading.dailogRef.isConnected) {
+                    this.loading.dailogRef.dismiss();
+                }
 
-        const daoLife = new DaoLife();
-        const update_user_auth = new this.database.update_user_auth(daoConfig);
-        /**
-         *
-         *
-         */
-        update_user_auth.observe(daoLife).subscribe((val) => {
-            const data = val;
-            if (data.is_err) {
-                this.can_click_next_button = true;
-                this.printToastMessage(data.error);
-                return;
-            }
+                const data = val;
 
-            this.can_click_next_button = true;
-            /**  nav to otp screen */
-            this.navOtpScreen(data.user_row_uuid, this.mobile_number);
+                if (data.is_err) {
+                    this.printToastMessage(data.error);
+                    return;
+                }
+
+                /**  nav to otp screen */
+                this.navOtpScreen(data.user_row_uuid, this.mobile_number);
+            });
+
+            this.loading.showLoadingScreen().then(async () => {
+                (await update_user_auth.fetch(this.mobile_number)).obsData();
+            });
+
+            daoLife.softKill();
         });
-        /**
-         *
-         *
-         */
-        (await update_user_auth.fetch(this.mobile_number)).obsData();
-
-        daoLife.softKill();
     }
 
     /** print the toast message */
@@ -70,7 +68,7 @@ export class MobileTakerPageComponent implements OnInit, ViewWillEnter {
         const toastRef = await this.toast.create({
             translucent: true,
             header: message,
-            duration: 1000,
+            duration: 5000,
         });
 
         await toastRef.present();

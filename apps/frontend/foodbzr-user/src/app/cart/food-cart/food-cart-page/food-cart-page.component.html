@@ -12,14 +12,14 @@
         </ion-toolbar>
     </ion-header>
 
-    <ion-card *ngFor="let kitchen of allCheckoutItems">
+    <ion-card *ngFor="let kitchen of allCheckoutItems; trackBy: tracker">
         <img [src]="kitchen.kitchen.profile_picture" />
         <ion-card-header>
             <ion-card-subtitle>{{ kitchen.kitchen.address }}</ion-card-subtitle>
             <ion-card-title>{{ kitchen.kitchen.kitchen_name }}</ion-card-title>
         </ion-card-header>
         <ion-card-content>
-            <ion-item-sliding *ngFor="let item of kitchen.orders">
+            <ion-item-sliding *ngFor="let item of kitchen.orders; trackBy: orderTracker">
                 <ion-item>
                     <div class="food_item">
                         <div>
@@ -86,11 +86,11 @@
     </ion-card>
 
     <!-- empty card -->
-    <div *ngIf="allCheckoutItems.length === 0" class="empty_screen">
+    <div *ngIf="can_show_empty_screen" class="empty_screen">
         <div><img src="../../../../assets/icon/box.png" alt="" srcset="" /></div>
         <div>
             <ion-text color="warning"> <h3>Empty Cart</h3> </ion-text>
-            <p>Once you will add some food for checkout that is appear here</p>
+            <p>Once you will add some food for checkout that will appear here</p>
         </div>
     </div>
 </ion-content>

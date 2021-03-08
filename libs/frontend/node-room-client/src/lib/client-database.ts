@@ -1,11 +1,12 @@
-import { DaoManager } from './dao-manager';
-import { dao_status, rootDatabase } from './main_interface';
-import * as io from 'socket.io-client';
-import { SyncOfflineTables } from './sync-manager';
-import { v4 as uuid } from 'uuid';
 import { ISQLConnection } from '@sculify/indexed-sql';
 import { LiveData } from '@sculify/live-data';
 import { IDaoConfig } from '@sculify/node-room';
+import { BehaviorSubject, Subject } from 'rxjs';
+import * as io from 'socket.io-client';
+import { v4 as uuid } from 'uuid';
+import { DaoManager } from './dao-manager';
+import { dao_status, rootDatabase } from './main_interface';
+import { SyncOfflineTables } from './sync-manager';
 
 export const daoConfig: IDaoConfig = {
     runType: 'normal',
@@ -36,6 +37,7 @@ export class ClientDatabase {
         private default_dao_running_status: dao_status = 'offline'
     ) {
         this.make_connection(); // make the socket connection
+        localStorage.setItem('domain_name', socket_uri);
 
         this.database = database.getInstance(); // get the database instance from the database class
         this.database_name = this.database.db_name;
@@ -52,10 +54,13 @@ export class ClientDatabase {
         }
     }
 
-    public initInstance = async () => {
-        if (this.default_dao_running_status === 'offline') {
-            await this.create_all_offline_tables();
+    public initInstance = async (can_create_offline_tables = true) => {
+        if (can_create_offline_tables) {
+            if (this.default_dao_running_status === 'offline') {
+                await this.create_all_offline_tables();
+            }
         }
+
         this.socket.emit(`${this.root_database_name}`, {
             socket_connection_uuid: this.socket_id,
             instance_uuid: this.instance_uuid,
@@ -117,6 +122,32 @@ export class ClientDatabase {
             localStorage.setItem('entity_created', 'yes');
         }
     };
+
+    /** reconnect */
+    public async reConect() {
+        if (this.socket.disconnected) {
+            this.socket.open();
+            this.listen_for_response();
+            await this.initInstance(false);
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public disconnectConnection() {
+        if (this.socket) {
+            this.socket.close();
+        }
+    }
+
+    public isConnected() {
+        if (this.socket.connected) {
+            return true;
+        } else {
+            return false;
+        }
+    }
 }
 
 /**
@@ -140,4 +171,46 @@ export class DaoLife {
             (daoConfig.clientQuery as DaoManager).mark_for_delete(live_data.uuid);
         });
     }
+}
+
+export class NetworkManager {
+    private static instance: NetworkManager;
+
+    private clientDB: ClientDatabase;
+    public reloadCtx: Subject<boolean> = new Subject();
+
+    private constructor(clientDB: ClientDatabase) {
+        this.clientDB = clientDB;
+    }
+
+    public isConnected() {
+        if (!this.clientDB) {
+            return false;
+        }
+
+        if (this.clientDB.isConnected()) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public async reConnect() {
+        await this.clientDB.reConect();
+        this.reloadCtx.next(true);
+    }
+
+    public disconnect() {
+        this.clientDB.disconnectConnection();
+    }
+
+    public static initInstance = (clientDB: ClientDatabase) => {
+        if (!NetworkManager.instance) {
+            NetworkManager.instance = new NetworkManager(clientDB);
+        }
+    };
+
+    public static getInstance = () => {
+        return NetworkManager.instance;
+    };
 }

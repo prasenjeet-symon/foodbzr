@@ -1,19 +1,24 @@
-import { Component, Input, NgZone, OnInit } from '@angular/core';
-import { PhotoViewer, PhotoViewerOptions } from '@ionic-native/photo-viewer/ngx';
+import { Component, Input, NgZone, OnDestroy, OnInit } from '@angular/core';
+import { CameraResultType, Plugins } from '@capacitor/core';
 import { fetch_menu_picture_of_menu, FoodbzrDatasource } from '@foodbzr/datasource';
-import { DaoLife, daoConfig } from '@sculify/node-room-client';
 import { IGetMenuPicture } from '@foodbzr/shared/types';
-import { Plugins, CameraResultType } from '@capacitor/core';
+import { PhotoViewer, PhotoViewerOptions } from '@ionic-native/photo-viewer/ngx';
+import { Platform } from '@ionic/angular';
+import { daoConfig, DaoLife, NetworkManager } from '@sculify/node-room-client';
+import { from } from 'rxjs';
+import { LoadingScreenService } from '../../../../loading-screen.service';
 const { Camera } = Plugins;
+import { ImagePicker } from '@ionic-native/image-picker/ngx';
 
 @Component({
     selector: 'foodbzr-food-picture',
     templateUrl: './food-picture.component.html',
     styleUrls: ['./food-picture.component.scss'],
 })
-export class FoodPictureComponent implements OnInit {
+export class FoodPictureComponent implements OnInit, OnDestroy {
     @Input() menu_row_uuid: string;
     @Input() partner_row_uuid: string;
+
     daosLife: DaoLife;
     /** data */
     allPics: IGetMenuPicture[] = [];
@@ -23,28 +28,73 @@ export class FoodPictureComponent implements OnInit {
         uplaod_image_to_cloud: FoodbzrDatasource.getInstance().uplaod_image_to_cloud,
     };
 
-    constructor(private photoViewer: PhotoViewer, private ngZone: NgZone) {
+    constructor(private photoViewer: PhotoViewer, private ngZone: NgZone, private platform: Platform, private imagePicker: ImagePicker, private loading: LoadingScreenService) {
         this.daosLife = new DaoLife();
     }
+
     /** daos */
     fetch_menu_picture_of_menu__: fetch_menu_picture_of_menu;
 
+    /**  subscriptions */
+    public networkSubscription: any;
+
+    ngOnDestroy() {
+        this.daosLife.softKill();
+        if (this.networkSubscription) {
+            this.networkSubscription.unsubscribe();
+        }
+    }
+
     ngOnInit() {
-        /** fetch all the menus picture */
-        this.fetch_menu_picture_of_menu__ = new this.database.fetch_menu_picture_of_menu(daoConfig);
-        this.fetch_menu_picture_of_menu__.observe(this.daosLife).subscribe((val) => {
-            this.ngZone.run(() => {
-                this.allPics = val;
-            });
+        this.initScreen();
+        this.networkSubscription = NetworkManager.getInstance().reloadCtx.subscribe((val) => {
+            if (val) {
+                this.daosLife.softKill();
+                this.initScreen(false);
+            }
         });
-        this.fetch_menu_picture_of_menu__.fetch(this.menu_row_uuid).obsData();
+    }
+
+    initScreen(can_show_loading = true) {
+        this.platform.ready().then(() => {
+            if (can_show_loading) {
+                this.loading.showLoadingScreen().then((ref) => {
+                    /** fetch all the menus picture */
+                    this.fetch_menu_picture_of_menu__ = new this.database.fetch_menu_picture_of_menu(daoConfig);
+                    this.fetch_menu_picture_of_menu__.observe(this.daosLife).subscribe((val) => {
+                        if (ref.isConnected) {
+                            ref.dismiss();
+                        }
+
+                        this.ngZone.run(() => {
+                            this.allPics = val;
+                        });
+                    });
+
+                    this.fetch_menu_picture_of_menu__.fetch(this.menu_row_uuid).obsData();
+                });
+            } else {
+                /** fetch all the menus picture */
+                this.fetch_menu_picture_of_menu__ = new this.database.fetch_menu_picture_of_menu(daoConfig);
+                this.fetch_menu_picture_of_menu__.observe(this.daosLife).subscribe((val) => {
+                    this.ngZone.run(() => {
+                        this.allPics = val;
+                    });
+                });
+
+                this.fetch_menu_picture_of_menu__.fetch(this.menu_row_uuid).obsData();
+            }
+        });
     }
 
     viewImage(url: string) {
         const options: PhotoViewerOptions = {
             share: true,
         };
-        this.photoViewer.show(url, 'Menu Picture', options);
+
+        this.platform.ready().then(() => {
+            this.photoViewer.show(url, 'Menu Picture', options);
+        });
     }
 
     tracker(index: number, value: IGetMenuPicture) {
@@ -55,18 +105,16 @@ export class FoodPictureComponent implements OnInit {
 
     /** take the camera pics */
     public async takePicture() {
-        const image = await Camera.getPhoto({
-            quality: 90,
-            allowEditing: true,
-            resultType: CameraResultType.Base64,
-        });
+        const has_permission = await this.imagePicker.hasReadPermission();
+        if (!has_permission) {
+            // request the permission
+            await this.imagePicker.requestReadPermission();
+            return;
+        }
 
-        // image.webPath will contain a path that can be set as an image src.
-        // You can access the original file using image.path, which can be
-        // passed to the Filesystem API to read the raw data of the image,
-        // if desired (or pass resultType: CameraResultType.Base64 to getPhoto)
-        const base64 = image.base64String;
+        /** there is permission */
+        const images = await this.imagePicker.getPictures({ quality: 70, outputType: 1 });
 
-        /** upload to cloud */
+        console.log(images, 'HEY');
     }
 }

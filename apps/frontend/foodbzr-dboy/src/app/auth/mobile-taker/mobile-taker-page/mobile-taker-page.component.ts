@@ -3,6 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { FoodbzrDatasource } from '@foodbzr/datasource';
 import { ToastController, ViewWillEnter } from '@ionic/angular';
 import { daoConfig, DaoLife } from '@sculify/node-room-client';
+import { LoadingScreenService } from '../../../loading-screen.service';
 
 @Component({
     selector: 'foodbzr-mobile-taker-page',
@@ -18,7 +19,7 @@ export class MobileTakerPageComponent implements OnInit, ViewWillEnter {
     public mobile_number: string;
     public can_click_next_button = true;
 
-    constructor(private toast: ToastController, private router: Router, private activatedRoute: ActivatedRoute, private ngZone: NgZone) {}
+    constructor(private loading: LoadingScreenService, private toast: ToastController, private router: Router, private activatedRoute: ActivatedRoute, private ngZone: NgZone) {}
 
     ngOnInit() {}
 
@@ -37,31 +38,27 @@ export class MobileTakerPageComponent implements OnInit, ViewWillEnter {
         //     return;
         // }
 
-        const daoLife = new DaoLife();
-        const auth_dboy__ = new this.database.auth_dboy(daoConfig);
-        /**
-         *
-         *
-         */
-        auth_dboy__.observe(daoLife).subscribe((val) => {
-            const data = val;
-            if (data.is_err) {
-                this.can_click_next_button = true;
-                this.printToastMessage(data.error);
-                return;
-            }
-            
-            this.can_click_next_button = true;
-            /**  nav to otp screen */
-            this.navOtpScreen(data.dboy_row_uuid, this.mobile_number);
-        });
-        /**
-         *
-         *
-         */
-        (await auth_dboy__.fetch(this.mobile_number)).obsData();
+        this.loading.showLoadingScreen().then(async () => {
+            const daoLife = new DaoLife();
+            const auth_dboy__ = new this.database.auth_dboy(daoConfig);
+            auth_dboy__.observe(daoLife).subscribe((val) => {
+                if (this.loading.dailogRef.isConnected) {
+                    this.loading.dailogRef.dismiss();
+                }
 
-        daoLife.softKill();
+                const data = val;
+                if (data.is_err) {
+                    this.can_click_next_button = true;
+                    this.printToastMessage(data.error);
+                    return;
+                }
+
+                this.can_click_next_button = true;
+                this.navOtpScreen(data.dboy_row_uuid, this.mobile_number);
+            });
+            (await auth_dboy__.fetch(this.mobile_number)).obsData();
+            daoLife.softKill();
+        });
     }
 
     /** print the toast message */

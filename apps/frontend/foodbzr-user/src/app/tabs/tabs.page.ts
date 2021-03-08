@@ -1,6 +1,7 @@
 import { Component, NgZone, OnDestroy, OnInit } from '@angular/core';
-import { DaoLife, daoConfig } from '@sculify/node-room-client';
-import { FoodbzrDatasource, fetch_user_cart_total_items } from '@foodbzr/datasource';
+import { fetch_user_cart_total_items, FoodbzrDatasource } from '@foodbzr/datasource';
+import { Platform } from '@ionic/angular';
+import { daoConfig, DaoLife, NetworkManager } from '@sculify/node-room-client';
 
 @Component({
     selector: 'foodbzr-tabs',
@@ -14,7 +15,11 @@ export class TabsPage implements OnInit, OnDestroy {
     public database = {
         fetch_user_cart_total_items: FoodbzrDatasource.getInstance().fetch_user_cart_total_items,
     };
-    constructor(private ngZone: NgZone) {
+
+    /** subscription */
+    public networkSubscription: any;
+
+    constructor(private ngZone: NgZone, private platform: Platform) {
         this.user_row_uuid = localStorage.getItem('user_row_uuid');
         this.daosLife = new DaoLife();
     }
@@ -22,16 +27,31 @@ export class TabsPage implements OnInit, OnDestroy {
     fetch_user_cart_total_items__: fetch_user_cart_total_items;
 
     ngOnInit() {
-        this.fetch_user_cart_total_items__ = new this.database.fetch_user_cart_total_items(daoConfig);
-        this.fetch_user_cart_total_items__.observe(this.daosLife).subscribe((val) => {
-            this.ngZone.run(() => {
-                this.totalItemsInCart = val[0].items;
-            });
+        this.initScreen();
+        this.networkSubscription = NetworkManager.getInstance().reloadCtx.subscribe((val) => {
+            if (val) {
+                this.daosLife.softKill();
+                this.initScreen(false);
+            }
         });
-        this.fetch_user_cart_total_items__.fetch(this.user_row_uuid).obsData();
+    }
+
+    public initScreen(can_show_loading = true) {
+        this.platform.ready().then(() => {
+            this.fetch_user_cart_total_items__ = new this.database.fetch_user_cart_total_items(daoConfig);
+            this.fetch_user_cart_total_items__.observe(this.daosLife).subscribe((val) => {
+                this.ngZone.run(() => {
+                    this.totalItemsInCart = val[0].items;
+                });
+            });
+            this.fetch_user_cart_total_items__.fetch(this.user_row_uuid).obsData();
+        });
     }
 
     ngOnDestroy() {
         this.daosLife.softKill();
+        if (this.networkSubscription) {
+            this.networkSubscription.unsubscribe();
+        }
     }
 }

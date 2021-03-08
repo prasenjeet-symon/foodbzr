@@ -20,6 +20,7 @@ export class fetch_partner_single extends BaseDao<IGetPartner[]> {
         full_name,
         mobile_number,
         bio,
+        last_otp,
         date_created,
         row_uuid
 

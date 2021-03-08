@@ -1,9 +1,10 @@
 import { Component, NgZone, OnDestroy, OnInit } from '@angular/core';
-import { ModalController } from '@ionic/angular';
-import { AddFoodCatComponent } from '../components/add-food-cat/add-food-cat.component';
 import { fetch_food_category_of_partner, FoodbzrDatasource } from '@foodbzr/datasource';
-import { daoConfig, DaoLife } from '@sculify/node-room-client';
 import { IGetFoodCategory } from '@foodbzr/shared/types';
+import { ModalController, Platform } from '@ionic/angular';
+import { daoConfig, DaoLife, NetworkManager } from '@sculify/node-room-client';
+import { LoadingScreenService } from '../../../loading-screen.service';
+import { AddFoodCatComponent } from '../components/add-food-cat/add-food-cat.component';
 import { UpdateFoodCatComponent } from '../components/update-food-cat/update-food-cat.component';
 
 @Component({
@@ -27,26 +28,53 @@ export class FoodCatPageComponent implements OnInit, OnDestroy {
     /** daos */
     fetch_food_category_of_partner__: fetch_food_category_of_partner;
 
-    constructor(private modal: ModalController, private ngZone: NgZone) {
+    /** subscriptions */
+    public networkSubscription: any;
+
+    constructor(private modal: ModalController, private ngZone: NgZone, private loading: LoadingScreenService, private platform: Platform) {
         this.partner_row_uuid = localStorage.getItem('partner_row_uuid');
         this.daosLife = new DaoLife();
     }
 
     ngOnInit() {
-        this.fetch_food_category_of_partner__ = new this.database.fetch_food_category_of_partner(daoConfig);
-        this.fetch_food_category_of_partner__.observe(this.daosLife).subscribe((val) => {
-            this.ngZone.run(() => {
-                this.foodCate = val;
-            });
+        this.initScreen();
+        this.networkSubscription = NetworkManager.getInstance().reloadCtx.subscribe((val) => {
+            if (val) {
+                this.daosLife.softKill();
+                this.initScreen(false);
+            }
         });
-        this.fetch_food_category_of_partner__.fetch(this.partner_row_uuid).obsData();
     }
 
     ngOnDestroy() {
         this.daosLife.softKill();
+        if (this.networkSubscription) {
+            this.networkSubscription.unsubscribe();
+        }
     }
 
-    /**  */
+    public initScreen(can_show_loading = true) {
+        this.platform.ready().then(() => {
+            this.fetch_food_category_of_partner__ = new this.database.fetch_food_category_of_partner(daoConfig);
+            this.fetch_food_category_of_partner__.observe(this.daosLife).subscribe((val) => {
+                if (this.loading.dailogRef.isConnected) {
+                    this.loading.dailogRef.dismiss();
+                }
+
+                this.ngZone.run(() => {
+                    this.foodCate = val;
+                });
+            });
+
+            if (can_show_loading) {
+                this.loading.showLoadingScreen().then(() => {
+                    this.fetch_food_category_of_partner__.fetch(this.partner_row_uuid).obsData();
+                });
+            } else {
+                this.fetch_food_category_of_partner__.fetch(this.partner_row_uuid).obsData();
+            }
+        });
+    }
 
     /** add new cat */
     public async addNewCat() {
@@ -77,22 +105,38 @@ export class FoodCatPageComponent implements OnInit, OnDestroy {
 
     /** activate the food cat */
     public ActiveFoodCat(foodCat: IGetFoodCategory) {
-        this.ngZone.run(() => {
+        this.platform.ready().then(() => {
             const daoLife = new DaoLife();
             const delete_food_category = new this.database.delete_food_category(daoConfig);
-            delete_food_category.observe(daoLife).subscribe((val) => console.log('deleted the food cat'));
-            delete_food_category.fetch('yes', foodCat.row_uuid).obsData();
+            delete_food_category.observe(daoLife).subscribe((val) => {
+                if (this.loading.dailogRef.isConnected) {
+                    this.loading.dailogRef.dismiss();
+                }
+            });
+
+            this.loading.showLoadingScreen().then(() => {
+                delete_food_category.fetch('yes', foodCat.row_uuid).obsData();
+            });
+
             daoLife.softKill();
         });
     }
 
     /** inactive the food cat */
     public inActiveFoodCat(foodCat: IGetFoodCategory) {
-        this.ngZone.run(() => {
+        this.platform.ready().then(() => {
             const daoLife = new DaoLife();
             const delete_food_category = new this.database.delete_food_category(daoConfig);
-            delete_food_category.observe(daoLife).subscribe((val) => console.log('deleted the food cat'));
-            delete_food_category.fetch('no', foodCat.row_uuid).obsData();
+            delete_food_category.observe(daoLife).subscribe((val) => {
+                if (this.loading.dailogRef.isConnected) {
+                    this.loading.dailogRef.dismiss();
+                }
+            });
+
+            this.loading.showLoadingScreen().then(() => {
+                delete_food_category.fetch('no', foodCat.row_uuid).obsData();
+            });
+
             daoLife.softKill();
         });
     }

@@ -1,17 +1,14 @@
 import { enableProdMode } from '@angular/core';
 import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
-
+import { FoodbzrDatasource } from '@foodbzr/datasource';
+import { defineCustomElements } from '@ionic/pwa-elements/loader';
+import { ClientDatabase, NetworkManager } from '@sculify/node-room-client';
 import { AppModule } from './app/app.module';
 import { environment } from './environments/environment';
 
-import { ClientDatabase } from '@sculify/node-room-client';
-import { FoodbzrDatasource } from '@foodbzr/datasource';
-
-import { defineCustomElements } from '@ionic/pwa-elements/loader';
-
 FoodbzrDatasource.initInstance();
-
-const clientDB = new ClientDatabase(FoodbzrDatasource, 'https://a6e227990279.ngrok.io', 'foodbzr_database', '31acb587-9cc0-4338-9cbf-8d898ea50ac5', 'online');
+const clientDB = new ClientDatabase(FoodbzrDatasource, 'https://sculifyface.xyz/', 'foodbzr_database', '9962ded9-ca85-4d15-a2f6-ac17f553381b', 'online');
+NetworkManager.initInstance(clientDB);
 
 if (environment.production) {
     enableProdMode();

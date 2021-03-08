@@ -1,9 +1,12 @@
 import { Component, NgZone, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { FoodbzrDatasource, fetch_partner_for_owner, update_partner_commision } from '@foodbzr/datasource';
+import { fetch_partner_for_owner, FoodbzrDatasource } from '@foodbzr/datasource';
 import { IGetPartner, is_active } from '@foodbzr/shared/types';
-import { PopoverController } from '@ionic/angular';
-import { DaoLife, daoConfig } from '@sculify/node-room-client';
+import { CallNumber } from '@ionic-native/call-number/ngx';
+import { Platform, PopoverController } from '@ionic/angular';
+import { daoConfig, DaoLife, NetworkManager } from '@sculify/node-room-client';
+import { FcmService } from '../../../fcm.service';
+import { LoadingScreenService } from '../../../loading-screen.service';
 import { UpdateCommisionComponent } from '../components/update-commission/update-commission.component';
 
 @Component({
@@ -30,24 +33,63 @@ export class PartnerManagerPageComponent implements OnInit, OnDestroy {
     /** daos */
     fetch_partner_for_owner__: fetch_partner_for_owner;
 
-    constructor(private ngZone: NgZone, private popover: PopoverController, private router: Router) {
+    /** subscriptions */
+    public networkSubs: any;
+
+    constructor(
+        private ngZone: NgZone,
+        private popover: PopoverController,
+        private router: Router,
+        private fcm: FcmService,
+        private loading: LoadingScreenService,
+        private platform: Platform,
+        private call: CallNumber
+    ) {
         this.daosLife = new DaoLife();
         this.owner_row_uuid = localStorage.getItem('owner_row_uuid');
+        this.fcm.initPush();
     }
 
     ngOnDestroy() {
         this.daosLife.softKill();
+        if (this.networkSubs) {
+            this.networkSubs.unsubscribe();
+        }
     }
 
     ngOnInit() {
-        this.fetch_partner_for_owner__ = new this.database.fetch_partner_for_owner(daoConfig);
-        this.fetch_partner_for_owner__.observe(this.daosLife).subscribe((val) => {
-            this.ngZone.run(() => {
-                this.allParters = val;
-                this.sortPartners();
-            });
+        this.initScreen();
+        this.networkSubs = NetworkManager.getInstance().reloadCtx.subscribe((val) => {
+            if (val) {
+                this.daosLife.softKill();
+                this.initScreen(false);
+            }
         });
-        this.fetch_partner_for_owner__.fetch(this.owner_row_uuid).obsData();
+    }
+
+    /** init screen */
+    public initScreen(show_loading: boolean = true) {
+        this.platform.ready().then(() => {
+            this.fetch_partner_for_owner__ = new this.database.fetch_partner_for_owner(daoConfig);
+            this.fetch_partner_for_owner__.observe(this.daosLife).subscribe((val) => {
+                this.ngZone.run(() => {
+                    if (this.loading.dailogRef.isConnected) {
+                        this.loading.dailogRef.dismiss();
+                    }
+
+                    this.allParters = val;
+                    this.sortPartners();
+                });
+            });
+
+            if (show_loading) {
+                this.loading.showLoadingScreen().then(() => {
+                    this.fetch_partner_for_owner__.fetch(this.owner_row_uuid).obsData();
+                });
+            } else {
+                this.fetch_partner_for_owner__.fetch(this.owner_row_uuid).obsData();
+            }
+        });
     }
 
     public sortPartners() {
@@ -58,6 +100,7 @@ export class PartnerManagerPageComponent implements OnInit, OnDestroy {
 
     /** update verification sttaus */
     public updateVerificationStatus(partner: IGetPartner, is_verified: is_active) {
+        // local update first
         this.allParters = this.allParters.map((p) => {
             if (p.row_uuid === partner.row_uuid) {
                 return { ...p, is_verified: is_verified };
@@ -66,11 +109,22 @@ export class PartnerManagerPageComponent implements OnInit, OnDestroy {
             }
         });
         this.sortPartners();
-        const daoLife = new DaoLife();
-        const update_partner_verification_status = new this.database.update_partner_verification_status(daoConfig);
-        update_partner_verification_status.observe(daoLife).subscribe((val) => console.log('updated the status'));
-        update_partner_verification_status.fetch(is_verified, partner.row_uuid).obsData();
-        daoLife.softKill();
+
+        this.platform.ready().then(() => {
+            const daoLife = new DaoLife();
+            const update_partner_verification_status = new this.database.update_partner_verification_status(daoConfig);
+            update_partner_verification_status.observe(daoLife).subscribe((val) => {
+                if (this.loading.dailogRef.isConnected) {
+                    this.loading.dailogRef.dismiss();
+                }
+            });
+
+            this.loading.showLoadingScreen().then(() => {
+                update_partner_verification_status.fetch(is_verified, partner.row_uuid).obsData();
+            });
+
+            daoLife.softKill();
+        });
     }
 
     /** update verification sttaus */
@@ -87,16 +141,28 @@ export class PartnerManagerPageComponent implements OnInit, OnDestroy {
         /** inactive = 'yes' */
         const daoLife = new DaoLife();
 
-        const delete_partner = new this.database.delete_partner(daoConfig);
-        delete_partner.observe(daoLife).subscribe((val) => console.log('updated the partner'));
-        delete_partner.fetch('no', partner.row_uuid).obsData();
+        this.platform.ready().then(() => {
+            const delete_partner = new this.database.delete_partner(daoConfig);
+            delete_partner.observe(daoLife).subscribe((val) => {
+                if (this.loading.dailogRef.isConnected) {
+                    this.loading.dailogRef.dismiss();
+                }
+            });
+            /** unverify */
+            const update_partner_verification_status = new this.database.update_partner_verification_status(daoConfig);
+            update_partner_verification_status.observe(daoLife).subscribe((val) => {
+                if (this.loading.dailogRef.isConnected) {
+                    this.loading.dailogRef.dismiss();
+                }
+            });
 
-        /** unverify */
-        const update_partner_verification_status = new this.database.update_partner_verification_status(daoConfig);
-        update_partner_verification_status.observe(daoLife).subscribe((val) => console.log('updated the status'));
-        update_partner_verification_status.fetch('no', partner.row_uuid).obsData();
+            this.loading.showLoadingScreen().then(() => {
+                delete_partner.fetch('no', partner.row_uuid).obsData();
+                update_partner_verification_status.fetch('no', partner.row_uuid).obsData();
+            });
 
-        daoLife.softKill();
+            daoLife.softKill();
+        });
     }
 
     /** make the partner active */
@@ -110,11 +176,21 @@ export class PartnerManagerPageComponent implements OnInit, OnDestroy {
         });
         this.sortPartners();
 
-        const daoLife = new DaoLife();
-        const delete_partner = new this.database.delete_partner(daoConfig);
-        delete_partner.observe(daoLife).subscribe((val) => console.log('updated the partner'));
-        delete_partner.fetch('yes', partner.row_uuid).obsData();
-        daoLife.softKill();
+        this.platform.ready().then(() => {
+            const daoLife = new DaoLife();
+            const delete_partner = new this.database.delete_partner(daoConfig);
+            delete_partner.observe(daoLife).subscribe((val) => {
+                if (this.loading.dailogRef.isConnected) {
+                    this.loading.dailogRef.dismiss();
+                }
+            });
+
+            this.loading.showLoadingScreen().then(() => {
+                delete_partner.fetch('yes', partner.row_uuid).obsData();
+            });
+
+            daoLife.softKill();
+        });
     }
 
     /** update the partner comm */
@@ -145,23 +221,38 @@ export class PartnerManagerPageComponent implements OnInit, OnDestroy {
                 }
             });
 
-            const daoLife = new DaoLife();
-            const update_partner_commision = new this.database.update_partner_commision(daoConfig);
-            update_partner_commision.observe(daoLife).subscribe((val) => console.log('updated the partner commision'));
-            update_partner_commision.fetch(commission, partner.row_uuid).obsData();
-            daoLife.softKill();
+            this.platform.ready().then(() => {
+                const daoLife = new DaoLife();
+                const update_partner_commision = new this.database.update_partner_commision(daoConfig);
+                update_partner_commision.observe(daoLife).subscribe((val) => {
+                    if (this.loading.dailogRef.isConnected) {
+                        this.loading.dailogRef.dismiss();
+                    }
+                });
+                this.loading.showLoadingScreen().then(() => {
+                    update_partner_commision.fetch(commission, partner.row_uuid).obsData();
+                });
+
+                daoLife.softKill();
+            });
         }
     }
 
     /** nav to report */
     navToReport(partner: IGetPartner) {
         this.ngZone.run(() => {
-            this.router.navigate(['tabs','tab1','report-partner', partner.row_uuid, partner.commission]);
+            this.router.navigate(['tabs', 'tab1', 'report-partner', partner.row_uuid, partner.commission]);
         });
     }
 
     /** trackers */
     tracker(index: number, value: IGetPartner) {
         return value.row_uuid;
+    }
+
+    public callNumber(number: string) {
+        if (this.call.isCallSupported) {
+            this.call.callNumber(number, true);
+        }
     }
 }

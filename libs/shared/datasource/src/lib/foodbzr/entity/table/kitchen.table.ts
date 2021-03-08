@@ -31,6 +31,9 @@ export class kitchen {
     @Column({ dataType: MYSQL_DATATYPE.TEXT() })
     private profile_picture: string;
 
+    @Column({ dataType: MYSQL_DATATYPE.TEXT() })
+    private bio: string;
+
     @Column({ dataType: MYSQL_DATATYPE.DOUBLE(), defaultValue: 10 })
     private radius: number;
 

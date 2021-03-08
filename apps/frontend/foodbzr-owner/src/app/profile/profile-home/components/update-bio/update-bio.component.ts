@@ -1,8 +1,8 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { ModalController } from '@ionic/angular';
 import { update_owner_bio } from '@foodbzr/datasource';
-import { daoConfig, DaoLife } from '@sculify/node-room-client';
 import { databaseDao } from '@foodbzr/shared/types';
+import { ModalController } from '@ionic/angular';
+import { daoConfig, DaoLife } from '@sculify/node-room-client';
 
 @Component({
     selector: 'foodbzr-update-bio',

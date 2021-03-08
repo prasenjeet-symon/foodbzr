@@ -1,0 +1,126 @@
+{
+  "project_info": {
+    "project_number": "1033543671196",
+    "project_id": "foodbzr",
+    "storage_bucket": "foodbzr.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1033543671196:android:5c60670301b696e95b7c59",
+        "android_client_info": {
+          "package_name": "io.sculify.foodbzr.dboy"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1033543671196-bg1ku59qn42kgfski90bdpudn2urjgln.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBho7AT2HR4oqRTkIOiU5JwJA1iIDmTVso"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1033543671196-bg1ku59qn42kgfski90bdpudn2urjgln.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1033543671196:android:4247147866172ab55b7c59",
+        "android_client_info": {
+          "package_name": "io.sculify.foodbzr.owner"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1033543671196-bg1ku59qn42kgfski90bdpudn2urjgln.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBho7AT2HR4oqRTkIOiU5JwJA1iIDmTVso"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1033543671196-bg1ku59qn42kgfski90bdpudn2urjgln.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1033543671196:android:41dfd7a6176502fa5b7c59",
+        "android_client_info": {
+          "package_name": "io.sculify.foodbzr.partner"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1033543671196-bg1ku59qn42kgfski90bdpudn2urjgln.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBho7AT2HR4oqRTkIOiU5JwJA1iIDmTVso"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1033543671196-bg1ku59qn42kgfski90bdpudn2urjgln.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1033543671196:android:5a6eebfcead0d9155b7c59",
+        "android_client_info": {
+          "package_name": "io.sculify.foodbzr.user"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1033543671196-bg1ku59qn42kgfski90bdpudn2urjgln.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBho7AT2HR4oqRTkIOiU5JwJA1iIDmTVso"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1033543671196-bg1ku59qn42kgfski90bdpudn2urjgln.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

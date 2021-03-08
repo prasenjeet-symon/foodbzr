@@ -1,6 +1,6 @@
-import { dao_execute_type } from '../../main-interface';
-import { ExecuteDaoOnline } from '../../dao/online-daos/execute_dao_online';
 import { v4 as uuid } from 'uuid';
+import { ExecuteDaoOnline } from '../../dao/online-daos/execute_dao_online';
+import { dao_execute_type } from '../../main-interface';
 import { OfflineSync } from '../sync/sync';
 
 export class InstanceClient {
@@ -11,6 +11,7 @@ export class InstanceClient {
     constructor(private socket: any, private removeMe: (client_uuid: string) => void, private modification_happen: (table_range: string[]) => void) {
         this.client_uuid = uuid();
         this.socket.on('disconnect', () => {
+            console.log(`client connection disconnected with id - ${this.socket.id}`);
             this.onlineDao.kill_all_live_data();
             this.onlineDao.disconnect_mysql_connection();
             this.removeMe(this.client_uuid);
