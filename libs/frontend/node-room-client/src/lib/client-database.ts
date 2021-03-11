@@ -136,7 +136,7 @@ export class ClientDatabase {
     }
 
     public disconnectConnection() {
-        if (this.socket) {
+        if (!this.socket.disconnected) {
             this.socket.close();
         }
     }
@@ -196,8 +196,10 @@ export class NetworkManager {
     }
 
     public async reConnect() {
-        await this.clientDB.reConect();
-        this.reloadCtx.next(true);
+        const val = await this.clientDB.reConect();
+        if (val) {
+            this.reloadCtx.next(true);
+        }
     }
 
     public disconnect() {

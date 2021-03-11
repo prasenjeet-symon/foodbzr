@@ -1,0 +1,93 @@
+<ion-header translucent>
+    <ion-toolbar>
+        <ion-title>Create Menu</ion-title>
+        <ion-buttons slot="end">
+            <ion-button (click)="createMenu()"><ion-icon name="checkmark"></ion-icon></ion-button>
+        </ion-buttons>
+        <ion-buttons slot="end">
+            <ion-button (click)="closeModal()"><ion-icon name="close"></ion-icon></ion-button>
+        </ion-buttons>
+    </ion-toolbar>
+</ion-header>
+<ion-content fullscreen>
+    <!-- upload the profile picture of the menu -->
+    <div class="upload_profile_picture">
+        <img [src]="profile_picture" alt="" srcset="" />
+        <div class="file_chooser">
+            <ion-fab-button color="secondary"> <ion-icon name="aperture-sharp"></ion-icon> </ion-fab-button>
+        </div>
+    </div>
+
+    <!-- menu details -->
+    <div class="menu_details">
+        <ion-list>
+            <ion-list-header>
+                <ion-label color="secondary"> Menu Details </ion-label>
+            </ion-list-header>
+
+            <ion-item>
+                <ion-label>Menu Name</ion-label>
+                <ion-input [(ngModel)]="menu_name" inputmode="text"></ion-input>
+            </ion-item>
+
+            <!-- menu bio  , write something good about this menu-->
+            <ion-item>
+                <ion-textarea [(ngModel)]="menu_bio" placeholder="Something good about this menu..."></ion-textarea>
+            </ion-item>
+        </ion-list>
+    </div>
+
+    <!-- choose the food category -->
+    <div class="choose_food_category">
+        <ion-list>
+            <ion-list-header>
+                <ion-label color="secondary"> Food Category </ion-label>
+            </ion-list-header>
+
+            <!--  single select food category -->
+            <ion-item>
+                <ion-label>Food Category</ion-label>
+                <ion-select [(ngModel)]="food_category">
+                    <ion-select-option *ngFor="let food_c of foodCategory" [value]="food_c">{{ food_c.name }}</ion-select-option>
+                </ion-select>
+            </ion-item>
+
+            <!-- single select regional food category -->
+            <ion-item>
+                <ion-label>Regional Food Category</ion-label>
+                <ion-select [(ngModel)]="regional_food_category">
+                    <ion-select-option *ngFor="let regional_food_c of regionalFoodCategory" [value]="regional_food_c">{{ regional_food_c.name }}</ion-select-option>
+                </ion-select>
+            </ion-item>
+        </ion-list>
+    </div>
+
+    <!-- menu ofer details -->
+    <div class="menu_offer_details">
+        <ion-list>
+            <ion-list-header>
+                <ion-label color="secondary"> Offer Details </ion-label>
+            </ion-list-header>
+            <ion-item>
+                <ion-label> Offer (%) </ion-label>
+                <ion-input inputmode="number" [(ngModel)]="offer_percentage"></ion-input>
+            </ion-item>
+            <ion-item>
+                <ion-label>Start Date</ion-label>
+                <ion-datetime [(ngModel)]="offer_start_date" value="1990-02-19" placeholder="Select Date"></ion-datetime>
+            </ion-item>
+            <ion-item>
+                <ion-label>Start Time</ion-label>
+                <ion-datetime [(ngModel)]="offer_start_time" display-format="h:mm A" picker-format="h:mm A" value="1990-02-19T07:43Z"></ion-datetime>
+            </ion-item>
+            <ion-item>
+                <ion-label>End Date</ion-label>
+                <ion-datetime [(ngModel)]="offer_end_date" value="1990-02-19" placeholder="Select Date"></ion-datetime>
+            </ion-item>
+            <ion-item>
+                <ion-label>End Time</ion-label>
+                <ion-datetime [(ngModel)]="offer_end_time" display-format="h:mm A" picker-format="h:mm A" value="1990-02-19T07:43Z"></ion-datetime>
+            </ion-item>
+        </ion-list>
+    </div>
+</ion-content>

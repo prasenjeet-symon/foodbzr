@@ -6,6 +6,7 @@ import { daoConfig, DaoLife, NetworkManager } from '@sculify/node-room-client';
 import { combineLatest } from 'rxjs';
 import { LoadingScreenService } from '../../../loading-screen.service';
 import { CallNumber } from '@ionic-native/call-number/ngx';
+import { FcmService } from '../../../fcm.service';
 
 @Component({
     selector: 'foodbzr-pending-order-page',
@@ -33,8 +34,9 @@ export class PendingOrderPageComponent implements OnInit, OnDestroy {
     /** subscriptions */
     public networkSubscription: any;
 
-    constructor(private ngZone: NgZone, private loading: LoadingScreenService, private platform: Platform, private call: CallNumber) {
+    constructor(private ngZone: NgZone, private loading: LoadingScreenService, private platform: Platform, private call: CallNumber, private fcm: FcmService) {
         this.dboy_row_uuid = localStorage.getItem('dboy_row_uuid');
+        this.fcm.initPush();
     }
 
     ngOnInit() {

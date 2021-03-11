@@ -1,8 +1,9 @@
-import { IGetOrder } from '@foodbzr/shared/types';
+import { fetch_push_message_fcm_tokens } from '@foodbzr/datasource';
+import { IGetOrder, IGetOrderStatus, IGetOrderStatusGroupedKitchen } from '@foodbzr/shared/types';
+import { NodeJsModules } from '@sculify/node-room';
 import axios from 'axios';
 import { Chance } from 'chance';
 import * as moment from 'moment';
-import { NodeJsModules } from '@sculify/node-room';
 
 export function convert_object_to_sql_object(obj: any) {
     Object.keys(obj).forEach((p) => {
@@ -368,7 +369,35 @@ export async function sendSMS(to: string, sms: string) {
 /** send the push message */
 export async function send_push_message(heading: string, body: string, banner_uri: string, data: any, fcm_token: string[]) {
     const admin = NodeJsModules.getInstance().getModule('FirebaseAdmin');
-    await admin.messaging().sendToDevice(fcm_token, data, { priority: 'high' });
+    const message = {
+        notification: {
+            title: heading,
+            body: body,
+        },
+        android: {
+            notification: {
+                image: banner_uri,
+            },
+        },
+        apns: {
+            payload: {
+                aps: {
+                    'mutable-content': 1,
+                },
+            },
+            fcm_options: {
+                image: banner_uri,
+            },
+        },
+        webpush: {
+            headers: {
+                image: banner_uri,
+            },
+        },
+        data: data,
+        tokens: fcm_token,
+    };
+    await admin.messaging().sendMulticast(message);
     return true;
 }
 
@@ -379,3 +408,100 @@ export async function uri_to_blob(uri: string) {
             return data;
         });
 }
+
+/** send the push  message to the user */
+export const send_push_message_to_user = async (daoConfig: any, user_row_uuid: string, heading: string, body: string, image_uri: string, data: any) => {
+    /** send the push to user */
+    const pushData = await new fetch_push_message_fcm_tokens(daoConfig).fetch('user', user_row_uuid).asyncData(this);
+    if (pushData.length === 0) {
+        return;
+    }
+
+    return send_push_message(
+        heading,
+        body,
+        image_uri,
+        data,
+        find_unique_items(pushData, 'push_address').map((p) => p.push_address)
+    );
+};
+
+/** send the push  message to the partner */
+export const send_push_message_to_partner = async (daoConfig: any, partner_row_uuid: string, heading: string, body: string, image_uri: string, data: any) => {
+    /** send the push to user */
+    const pushData = await new fetch_push_message_fcm_tokens(daoConfig).fetch('partner', partner_row_uuid).asyncData(this);
+    if (pushData.length === 0) {
+        return;
+    }
+
+    return send_push_message(
+        heading,
+        body,
+        image_uri,
+        data,
+        find_unique_items(pushData, 'push_address').map((p) => p.push_address)
+    );
+};
+
+/** send the push  message to the owner */
+export const send_push_message_to_owner = async (daoConfig: any, owner_row_uuid: string, heading: string, body: string, image_uri: string, data: any) => {
+    /** send the push to user */
+    const pushData = await new fetch_push_message_fcm_tokens(daoConfig).fetch('owner', owner_row_uuid).asyncData(this);
+    if (pushData.length === 0) {
+        return;
+    }
+
+    return send_push_message(
+        heading,
+        body,
+        image_uri,
+        data,
+        find_unique_items(pushData, 'push_address').map((p) => p.push_address)
+    );
+};
+
+/** send the push  message to the dboy */
+export const send_push_message_to_dboy = async (daoConfig: any, dboy_row_uuid: string, heading: string, body: string, image_uri: string, data: any) => {
+    /** send the push to user */
+    const pushData = await new fetch_push_message_fcm_tokens(daoConfig).fetch('dboy', dboy_row_uuid).asyncData(this);
+    if (pushData.length === 0) {
+        return;
+    }
+
+    return send_push_message(
+        heading,
+        body,
+        image_uri,
+        data,
+        find_unique_items(pushData, 'push_address').map((p) => p.push_address)
+    );
+};
+
+/** media server  */
+export const media_server_url = 'https://foodbzr.xyz/';
+
+/** group the order status for owner  */
+export const group_order_status_in_kitchen = (orders: IGetOrderStatus[]) => {
+    if (!orders) {
+        return;
+    }
+
+    if (orders.length === 0) {
+        return;
+    }
+
+    const unique_kitchens = find_unique_items(orders, 'kitchen_row_uuid');
+    const grouped_items: IGetOrderStatusGroupedKitchen[] = [];
+
+    unique_kitchens.forEach((kit) => {
+        const found_orders = orders.filter((p) => p.kitchen_row_uuid === kit.kitchen_row_uuid);
+        grouped_items.push({
+            kitchen_name: kit.kitchen_name,
+            address: kit.kitchen_address,
+            kitchen_row_uuid: kit.kitchen_row_uuid,
+            orders: found_orders,
+        });
+    });
+
+    return grouped_items;
+};

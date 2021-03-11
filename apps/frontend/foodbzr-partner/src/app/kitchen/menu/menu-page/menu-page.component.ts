@@ -1,7 +1,7 @@
 import { Component, NgZone, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { FoodbzrDatasource } from '@foodbzr/datasource';
-import { IGetMenu } from '@foodbzr/shared/types';
+import { IGetMenu, is_active } from '@foodbzr/shared/types';
 import { ModalController, Platform } from '@ionic/angular';
 import { LoadingScreenService } from '../../../loading-screen.service';
 import { CreateMenuComponent } from '../components/create-menu/create-menu.component';
@@ -16,6 +16,7 @@ export class MenuPageComponent implements OnInit {
     public kitchen_row_uuid: string;
     public kitchen_profile_picture: string;
     public partner_row_uuid: string;
+    can_edit_kitchen: is_active = 'no';
 
     public database = {
         fetch_regional_food_category_of_partner: FoodbzrDatasource.getInstance().fetch_regional_food_category_of_partner,
@@ -35,6 +36,10 @@ export class MenuPageComponent implements OnInit {
             if (param.has('kitchen_row_uuid') && param.has('profile_picture')) {
                 this.kitchen_row_uuid = param.get('kitchen_row_uuid');
                 this.kitchen_profile_picture = param.get('profile_picture');
+                /** lcoal */
+                if (localStorage.getItem(`${this.kitchen_row_uuid}_can_edit`)) {
+                    this.can_edit_kitchen = localStorage.getItem(`${this.kitchen_row_uuid}_can_edit`) as is_active;
+                }
             }
         });
     }

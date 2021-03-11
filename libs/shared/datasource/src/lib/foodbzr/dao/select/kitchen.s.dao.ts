@@ -13,14 +13,15 @@ export class fetch_kitchen_single extends BaseDao<IGetKitchen[]> {
     @Query(`
         SELECT
         partner_row_uuid,
+        owner_row_uuid,
         is_active,
         kitchen_user_id,
         kitchen_password,
         kitchen_name,
         profile_picture,
         radius,
-        latitude,
-        longitude,
+        ST_X(coordinate) as latitude,
+        ST_Y(coordinate) as longitude,
         opening_time,
         closing_time,
         open_week_list,
@@ -60,14 +61,61 @@ export class fetch_kitchens_of_partner extends BaseDao<IGetKitchen[]> {
     @Query(`
         SELECT
         partner_row_uuid,
+        owner_row_uuid,
         is_active,
         kitchen_user_id,
         kitchen_password,
         kitchen_name,
         profile_picture,
         radius,
-        latitude,
-        longitude,
+        ST_X(coordinate) as latitude,
+        ST_Y(coordinate) as longitude,
+        opening_time,
+        closing_time,
+        open_week_list,
+        offer_percentage,
+        offer_start_datetime,
+        offer_end_datetime,
+        street,
+        pincode,
+        city,
+        state,
+        country,
+        date_created,
+        date_updated,
+        row_uuid,
+        can_edit_partner
+
+        FROM kitchen
+        WHERE partner_row_uuid = :partner_row_uuid: AND is_active = :is_active:
+    ;`)
+    fetch(partner_row_uuid: string, is_active: is_active) {
+        return this.baseFetch(
+            this.DBData.map((p) => {
+                return { ...p, address: `${p.street}, ${p.city}, ${p.pincode}, ${p.state}, ${p.country}`, open_week_list: JSON.parse(p.open_week_list as any) as string[] };
+            })
+        );
+    }
+}
+
+/** fech the kitchens of owner */
+export class fetch_kitchens_of_owner extends BaseDao<IGetKitchen[]> {
+    constructor(config: IDaoConfig) {
+        super(config);
+    }
+
+    @Query(`
+        SELECT
+        partner_row_uuid,
+        owner_row_uuid,
+        is_active,
+        kitchen_user_id,
+        kitchen_password,
+        kitchen_name,
+        profile_picture,
+        radius,
+        ST_X(coordinate) as latitude,
+        ST_Y(coordinate) as longitude,
         opening_time,
         closing_time,
         open_week_list,
@@ -84,9 +132,9 @@ export class fetch_kitchens_of_partner extends BaseDao<IGetKitchen[]> {
         row_uuid
 
         FROM kitchen
-        WHERE partner_row_uuid = :partner_row_uuid: AND is_active = :is_active:
+        WHERE owner_row_uuid = :owner_row_uuid: AND is_active = :is_active:
     ;`)
-    fetch(partner_row_uuid: string, is_active: is_active) {
+    fetch(owner_row_uuid: string, is_active: is_active) {
         return this.baseFetch(
             this.DBData.map((p) => {
                 return { ...p, open_week_list: JSON.parse(p.open_week_list as any) as string[] };
@@ -98,7 +146,6 @@ export class fetch_kitchens_of_partner extends BaseDao<IGetKitchen[]> {
 /**
  * Retrive the kitchen password
  */
-
 export class fetch_kitchen_password extends BaseDao<{ kitchen_password: string }[]> {
     constructor(config: IDaoConfig) {
         super(config);
@@ -124,14 +171,15 @@ export class fetch_kitchen_all extends BaseDao<IGetKitchen[]> {
     @Query(`
         SELECT
         partner_row_uuid,
+        owner_row_uuid,
         is_active,
         kitchen_user_id,
         kitchen_password,
         kitchen_name,
         profile_picture,
         radius,
-        latitude,
-        longitude,
+        ST_X(coordinate) as latitude,
+        ST_Y(coordinate) as longitude,
         opening_time,
         closing_time,
         open_week_list,
@@ -169,14 +217,15 @@ export class fetch_kitchen_in_range extends BaseDao<IGetKitchen[]> {
     @Query(`
         SELECT
         partner_row_uuid,
+        owner_row_uuid,
         is_active,
         kitchen_user_id,
         kitchen_password,
         kitchen_name,
         profile_picture,
         radius,
-        latitude,
-        longitude,
+        ST_X(coordinate) as latitude,
+        ST_Y(coordinate) as longitude,
         opening_time,
         closing_time,
         open_week_list,
@@ -270,6 +319,56 @@ export class fetch_kitchen_supported_menus extends BaseDao<IGetKitchenSearchResu
         return this.baseFetch(
             this.DBData.map((p) => {
                 return { ...p, address: `${p.street} ${p.city} ${p.pincode} ${p.state} ${p.country}` };
+            })
+        );
+    }
+}
+
+/**
+ * Get the kitchen for the new partner,
+ * To select the kitchens from list
+ * Already selected one should be rehected
+ */
+
+export class fetch_kitchen_for_new_partner extends BaseDao<IGetKitchen[]> {
+    constructor(config: IDaoConfig) {
+        super(config);
+    }
+
+    @Query(`
+        SELECT
+        partner_row_uuid,
+        owner_row_uuid,
+        is_active,
+        kitchen_user_id,
+        kitchen_password,
+        kitchen_name,
+        profile_picture,
+        radius,
+        ST_X(coordinate) as latitude,
+        ST_Y(coordinate) as longitude,
+        opening_time,
+        closing_time,
+        open_week_list,
+        offer_percentage,
+        offer_start_datetime,
+        offer_end_datetime,
+        street,
+        pincode,
+        city,
+        state,
+        country,
+        date_created,
+        date_updated,
+        row_uuid
+
+        FROM kitchen
+        WHERE partner_row_uuid IS NULL
+    ;`)
+    fetch() {
+        return this.baseFetch(
+            this.DBData.map((p) => {
+                return { ...p, open_week_list: JSON.parse(p.open_week_list as any) as string[] };
             })
         );
     }

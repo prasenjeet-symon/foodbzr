@@ -1,0 +1,11 @@
+.upload_profile_picture {
+    position: relative;
+}
+
+.file_chooser {
+    position: absolute;
+    bottom: -25px;
+    right: 0;
+    padding: 0px 20px;
+    z-index: +2;
+}

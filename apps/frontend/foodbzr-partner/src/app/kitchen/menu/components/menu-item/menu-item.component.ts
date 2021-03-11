@@ -1,7 +1,7 @@
 import { Component, EventEmitter, Input, NgZone, OnDestroy, OnInit, Output } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { fetch_menus_of_kitchen, FoodbzrDatasource } from '@foodbzr/datasource';
-import { IGetMenu } from '@foodbzr/shared/types';
+import { IGetMenu, is_active } from '@foodbzr/shared/types';
 import { Platform } from '@ionic/angular';
 import { daoConfig, DaoLife, NetworkManager } from '@sculify/node-room-client';
 import { LoadingScreenService } from '../../../../loading-screen.service';
@@ -13,6 +13,7 @@ import { LoadingScreenService } from '../../../../loading-screen.service';
 })
 export class MenuItemComponent implements OnInit, OnDestroy {
     @Input() kitchen_row_uuid: string;
+    @Input() can_edit_kitchen: is_active;
     private database = {
         fetch_menus_of_kitchen: FoodbzrDatasource.getInstance().fetch_menus_of_kitchen,
         delete_menu: FoodbzrDatasource.getInstance().delete_menu,
@@ -112,6 +113,6 @@ export class MenuItemComponent implements OnInit, OnDestroy {
     }
 
     navToMenuVariant(menu: IGetMenu) {
-        this.router.navigate(['tabs', 'tab2', 'kitchen-menu-variant', menu.row_uuid, menu.profile_picture]);
+        this.router.navigate(['tabs', 'tab2', 'kitchen-menu-variant', menu.row_uuid, menu.profile_picture, this.kitchen_row_uuid]);
     }
 }

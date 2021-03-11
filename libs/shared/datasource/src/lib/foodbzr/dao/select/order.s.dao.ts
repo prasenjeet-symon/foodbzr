@@ -40,6 +40,7 @@ export class fetch_order_single extends BaseDao<IGetOrder[]> {
     
     kit.profile_picture as kitchen_profile_picture,
     kit.kitchen_name as kitchen_name,
+    kit.owner_row_uuid as owner_row_uuid,
     
     fo.row_id,
     fo.user_row_uuid,
@@ -63,8 +64,9 @@ export class fetch_order_single extends BaseDao<IGetOrder[]> {
     db.profile_picture,
     db.full_name,
     db.mobile_number,
-    da.latitude,
-    da.longitude
+    ST_X(da.coordinate) as latitude, 
+    ST_Y(da.coordinate) as longitude
+    
 
     FROM food_order as fo
     LEFT OUTER JOIN dboy as db
@@ -115,8 +117,8 @@ export class fetch_order_all extends BaseDao<IGetOrder[]> {
         db.profile_picture,
         db.full_name,
         db.mobile_number,
-        da.latitude,
-        da.longitude
+        ST_X(da.coordinate) as latitude, 
+        ST_Y(da.coordinate) as longitude
 
         FROM food_order as fo
         LEFT OUTER JOIN dboy as db
@@ -190,8 +192,8 @@ export class fetch_order_status extends BaseDao<IGetOrderStatus[]> {
         da.city as delivery_address_city,
         da.state as delivery_address_state,
         da.country as delivery_address_country,
-        da.latitude as delivery_address_latitude,
-        da.longitude as delivery_address_longitude
+        ST_X(da.coordinate) as delivery_address_latitude,
+        ST_Y(da.coordinate) as delivery_address_longitude
 
         FROM food_order as fo
         LEFT OUTER JOIN dboy as db
@@ -202,9 +204,9 @@ export class fetch_order_status extends BaseDao<IGetOrderStatus[]> {
         ON kit.row_uuid = fo.kitchen_row_uuid
         LEFT OUTER JOIN user as usr
         ON usr.row_uuid = fo.user_row_uuid
-        WHERE ( fo.delivery_status = 'placed' OR fo.delivery_status = 'on_way' OR fo.delivery_status = 'cooking' ) AND fo.partner_row_uuid = :partner_row_uuid:
+        WHERE fo.delivery_status  = :delivery_status: AND fo.partner_row_uuid IN ( :partner_row_uuids: )
     ;`)
-    fetch(partner_row_uuid: string) {
+    fetch(delivery_status: delivery_status, partner_row_uuids: string[]) {
         return this.baseFetch(
             this.DBData.map((p) => {
                 return {
@@ -272,8 +274,9 @@ export class fetch_order_status_for_user extends BaseDao<IGetOrderStatus[]> {
         da.city as delivery_address_city,
         da.state as delivery_address_state,
         da.country as delivery_address_country,
-        da.latitude as delivery_address_latitude,
-        da.longitude as delivery_address_longitude
+        ST_X(da.coordinate) as delivery_address_latitude,
+        ST_Y(da.coordinate) as delivery_address_longitude
+       
 
         FROM food_order as fo
         LEFT OUTER JOIN dboy as db
@@ -376,9 +379,10 @@ export class fetch_order_on_way_dboy extends BaseDao<IGetOrderOnWay[]> {
         db.profile_picture as dboy_profile_picture,
         db.full_name as dboy_full_name,
         db.mobile_number as dboy_mobile_number,
-        da.latitude as latitude,
-        da.longitude as longitude, 
+        ST_X(da.coordinate) as latitude, 
+        ST_Y(da.coordinate) as longitude, 
         da.street as street,
+        da.city as city,
         da.pincode as pincode,
         da.state as state,
         da.country as country
@@ -401,6 +405,7 @@ export class fetch_order_on_way_dboy extends BaseDao<IGetOrderOnWay[]> {
                     user_saved_amount: p.user_saved_amount ? +p.user_saved_amount.toFixed(2) : p.user_saved_amount,
                     order_menu: JSON.parse(p.order_menu as any),
                     lifecycle: JSON.parse(p.lifecycle as any),
+                    delivery_address: `${p.street}, ${p.city}, ${p.pincode}, ${p.state}, ${p.country}`,
                 };
             }) as IGetOrderOnWay[]
         );
@@ -571,8 +576,9 @@ export class fetch_order_search_partner extends BaseDao<IGetOrderStatus[]> {
         da.city as delivery_address_city,
         da.state as delivery_address_state,
         da.country as delivery_address_country,
-        da.latitude as delivery_address_latitude,
-        da.longitude as delivery_address_longitude
+        ST_X(da.coordinate) as delivery_address_latitude,
+        ST_Y(da.coordinate) as delivery_address_longitude
+
 
         FROM food_order as fo
         LEFT OUTER JOIN dboy as db

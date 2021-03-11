@@ -2,7 +2,7 @@
  * This is the food category table
  * This table hold the information like 'veg' , 'non veg' etc
  * This table si the child of the partner table
- * Having the foreign key = 'partner_row_uuid'
+ * Having the foreign key = 'owner_row_uuid'
  */
 
 import { e_is_active, is_active, is_active_values } from '@foodbzr/shared/types';
@@ -24,7 +24,7 @@ export class food_category {
     private profile_picture: string;
 
     @Column({ dataType: MYSQL_DATATYPE.TINYTEXT })
-    private partner_row_uuid: string;
+    private owner_row_uuid: string;
 
     /** offers information */
     @Column({ dataType: MYSQL_DATATYPE.DOUBLE() })

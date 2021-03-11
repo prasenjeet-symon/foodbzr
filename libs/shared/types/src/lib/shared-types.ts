@@ -50,6 +50,7 @@ export interface IGetPartner {
     bio: string;
     date_created: string;
     row_uuid: string;
+    can_add_kitchen: is_active;
 }
 
 export const week_name_values = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
@@ -79,6 +80,7 @@ export interface IGetKitchen {
     date_updated: string;
     row_uuid: string;
     address: string;
+    can_edit_partner: is_active;
 }
 
 export interface IGetMenu {
@@ -265,6 +267,7 @@ export type databaseDao<T> = { new (config: IDaoConfig): T };
 export interface IGetOrder {
     group_date: string;
     kitchen_profile_picture: string;
+    owner_row_uuid: string;
     kitchen_name: string;
     row_id: number;
     user_row_uuid: string;
@@ -431,6 +434,7 @@ export interface IGetOrderOnWay {
     city: string;
     state: string;
     country: string;
+    delivery_address: string;
 }
 
 export interface IGetMenuVariantForCart {
@@ -587,10 +591,12 @@ export interface IGetUserCartForCheckout {
     menu_variant_offer_end_datetime: string;
     menu_variant_row_uuid: string;
     menu_variant_min_order_amount: number;
+
+    owner_row_uuid: string;
 }
 
 export interface IGetUserCartGroupedKitchen {
-    kitchen: { kitchen_row_uuid: string; kitchen_partner_row_uuid: string; kitchen_name: string; profile_picture: string; address: string; can_take_order: boolean };
+    kitchen: { owner_row_uuid: string; kitchen_row_uuid: string; kitchen_partner_row_uuid: string; kitchen_name: string; profile_picture: string; address: string; can_take_order: boolean };
     orders: {
         menu_name: string;
         menu_variant_name: string;
@@ -713,4 +719,11 @@ export enum PUSH_MESSAGE_TYPE {
     order_pickedup = 'ORDER PICKEDUP',
     order_delivered = 'ORDER DELIVERED',
     order_cooking = 'ORDER COOKING',
+}
+
+export interface IGetOrderStatusGroupedKitchen {
+    kitchen_name: string;
+    kitchen_row_uuid: string;
+    address: string;
+    orders: IGetOrderStatus[];
 }

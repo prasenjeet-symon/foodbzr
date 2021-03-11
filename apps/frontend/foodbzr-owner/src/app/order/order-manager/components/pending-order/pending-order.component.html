@@ -1,0 +1,43 @@
+<ion-list *ngFor="let pending_order of pending_arr; trackBy: pendingOrderTracker">
+    <ion-list-header>
+        <ion-label>
+            <h4>
+                {{ pending_order.kitchen_name }}
+            </h4>
+            <p>
+                {{ pending_order.address }}
+            </p>
+        </ion-label>
+    </ion-list-header>
+
+    <ion-item-sliding *ngFor="let order_detail of pending_order.orders; trackBy: pendingOrderOrderTracker">
+        <ion-item>
+            <ion-avatar slot="start">
+                <img src="../../../../../assets/icon/order-food.png" alt="order-food" srcset="" />
+            </ion-avatar>
+            <ion-label>
+                <h2>New order recieved</h2>
+                <p>{{ order_detail.food_order_pay_type }}</p>
+            </ion-label>
+            <ion-note slot="end"> {{ order_detail.food_order_date_created | date: 'short' }} </ion-note>
+        </ion-item>
+
+        <ion-item-options side="start">
+            <ion-item-option (click)="changeOrderStatus('canceled', order_detail.food_order_row_uuid)" color="danger">
+                <ion-icon slot="icon-only" name="close-outline"></ion-icon>
+            </ion-item-option>
+            <ion-item-option (click)="openOrderDetailPage(order_detail)" color="warning">
+                <ion-icon slot="icon-only" name="list"></ion-icon>
+            </ion-item-option>
+        </ion-item-options>
+
+        <ion-item-options side="end">
+            <ion-item-option (click)="showOrderLocation(order_detail.delivery_address_latitude, order_detail.delivery_address_longitude)" color="tertiary">
+                <ion-icon slot="icon-only" name="location"></ion-icon>
+            </ion-item-option>
+            <ion-item-option (click)="changeOrderStatus('order confirmed then cooking', order_detail.food_order_row_uuid)" color="success">
+                <ion-icon slot="icon-only" name="checkmark-outline"></ion-icon>
+            </ion-item-option>
+        </ion-item-options>
+    </ion-item-sliding>
+</ion-list>

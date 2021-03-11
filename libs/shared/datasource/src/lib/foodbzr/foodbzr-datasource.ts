@@ -33,8 +33,10 @@ import { fetch_dboy_of_kitchen, fetch_dboy_single } from './dao/select/dboy.s.da
 import { fetch_delivery_address_of_user } from './dao/select/delivery_address.s.dao';
 import { fetch_food_category_of_partner } from './dao/select/food_category.s.dao';
 import {
+    fetch_kitchens_of_owner,
     fetch_kitchens_of_partner,
     fetch_kitchen_all,
+    fetch_kitchen_for_new_partner,
     fetch_kitchen_in_range,
     fetch_kitchen_password,
     fetch_kitchen_search,
@@ -69,7 +71,7 @@ import { fetch_user_fav_kitchen, fetch_user_fav_kitchen_is_fav } from './dao/sel
 import { auth_dboy, update_dboy, update_dboy_mobile, update_dboy_resend_otp, update_dboy_verify, update_dboy_verify_otp } from './dao/update/dboy.u.dao';
 import { update_delivery_address } from './dao/update/delivery_address.u.dao';
 import { update_food_category } from './dao/update/food_category.u.dao';
-import { update_kitchen, update_kitchen_address, update_kitchen_login_detail, update_kitchen_offers, update_kitchen_password } from './dao/update/kitchen.u.dao';
+import { update_kitchen, update_kitchen_address, update_kitchen_login_detail, update_kitchen_offers, update_kitchen_partner_ref, update_kitchen_password } from './dao/update/kitchen.u.dao';
 import { update_menu, update_menu_category, update_menu_offers } from './dao/update/menu.u.dao';
 import { update_menu_review } from './dao/update/menu_review.u.dao';
 import { update_menu_size_variant, update_menu_size_variant_offer } from './dao/update/menu_size_variant.u.dao';
@@ -102,6 +104,7 @@ import {
     update_partner_mobile_number,
     update_partner_name,
     update_partner_otp,
+    update_partner_permission,
     update_partner_resend_otp,
     update_partner_verification_status,
     update_partner_verify_otp,
@@ -235,6 +238,7 @@ export class FoodbzrDatasource {
     public update_partner_resend_otp = update_partner_resend_otp;
     public update_partner_verify_otp = update_partner_verify_otp;
     public update_partner_mobile = update_partner_mobile;
+    public update_partner_permission = update_partner_permission;
 
     /** kitchen.table.ts */
     public delete_kitchen = delete_kitchen;
@@ -251,6 +255,9 @@ export class FoodbzrDatasource {
     public fetch_kitchen_in_range = fetch_kitchen_in_range;
     public fetch_kitchen_search = fetch_kitchen_search;
     public fetch_kitchen_supported_menus = fetch_kitchen_supported_menus;
+    public fetch_kitchens_of_owner = fetch_kitchens_of_owner;
+    public update_kitchen_partner_ref = update_kitchen_partner_ref;
+    public fetch_kitchen_for_new_partner = fetch_kitchen_for_new_partner;
 
     /** menu.table.ts */
     public delete_menu = delete_menu;

@@ -12,28 +12,29 @@ import * as pathe from 'path';
 import { listen } from 'socket.io';
 import * as Twilio from 'twilio';
 import { v4 as uuid } from 'uuid';
+require('dotenv').config();
 const serviceAccount = require('../foodbzr-firebase-adminsdk-6fidb-fbc5c4382d.json');
 const admin = require('firebase-admin');
 
 const APP = express();
 APP.use(cors());
 
-APP.use(express.static(pathe.join(__dirname, 'uploads')));
+const static_path = pathe.join(__dirname, '../', 'storage');
+APP.use(express.static(static_path));
 
-APP.post('/home', async (req, res) => {
+APP.get('/home', async (req, res) => {
     res.send('Server works!');
 });
 
 /**
  * file upload cloud
  */
-
 const PROFILE_PIC_DIR_NAME = 'media/profile_pictures';
 const MENU_PIC_DIR_NAME = 'media/menu_pictures';
 
 const profile_picture_cloud = multer.diskStorage({
     destination: (req: any, file: Express.Multer.File, cb) => {
-        makeDir(pathe.join(__dirname, '../', PROFILE_PIC_DIR_NAME)).then((path: string) => {
+        makeDir(pathe.join(__dirname, '../', 'storage', PROFILE_PIC_DIR_NAME)).then((path: string) => {
             cb(null, path);
         });
     },
@@ -46,12 +47,12 @@ const uplaod_profile_picture = multer({ storage: profile_picture_cloud });
 
 APP.post('/upload_profile_picture', uplaod_profile_picture.single('avatar'), (req: Request, res: Response) => {
     const file_info = req.file;
-
+    console.log(file_info);
     res.json({
         MimeType: file_info.mimetype,
         size: file_info.size,
-        pic_uri: file_info.path,
-        thumbnail_uri: file_info.path,
+        pic_uri: `${PROFILE_PIC_DIR_NAME}/${uuid()}_profile_picture_${file_info.originalname}`,
+        thumbnail_uri: `${PROFILE_PIC_DIR_NAME}/${uuid()}_profile_picture_${file_info.originalname}`,
     });
 });
 
@@ -97,7 +98,6 @@ foodbzrDatasource.init('test_foodbzr_database').then(() => {
 });
 
 // Listen for any connection for the school database instances
-
 io.sockets.on('connection', (socket) => foodbzrDatasource.incomingConnection(socket));
 
 SERVER.listen(PORT, HOST, 1000, () => console.log(`running on http://${HOST}:${PORT}`));

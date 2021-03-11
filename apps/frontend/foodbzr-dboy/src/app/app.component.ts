@@ -4,7 +4,6 @@ import { SplashScreen } from '@ionic-native/splash-screen/ngx';
 import { StatusBar } from '@ionic-native/status-bar/ngx';
 import { Platform, ToastController } from '@ionic/angular';
 import { NetworkManager } from '@sculify/node-room-client';
-import { Subscription } from 'rxjs';
 const { Network } = Plugins;
 
 @Component({
@@ -14,8 +13,8 @@ const { Network } = Plugins;
 })
 export class AppComponent {
     private networkHandler: PluginListenerHandle;
-    private resume_subs: Subscription;
-    private pause_subs: Subscription;
+    private resume_subs: any;
+    private pause_subs: any;
 
     constructor(private platform: Platform, private splashScreen: SplashScreen, private statusBar: StatusBar, private toast: ToastController) {
         this.initializeApp();
@@ -58,13 +57,12 @@ export class AppComponent {
              */
 
             this.resume_subs = this.platform.resume.subscribe(() => {
-                if (!NetworkManager.getInstance().isConnected()) {
-                    NetworkManager.getInstance().reConnect();
-                }
+                NetworkManager.getInstance().disconnect();
+                NetworkManager.getInstance().reConnect();
             });
 
             this.pause_subs = this.platform.pause.subscribe(() => {
-                //TODO: need to disconnect the connection for the
+                NetworkManager.getInstance().disconnect();
             });
             /**
              *
@@ -73,11 +71,11 @@ export class AppComponent {
             this.networkHandler = Network.addListener('networkStatusChange', (status) => {
                 if (!status.connected) {
                     this.printMessage('Internet disconnected', 'danger');
+                    NetworkManager.getInstance().disconnect();
                 } else {
                     this.printMessage('Your are online.', 'success');
-                    if (!NetworkManager.getInstance().isConnected()) {
-                        NetworkManager.getInstance().reConnect();
-                    }
+                    NetworkManager.getInstance().disconnect();
+                    NetworkManager.getInstance().reConnect();
                 }
             });
             /**

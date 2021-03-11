@@ -17,8 +17,7 @@ export class update_delivery_address extends BaseDao<IModificationDaoStatus> {
         pincode = :pincode:,
         state = :state:,
         country = :country:,
-        latitude = :latitude:,
-        longitude = :longitude:
+        coordinate = ST_GeomFromText('POINT(:latitude: :longitude:)', 4326)
 
         WHERE row_uuid = :delivery_address_row_uuid:
     ;`)

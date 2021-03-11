@@ -4,6 +4,8 @@ import { fetch_kitchen_in_range, fetch_menu_trending, FoodbzrDatasource } from '
 import { IGetKitchen, IGetMenuTrending } from '@foodbzr/shared/types';
 import { ModalController, Platform } from '@ionic/angular';
 import { daoConfig, DaoLife, NetworkManager } from '@sculify/node-room-client';
+import { combineLatest } from 'rxjs';
+import { FcmService } from '../../../fcm.service';
 import { LoadingScreenService } from '../../../loading-screen.service';
 import { AskLocationComponent } from '../components/ask-location/ask-location.component';
 
@@ -17,14 +19,15 @@ export class FoundKitchenPageComponent implements OnInit, OnDestroy {
         fetch_kitchen_in_range: FoodbzrDatasource.getInstance().fetch_kitchen_in_range,
         fetch_menu_trending: FoodbzrDatasource.getInstance().fetch_menu_trending,
     };
-    daosLife: DaoLife;
+    public daosLife: DaoLife;
 
     /** data */
-    latitude: number = 12;
-    longitude: number = 12;
-    foundKitchens: IGetKitchen[] = [];
-    trendingMenus: IGetMenuTrending[] = [];
+    public latitude: number = 12;
+    public longitude: number = 12;
+    public foundKitchens: IGetKitchen[] = [];
+    public trendingMenus: IGetMenuTrending[] = [];
     public deliveryLocation: string;
+    public areWeUsingGps: boolean = false;
 
     /** daos */
     fetch_menu_trending__: fetch_menu_trending;
@@ -32,6 +35,7 @@ export class FoundKitchenPageComponent implements OnInit, OnDestroy {
 
     /** subscription */
     public networkSubscription: any;
+    public combinedLatestObs$: any;
 
     constructor(
         private loading: LoadingScreenService,
@@ -39,9 +43,11 @@ export class FoundKitchenPageComponent implements OnInit, OnDestroy {
         private router: Router,
         private activatedRoute: ActivatedRoute,
         private ngZone: NgZone,
-        private modal: ModalController
+        private modal: ModalController,
+        private fcm: FcmService
     ) {
         this.daosLife = new DaoLife();
+        this.fcm.initPush();
     }
 
     ngOnDestroy() {
@@ -49,12 +55,16 @@ export class FoundKitchenPageComponent implements OnInit, OnDestroy {
         if (this.networkSubscription) {
             this.networkSubscription.unsubscribe();
         }
+        if (this.combinedLatestObs$) {
+            this.combinedLatestObs$.unsubscribe();
+        }
     }
 
     ngOnInit() {
+        this.daosLife.softKill();
         this.initScreen();
         this.networkSubscription = NetworkManager.getInstance().reloadCtx.subscribe((val) => {
-            if (val) {
+            if (val && !this.areWeUsingGps) {
                 this.daosLife.softKill();
                 this.initScreen(false);
             }
@@ -65,25 +75,18 @@ export class FoundKitchenPageComponent implements OnInit, OnDestroy {
         this.platform.ready().then(() => {
             /** fetch the found result in range */
             this.fetch_kitchen_in_range__ = new this.database.fetch_kitchen_in_range(daoConfig);
-            this.fetch_kitchen_in_range__.observe(this.daosLife).subscribe((val) => {
-                this.ngZone.run(() => {
-                    if (this.loading.dailogRef.isConnected) {
-                        this.loading.dailogRef.dismiss();
-                    }
-
-                    this.foundKitchens = val;
-                });
-            });
-
             /** fetch the trending menus */
             this.fetch_menu_trending__ = new this.database.fetch_menu_trending(daoConfig);
-            this.fetch_menu_trending__.observe(this.daosLife).subscribe((val) => {
+
+            const cominedObs$ = combineLatest([this.fetch_kitchen_in_range__.observe(this.daosLife), this.fetch_menu_trending__.observe(this.daosLife)]);
+            this.combinedLatestObs$ = cominedObs$.subscribe((val) => {
                 this.ngZone.run(() => {
                     if (this.loading.dailogRef.isConnected) {
                         this.loading.dailogRef.dismiss();
                     }
 
-                    this.trendingMenus = val;
+                    this.foundKitchens = val[0];
+                    this.trendingMenus = val[1];
                 });
             });
 
@@ -105,7 +108,7 @@ export class FoundKitchenPageComponent implements OnInit, OnDestroy {
         });
     }
 
-    public setLocationLocal() {
+    public setLocationLocal(can_show_loading = true) {
         /** set the prev location */
         const street = localStorage.getItem('street') ? localStorage.getItem('street') : '';
         const city = localStorage.getItem('city') ? localStorage.getItem('city') : '';
@@ -121,57 +124,56 @@ export class FoundKitchenPageComponent implements OnInit, OnDestroy {
 
         this.latitude = +lat;
         this.longitude = +lng;
+
+        if (can_show_loading) {
+            this.loading.showLoadingScreen().then(() => {
+                this.fetch_menu_trending__.fetch(this.latitude, this.longitude).obsData();
+                this.fetch_kitchen_in_range__.fetch(this.latitude, this.longitude).obsData();
+            });
+        } else {
+            this.fetch_menu_trending__.fetch(this.latitude, this.longitude).obsData();
+            this.fetch_kitchen_in_range__.fetch(this.latitude, this.longitude).obsData();
+        }
     }
 
     /** ask for the location */
     public async askLocation(can_show_loading = true) {
         const prev_location = localStorage.getItem('lng');
+
         if (prev_location) {
-            this.setLocationLocal();
-
-            this.loading.showLoadingScreen().then(() => {
-                this.fetch_kitchen_in_range__.fetch(this.latitude, this.longitude).obsData();
-                this.fetch_menu_trending__.fetch(this.latitude, this.longitude).obsData();
-            });
-
+            this.setLocationLocal(can_show_loading);
             return;
         }
+
+        this.areWeUsingGps = true;
 
         const dailogRef = await this.modal.create({
             component: AskLocationComponent,
         });
 
         await dailogRef.present();
-
         const { data } = await dailogRef.onWillDismiss();
 
+        this.areWeUsingGps = false;
         if (data) {
-            this.setLocationLocal();
-        }
-
-        if (can_show_loading) {
-            this.loading.showLoadingScreen().then(() => {
-                this.fetch_kitchen_in_range__.fetch(this.latitude, this.longitude).obsData();
-                this.fetch_menu_trending__.fetch(this.latitude, this.longitude).obsData();
-            });
-        } else {
-            this.loading.showLoadingScreen().then(() => {
-                this.fetch_kitchen_in_range__.fetch(this.latitude, this.longitude).obsData();
-                this.fetch_menu_trending__.fetch(this.latitude, this.longitude).obsData();
-            });
+            this.setLocationLocal(can_show_loading);
         }
     }
 
     /** change location */
     public async changeLocation() {
+        this.areWeUsingGps = true;
+
         const dailogRef = await this.modal.create({
             component: AskLocationComponent,
         });
-
         await dailogRef.present();
 
         const { data } = await dailogRef.onWillDismiss();
+        this.areWeUsingGps = false;
 
-        this.askLocation();
+        if (data) {
+            this.askLocation();
+        }
     }
 }

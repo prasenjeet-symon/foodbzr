@@ -5,8 +5,6 @@ import { FoodbzrDatasource } from '@foodbzr/datasource';
 import { PUSH_MESSAGE_TYPE } from '@foodbzr/shared/types';
 import { Platform, ToastController } from '@ionic/angular';
 import { daoConfig, DaoLife } from '@sculify/node-room-client';
-import * as moment from 'moment';
-
 const { PushNotifications } = Plugins;
 
 @Injectable({
@@ -58,14 +56,10 @@ export class FcmService {
         });
 
         PushNotifications.addListener('registrationError', (error: any) => {});
-        PushNotifications.addListener('pushNotificationReceived', async (notification: PushNotification) => {});
-        PushNotifications.addListener('pushNotificationActionPerformed', async (notification: PushNotificationActionPerformed) => {
-            const data = notification.notification.data;
-            /** data is json object  */
-            /** handle any routing */
-
-            // console.log('Action performed: ' + JSON.stringify(notification.notification));
+        PushNotifications.addListener('pushNotificationReceived', async (notification: PushNotification) => {
+            this.handleRouting(notification);
         });
+        PushNotifications.addListener('pushNotificationActionPerformed', async (notification: PushNotificationActionPerformed) => {});
     }
 
     /** save the push message id to server */

@@ -1,0 +1,17 @@
+<div class="pictures">
+    <ion-list>
+        <ion-list-header>
+            <ion-label color="secondary"> Menu's Pictures </ion-label>
+            <ion-button (click)="takePicture()"> ADD </ion-button>
+        </ion-list-header>
+    </ion-list>
+    <ion-item>
+        <ion-grid>
+            <ion-row>
+                <ion-col sizeLg="4" sizeMd="4" sizeXs="6" *ngFor="let image of allPics; trackBy: tracker">
+                    <img (click)="viewImage(image.pic_uri)" class="img-wrapper" [src]="image.thumbnail_uri" alt="" srcset="" />
+                </ion-col>
+            </ion-row>
+        </ion-grid>
+    </ion-item>
+</div>

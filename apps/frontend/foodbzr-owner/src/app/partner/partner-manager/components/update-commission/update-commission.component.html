@@ -1,16 +1,47 @@
-<ion-card>
-    <ion-card-header>
-        <ion-card-subtitle> Update partner's per successful order commision in percentage </ion-card-subtitle>
-        <ion-card-title> Update commision </ion-card-title>
-    </ion-card-header>
-    <ion-card-content>
-        <ion-item>
-            <ion-label position="stacked">Commission</ion-label>
-            <ion-input [(ngModel)]="prev_commision" [autofocus]="true"></ion-input>
-        </ion-item>
+<!--  update the partner ref and commision and permissions  -->
+<ion-list>
+    <ion-list-header>
+        <ion-label>
+            <h2>Update partner</h2>
+            <p>Assign the partner new kitchen and set the permissions and commision</p>
+        </ion-label>
+    </ion-list-header>
 
-        <div class="actions">
-            <ion-button (click)="saveData()" color="success">Save</ion-button>
-        </div>
-    </ion-card-content>
-</ion-card>
+    <!-- commision -->
+    <ion-item>
+        <ion-label position="floating">Owner commision</ion-label>
+        <ion-input [value]="commision" debounce="500" (ionChange)="updateCommision()" [(ngModel)]="commision" inputmode="number" type="number"></ion-input>
+    </ion-item>
+
+    <!-- choose the kitchens -->
+    <ion-item *ngIf="selectedKitchens.length === 0">
+        <ion-label>Assign new cloud kitchen</ion-label>
+        <ion-select (ionChange)="addKitchenToPartner($event.detail.value)">
+            <ion-select-option *ngFor="let kit of freeKitchens" [value]="kit">{{ kit.kitchen_name }}</ion-select-option>
+        </ion-select>
+    </ion-item>
+
+    <!-- already selected kitchen -->
+    <ion-item *ngFor="let kit of selectedKitchens">
+        <ion-icon slot="start" name="restaurant"></ion-icon>
+        <ion-label>
+            <h2>{{ kit.kitchen_name }}</h2>
+            <p>{{ kit.address }}</p>
+        </ion-label>
+        <ion-icon (click)="removeKitchenFromPartner(kit)" slot="end" name="close-circle"></ion-icon>
+    </ion-item>
+
+    <!-- can edit the kitchen -->
+    <ion-item>
+        <ion-icon slot="start" name="egg"></ion-icon>
+        <ion-label> <h2>Can edit the menus</h2> </ion-label>
+        <ion-checkbox [checked]="canEditMenu" (ionChange)="updateCanEditMenu($event.detail.checked)" slot="end" color="secondary"></ion-checkbox>
+    </ion-item>
+
+    <!-- can add new kitchen -->
+    <ion-item>
+        <ion-icon slot="start" name="logo-bitbucket"></ion-icon>
+        <ion-label> <h2>Can add new kitchen</h2> </ion-label>
+        <ion-checkbox [checked]="partner.can_add_kitchen === 'yes' ? true : false" (ionChange)="updateCanAddKitchen($event.detail.checked)" slot="end" color="secondary"></ion-checkbox>
+    </ion-item>
+</ion-list>

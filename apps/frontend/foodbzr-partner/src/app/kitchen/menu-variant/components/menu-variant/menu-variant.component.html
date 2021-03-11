@@ -18,18 +18,18 @@
 
         <ion-item-options side="start">
             <!--  delete the menu -->
-            <ion-item-option (click)="deactivateMenu(menu_item)" *ngIf="menu_item.is_active === 'yes'" color="danger">
+            <ion-item-option [disabled]="can_edit_kitchen === 'yes' ? false : true" (click)="deactivateMenu(menu_item)" *ngIf="menu_item.is_active === 'yes'" color="danger">
                 <ion-icon slot="icon-only" name="trash"></ion-icon>
             </ion-item-option>
             <!-- undo the delete -->
-            <ion-item-option (click)="activateMenu(menu_item)" *ngIf="menu_item.is_active === 'no'" color="tertiary">
+            <ion-item-option [disabled]="can_edit_kitchen === 'yes' ? false : true" (click)="activateMenu(menu_item)" *ngIf="menu_item.is_active === 'no'" color="tertiary">
                 <ion-icon slot="icon-only" name="arrow-undo"></ion-icon>
             </ion-item-option>
         </ion-item-options>
 
         <ion-item-options side="end">
             <!-- menu edit -->
-            <ion-item-option (click)="updateMenu(menu_item)" color="tertiary">
+            <ion-item-option [disabled]="can_edit_kitchen === 'yes' ? false : true" (click)="updateMenu(menu_item)" color="tertiary">
                 <ion-icon slot="icon-only" name="create"></ion-icon>
             </ion-item-option>
         </ion-item-options>

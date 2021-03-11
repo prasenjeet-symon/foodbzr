@@ -145,18 +145,20 @@ export class update_owner_auth extends TBaseDao<IGetOwnerAuth> {
         await this.openTransaction();
 
         try {
+            mobile_number = mobile_number.toString().trim();
+
             const found_owner = await new fetch_owner_with_mobile(this.TDaoConfig).fetch(mobile_number).asyncData(this);
 
             if (found_owner.length === 0) {
-                throw new Error('user_not_found');
+                throw new Error('Owner not found');
             }
 
             const owner_data = found_owner[0];
 
             /** update the otp */
             const gen_otp = generate_otp(5);
-            if (mobile_number.toString().length === 10) {
-                sendSMS(mobile_number.trim(), `OTP for the foodbzr login is ${gen_otp}`);
+            if (mobile_number.length === 10) {
+                sendSMS(mobile_number, `OTP for the foodbzr login is ${gen_otp}`);
             }
 
             await new update_owner_otp(this.TDaoConfig).fetch(gen_otp, owner_data.row_uuid).asyncData(this);
@@ -243,7 +245,10 @@ export class update_owner_resend_otp extends TBaseDao<IGetOwnerResendOTP> {
     async fetch(mobile_number: string, owner_row_uuid: string) {
         await this.openTransaction();
 
+
         try {
+            mobile_number = mobile_number.toString().trim()
+            
             /** fetch the owenr data */
             const found_owner = await new fetch_owner_all(this.TDaoConfig).fetch().asyncData(this);
             if (found_owner.length === 0) {

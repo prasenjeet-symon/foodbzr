@@ -1,6 +1,6 @@
 import { Component, Input, NgZone, OnDestroy, OnInit } from '@angular/core';
 import { fetch_menu_reviews_of_menu, FoodbzrDatasource } from '@foodbzr/datasource';
-import { IGetMenuReview } from '@foodbzr/shared/types';
+import { IGetMenuReview, is_active } from '@foodbzr/shared/types';
 import { Platform } from '@ionic/angular';
 import { daoConfig, DaoLife, NetworkManager } from '@sculify/node-room-client';
 import { LoadingScreenService } from '../../../../loading-screen.service';
@@ -18,6 +18,7 @@ export class FoodReviewComponent implements OnInit, OnDestroy {
         fetch_menu_reviews_of_menu: FoodbzrDatasource.getInstance().fetch_menu_reviews_of_menu,
     };
 
+    @Input() can_edit_kitchen: is_active;
     /** data */
     allReviews: IGetMenuReview[] = [];
 

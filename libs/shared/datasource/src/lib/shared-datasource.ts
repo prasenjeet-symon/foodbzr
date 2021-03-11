@@ -36,6 +36,7 @@ export {
     update_partner_resend_otp,
     update_partner_verify_otp,
     update_partner_mobile,
+    update_partner_permission,
 } from './foodbzr/dao/update/partner.u.dao';
 
 /**
@@ -51,8 +52,10 @@ export {
     fetch_kitchen_in_range,
     fetch_kitchen_search,
     fetch_kitchen_supported_menus,
+    fetch_kitchens_of_owner,
+    fetch_kitchen_for_new_partner,
 } from './foodbzr/dao/select/kitchen.s.dao';
-export { update_kitchen, update_kitchen_password, update_kitchen_offers, update_kitchen_login_detail, update_kitchen_address } from './foodbzr/dao/update/kitchen.u.dao';
+export { update_kitchen, update_kitchen_password, update_kitchen_offers, update_kitchen_login_detail, update_kitchen_address, update_kitchen_partner_ref } from './foodbzr/dao/update/kitchen.u.dao';
 
 /** menu.table.ts */
 export { delete_menu } from './foodbzr/dao/delete/menu.d.dao';

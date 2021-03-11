@@ -38,7 +38,6 @@ export class UserProfilePageComponent implements OnInit, OnDestroy {
     constructor(private fcm: FcmService, private router: Router, private ngZone: NgZone, private modal: ModalController, private platform: Platform, private loading: LoadingScreenService) {
         this.user_row_uuid = localStorage.getItem('user_row_uuid');
         this.daosLife = new DaoLife();
-        this.fcm.initPush();
     }
 
     ngOnDestroy() {
@@ -60,7 +59,6 @@ export class UserProfilePageComponent implements OnInit, OnDestroy {
 
     public initScreen(can_show_loading = true) {
         this.platform.ready().then(() => {
-            this.toogleDarkMode();
             /** fetch the user */
             this.fetch_user_single__ = new this.database.fetch_user_single(daoConfig);
             this.fetch_user_single__.observe(this.daosLife).subscribe((val) => {

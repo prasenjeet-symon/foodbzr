@@ -57,8 +57,8 @@ export class AskLocationComponent implements OnInit, OnDestroy {
                 const loc = await this.location.getCurrentPosition();
 
                 if (loc) {
-                    const lat = loc.coords.latitude;
-                    const lng = loc.coords.longitude;
+                    const lat = +loc.coords.latitude;
+                    const lng = +loc.coords.longitude;
 
                     const data: any = await this.getReverseGeocodingData(lat, lng);
 
@@ -69,8 +69,8 @@ export class AskLocationComponent implements OnInit, OnDestroy {
                     localStorage.setItem('state', data.state);
                     localStorage.setItem('lat', data.lat);
                     localStorage.setItem('lng', data.lng);
-                    this.can_click_fetch_loc = true;
 
+                    this.can_click_fetch_loc = true;
                     this.closeModal(true);
                 } else {
                     this.can_click_fetch_loc = true;

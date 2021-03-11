@@ -11,7 +11,7 @@ const routes: Routes = [
         loadChildren: () => import('../kitchen/menu/menu.module').then((m) => m.MenuModule),
     },
     {
-        path: 'kitchen-menu-variant/:menu_row_uuid/:menu_profile_picture',
+        path: 'kitchen-menu-variant/:menu_row_uuid/:menu_profile_picture/:kitchen_row_uuid',
         loadChildren: () => import('../kitchen/menu-variant/menu-variant.module').then((m) => m.MenuVariantModule),
     },
     {

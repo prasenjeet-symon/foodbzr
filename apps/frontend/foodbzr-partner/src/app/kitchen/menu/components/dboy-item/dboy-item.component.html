@@ -1,8 +1,9 @@
 <ion-list>
     <!-- section name -->
+
     <ion-list-header>
-        <ion-label slot="start" color="secondary">Delivery Boys</ion-label>
-        <ion-button (click)="initDboy()" slot="end" color="secondary"> Add </ion-button>
+        <ion-label color="secondary">Delivery Boys</ion-label>
+        <ion-button [disabled]="can_edit_kitchen === 'yes' ? false : true" (click)="initDboy()" color="secondary"> Add </ion-button>
     </ion-list-header>
 
     <ion-item-sliding *ngFor="let dboy of allDboys">
@@ -27,19 +28,19 @@
 
         <ion-item-options side="start">
             <!-- active inactive -->
-            <ion-item-option (click)="inActiveDboy(dboy)" *ngIf="dboy.is_active === 'yes'" color="danger">
+            <ion-item-option [disabled]="can_edit_kitchen === 'yes' ? false : true" (click)="inActiveDboy(dboy)" *ngIf="dboy.is_active === 'yes'" color="danger">
                 <ion-icon slot="icon-only" name="trash"></ion-icon>
             </ion-item-option>
-            <ion-item-option (click)="activateDboy(dboy)" *ngIf="dboy.is_active === 'no'" color="tertiary">
+            <ion-item-option [disabled]="can_edit_kitchen === 'yes' ? false : true" (click)="activateDboy(dboy)" *ngIf="dboy.is_active === 'no'" color="tertiary">
                 <ion-icon slot="icon-only" name="arrow-undo"></ion-icon>
             </ion-item-option>
         </ion-item-options>
 
         <ion-item-options side="end">
-            <ion-item-option (click)="verifyDboy(dboy)" color="success" *ngIf="dboy.is_verified === 'no'">
+            <ion-item-option [disabled]="can_edit_kitchen === 'yes' ? false : true" (click)="verifyDboy(dboy)" color="success" *ngIf="dboy.is_verified === 'no'">
                 <ion-icon slot="icon-only" name="checkmark"></ion-icon>
             </ion-item-option>
-            <ion-item-option (click)="unverifyDboy(dboy)" color="warning" *ngIf="dboy.is_verified === 'yes'">
+            <ion-item-option [disabled]="can_edit_kitchen === 'yes' ? false : true" (click)="unverifyDboy(dboy)" color="warning" *ngIf="dboy.is_verified === 'yes'">
                 <ion-icon slot="icon-only" name="close"></ion-icon>
             </ion-item-option>
         </ion-item-options>

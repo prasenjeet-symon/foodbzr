@@ -101,41 +101,45 @@ async function generate_test_data(daoConfig: IDaoConfig, MYSQL_CONFIG: MYSQLConn
     /** add some kitchens to the partner */
     /** created kitchen do not have any password or user_id */
     await (async () => {
-        /** fetch all the inserted partners of db */
-        const ins_all_partners = await new rootDatabase.fetch_partner_all(daoConfig).fetch().asyncData();
+        const all_owners = await new rootDatabase.fetch_owner_all(daoConfig).fetch().asyncData();
+        for (const owner of all_owners) {
+            /** fetch all the inserted partners of db */
+            const owner_partners = await new rootDatabase.fetch_partners_of_owner(daoConfig).fetch(owner.row_uuid, 'yes').asyncData();
 
-        for (const partner of ins_all_partners) {
-            /** insert the 5 kitchen for single partner */
-            const gen_5_kitchens = generate_kitchens(2);
-            for (const kitchen of gen_5_kitchens) {
-                /** insert the kitchen */
-                await new rootDatabase.insert_kitchen(daoConfig)
-                    .fetch(
-                        partner.row_uuid,
-                        kitchen.kitchen_user_id,
-                        kitchen.kitchen_password,
-                        kitchen.kitchen_name,
-                        kitchen.kitchen_image,
-                        15,
-                        kitchen.latitude,
-                        kitchen.longitude,
-                        kitchen.opening_time,
-                        kitchen.closing_time,
-                        kitchen.open_week_list,
-                        kitchen.street,
-                        kitchen.pincode,
-                        kitchen.city,
-                        kitchen.state,
-                        kitchen.country,
-                        kitchen.date_created,
-                        kitchen.row_uuid
-                    )
-                    .asyncData();
-            }
-            /** delete the 2 random kitchen */
-            const kitchen_to_delete = chance.pickset(gen_5_kitchens, 1);
-            for (const kitchen_to_del of kitchen_to_delete) {
-                await new rootDatabase.delete_kitchen(daoConfig).fetch('no', kitchen_to_del.row_uuid).asyncData();
+            for (const partner of owner_partners) {
+                /** insert the 5 kitchen for single partner */
+                const gen_5_kitchens = generate_kitchens(2);
+                for (const kitchen of gen_5_kitchens) {
+                    /** insert the kitchen */
+                    await new rootDatabase.insert_kitchen(daoConfig)
+                        .fetch(
+                            partner.row_uuid,
+                            owner.row_uuid,
+                            kitchen.kitchen_user_id,
+                            kitchen.kitchen_password,
+                            kitchen.kitchen_name,
+                            kitchen.kitchen_image,
+                            15,
+                            kitchen.latitude,
+                            kitchen.longitude,
+                            kitchen.opening_time,
+                            kitchen.closing_time,
+                            kitchen.open_week_list,
+                            kitchen.street,
+                            kitchen.pincode,
+                            kitchen.city,
+                            kitchen.state,
+                            kitchen.country,
+                            kitchen.date_created,
+                            kitchen.row_uuid
+                        )
+                        .asyncData();
+                }
+                /** delete the 2 random kitchen */
+                const kitchen_to_delete = chance.pickset(gen_5_kitchens, 1);
+                for (const kitchen_to_del of kitchen_to_delete) {
+                    await new rootDatabase.delete_kitchen(daoConfig).fetch('no', kitchen_to_del.row_uuid).asyncData();
+                }
             }
         }
     })();
@@ -176,16 +180,16 @@ async function generate_test_data(daoConfig: IDaoConfig, MYSQL_CONFIG: MYSQLConn
     /** Generate the food category */
     await (async () => {
         /** fetch all the partner  */
-        const all_partners = await new rootDatabase.fetch_partner_all(daoConfig).fetch().asyncData();
+        const all_owners = await new rootDatabase.fetch_owner_all(daoConfig).fetch().asyncData();
 
-        for (const partner of all_partners) {
+        for (const owner of all_owners) {
             const food_category = generate_food_category();
             for (const food_cat of food_category) {
                 await new rootDatabase.insert_food_category(daoConfig)
                     .fetch(
                         food_cat.name,
                         food_cat.profile_picture,
-                        partner.row_uuid,
+                        owner.row_uuid,
                         food_cat.offer_percentage,
                         food_cat.offer_start_datetime,
                         food_cat.offer_end_datetime,
@@ -206,8 +210,8 @@ async function generate_test_data(daoConfig: IDaoConfig, MYSQL_CONFIG: MYSQLConn
     /** generate the regional food category */
     await (async () => {
         /** fetch all partners */
-        const all_partners = await new rootDatabase.fetch_partner_all(daoConfig).fetch().asyncData();
-        for (const partner of all_partners) {
+        const all_owners = await new rootDatabase.fetch_owner_all(daoConfig).fetch().asyncData();
+        for (const owner of all_owners) {
             /** add regional food cats */
             const all_regional_food_cats = generate_regional_food_category(5);
             for (const regional_food_cat of all_regional_food_cats) {
@@ -215,7 +219,7 @@ async function generate_test_data(daoConfig: IDaoConfig, MYSQL_CONFIG: MYSQLConn
                     .fetch(
                         regional_food_cat.name,
                         regional_food_cat.profile_picture,
-                        partner.row_uuid,
+                        owner.row_uuid,
                         regional_food_cat.offer_percentage,
                         regional_food_cat.offer_start_datetime,
                         regional_food_cat.offer_end_datetime,
@@ -235,34 +239,36 @@ async function generate_test_data(daoConfig: IDaoConfig, MYSQL_CONFIG: MYSQLConn
      */
     /** create some menus for the kitchens */
     await (async () => {
-        const all_partners = await new rootDatabase.fetch_partner_all(daoConfig).fetch().asyncData();
-        for (const partner of all_partners) {
+        const all_owners = await new rootDatabase.fetch_owner_all(daoConfig).fetch().asyncData();
+        for (const owner of all_owners) {
             /** fethc all the regional food cat and food cat */
-            const all_regional_food_cats = await new rootDatabase.fetch_regional_food_category_of_partner(daoConfig).fetch(partner.row_uuid).asyncData();
-            const all_food_cats = await new rootDatabase.fetch_food_category_of_partner(daoConfig).fetch(partner.row_uuid).asyncData();
-
-            /** fetch all kitchens */
-            const all_kitchens = await new rootDatabase.fetch_kitchens_of_partner(daoConfig).fetch(partner.row_uuid, 'yes').asyncData();
-            for (const kitchen of all_kitchens) {
-                /** create the menus */
-                const gen_menus = generate_menus(5);
-                for (const menu of gen_menus) {
-                    /** insert the menu */
-                    await new rootDatabase.insert_menu(daoConfig)
-                        .fetch(
-                            menu.name,
-                            menu.profile_picture,
-                            menu.bio,
-                            kitchen.row_uuid,
-                            chance.pickone(all_regional_food_cats).row_uuid,
-                            chance.pickone(all_food_cats).row_uuid,
-                            menu.offer_percentage,
-                            menu.offer_start_datetime,
-                            menu.offer_end_datetime,
-                            menu.date_created,
-                            menu.row_uuid
-                        )
-                        .asyncData();
+            const all_regional_food_cats = await new rootDatabase.fetch_regional_food_category_of_partner(daoConfig).fetch(owner.row_uuid).asyncData();
+            const all_food_cats = await new rootDatabase.fetch_food_category_of_partner(daoConfig).fetch(owner.row_uuid).asyncData();
+            const all_partners = await new rootDatabase.fetch_partners_of_owner(daoConfig).fetch(owner.row_uuid, 'yes').asyncData();
+            for (const partner of all_partners) {
+                /** fetch all kitchens */
+                const all_kitchens = await new rootDatabase.fetch_kitchens_of_partner(daoConfig).fetch(partner.row_uuid, 'yes').asyncData();
+                for (const kitchen of all_kitchens) {
+                    /** create the menus */
+                    const gen_menus = generate_menus(5);
+                    for (const menu of gen_menus) {
+                        /** insert the menu */
+                        await new rootDatabase.insert_menu(daoConfig)
+                            .fetch(
+                                menu.name,
+                                menu.profile_picture,
+                                menu.bio,
+                                kitchen.row_uuid,
+                                chance.pickone(all_regional_food_cats).row_uuid,
+                                chance.pickone(all_food_cats).row_uuid,
+                                menu.offer_percentage,
+                                menu.offer_start_datetime,
+                                menu.offer_end_datetime,
+                                menu.date_created,
+                                menu.row_uuid
+                            )
+                            .asyncData();
+                    }
                 }
             }
         }
@@ -460,11 +466,11 @@ async function generate_test_data(daoConfig: IDaoConfig, MYSQL_CONFIG: MYSQLConn
 
             for (const owner of all_owners) {
                 const all_partners = await new rootDatabase.fetch_partners_of_owner(daoConfig).fetch(owner.row_uuid, 'yes').asyncData();
-
+                const all_food_cats = await new rootDatabase.fetch_food_category_of_partner(daoConfig).fetch(owner.row_uuid).asyncData();
+                const all_regional_food_cats = await new rootDatabase.fetch_regional_food_category_of_partner(daoConfig).fetch(owner.row_uuid).asyncData();
                 for (const partner of all_partners) {
                     /** fetch all food category */
-                    const all_food_cats = await new rootDatabase.fetch_food_category_of_partner(daoConfig).fetch(partner.row_uuid).asyncData();
-                    const all_regional_food_cats = await new rootDatabase.fetch_regional_food_category_of_partner(daoConfig).fetch(partner.row_uuid).asyncData();
+
                     const all_kitchens = await new rootDatabase.fetch_kitchens_of_partner(daoConfig).fetch(partner.row_uuid, 'yes').asyncData();
 
                     for (const kitchen of all_kitchens) {

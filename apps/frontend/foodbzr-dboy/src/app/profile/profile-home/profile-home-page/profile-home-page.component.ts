@@ -35,7 +35,6 @@ export class ProfileHomePageComponent implements OnInit, OnDestroy {
     constructor(private router: Router, private ngZone: NgZone, private modal: ModalController, private platform: Platform, private loading: LoadingScreenService, private fcm: FcmService) {
         this.daosLife = new DaoLife();
         this.dboy_row_uuid = localStorage.getItem('dboy_row_uuid');
-        this.fcm.initPush();
     }
 
     ngOnInit() {
@@ -57,7 +56,6 @@ export class ProfileHomePageComponent implements OnInit, OnDestroy {
 
     public initScreen(can_show_loading = true) {
         this.platform.ready().then(() => {
-            this.toogleDarkMode();
             /** fetch the dboy profile info */
             this.fetch_dboy_single__ = new this.database.fetch_dboy_single(daoConfig);
             this.fetch_dboy_single__.observe(this.daosLife).subscribe((val) => {
@@ -153,6 +151,4 @@ export class ProfileHomePageComponent implements OnInit, OnDestroy {
             this.router.navigate(['auth']);
         });
     }
-
-    
 }

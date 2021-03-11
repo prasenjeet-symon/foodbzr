@@ -1,0 +1,53 @@
+<ion-header [translucent]="true">
+    <ion-toolbar>
+        <ion-title>Create menu variant</ion-title>
+        <ion-buttons slot="end">
+            <ion-button (click)="createMenu()" color="secondary">Save</ion-button>
+        </ion-buttons>
+        <ion-buttons slot="end">
+            <ion-button (click)="closeModal()"> <ion-icon name="close"></ion-icon> </ion-button>
+        </ion-buttons>
+    </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+    <!-- for ios only header  -->
+    <ion-header collapse="condense">
+        <ion-toolbar>
+            <ion-title size="large">Create menu variant</ion-title>
+        </ion-toolbar>
+    </ion-header>
+
+    <!-- header profile pic -->
+    <div class="upload_profile_picture">
+        <img [src]="menu_profile_picture" srcset="" />
+        <div class="file_chooser">
+            <ion-fab-button color="secondary"> <ion-icon name="aperture-sharp"></ion-icon> </ion-fab-button>
+        </div>
+    </div>
+
+    <!-- general information -->
+    <div class="main_details">
+        <ion-list>
+            <ion-list-header>
+                <ion-label color="secondary"> Menu Details </ion-label>
+            </ion-list-header>
+        </ion-list>
+
+        <ion-item>
+            <ion-label> Variant Name </ion-label>
+            <ion-input [(ngModel)]="menu_variant_name" placeholder="Enter menu size variant name" inputmode="text"></ion-input>
+        </ion-item>
+        <ion-item>
+            <ion-label> Price per unit ( &#x20B9; ) </ion-label>
+            <ion-input min="0" [(ngModel)]="menu_price" inputmode="number" placeholder="Enter price of single item"></ion-input>
+        </ion-item>
+        <ion-item>
+            <ion-label> Min order </ion-label>
+            <ion-input min="1" [(ngModel)]="min_order" inputmode="number" placeholder="Min order amount"></ion-input>
+        </ion-item>
+        <ion-item>
+            <ion-textarea [(ngModel)]="bio" placeholder="Enter good things about this menu..."></ion-textarea>
+        </ion-item>
+    </div>
+</ion-content>

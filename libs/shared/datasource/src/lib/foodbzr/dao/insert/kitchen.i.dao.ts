@@ -16,13 +16,13 @@ export class insert_kitchen extends BaseDao<IModificationDaoStatus> {
         INSERT INTO kitchen
         (
             partner_row_uuid,
+            owner_row_uuid,
             kitchen_user_id,
             kitchen_password,
             kitchen_name,
             profile_picture,
             radius,
-            latitude,
-            longitude,
+            coordinate,
             opening_time,
             closing_time,
             open_week_list,
@@ -37,13 +37,13 @@ export class insert_kitchen extends BaseDao<IModificationDaoStatus> {
         VALUES
         (
             :partner_row_uuid:,
+            :owner_row_uuid:,
             :kitchen_user_id:,
             :kitchen_password:,
             :kitchen_name:,
             :profile_picture:,
             :radius:,
-            :latitude:,
-            :longitude:,
+            ST_GeomFromText('POINT(:latitude: :longitude:)', 4326),
             :opening_time:,
             :closing_time:,
             :open_week_list:,
@@ -58,6 +58,7 @@ export class insert_kitchen extends BaseDao<IModificationDaoStatus> {
     ;`)
     fetch(
         partner_row_uuid: string,
+        owner_row_uuid: string,
         kitchen_user_id: string,
         kitchen_password: string,
         kitchen_name: string,

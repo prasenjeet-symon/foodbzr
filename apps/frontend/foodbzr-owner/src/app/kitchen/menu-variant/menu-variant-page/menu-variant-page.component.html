@@ -1,0 +1,31 @@
+<ion-header [translucent]="true">
+    <ion-toolbar>
+        <ion-title>Kitchen's Menu Variants</ion-title>
+        <ion-buttons slot="start">
+            <ion-back-button></ion-back-button>
+        </ion-buttons>
+    </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+    <!-- for ios only header  -->
+    <ion-header collapse="condense">
+        <ion-toolbar>
+            <ion-title size="large">Kitchen's Menu Variants</ion-title>
+        </ion-toolbar>
+    </ion-header>
+
+    <div class="menu_food_profile_picture">
+        <img [src]="menu_profile_picture" alt="" />
+        <div class="add_menu">
+            <ion-fab-button (click)="createMenuSizeVariant()"><ion-icon name="document-text"></ion-icon></ion-fab-button>
+        </div>
+    </div>
+
+    <!-- menu variants -->
+    <foodbzr-menu-variant [partner_row_uuid]="partner_row_uuid" [menu_row_uuid]="menu_row_uuid"></foodbzr-menu-variant>
+    <!-- menu pictures -->
+    <foodbzr-food-picture [owner_row_uuid]="owner_row_uuid" [menu_row_uuid]="menu_row_uuid"></foodbzr-food-picture>
+    <!-- menu review -->
+    <foodbzr-food-review [owner_row_uuid]="owner_row_uuid" [menu_row_uuid]="menu_row_uuid"></foodbzr-food-review>
+</ion-content>

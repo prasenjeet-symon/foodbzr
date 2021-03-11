@@ -18,7 +18,7 @@ declare let google: any;
 })
 export class TrackFoodPageComponent implements OnInit, OnDestroy {
     mapElement: ElementRef<HTMLDivElement>;
-    @ViewChild('map')
+    @ViewChild('map', { static: false })
     set appShark(mapElement: ElementRef<HTMLDivElement>) {
         if (mapElement) {
             this.mapElement = mapElement;

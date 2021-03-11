@@ -6,6 +6,7 @@ import { IonicModule } from '@ionic/angular';
 import { LoadingScreenService } from '../../loading-screen.service';
 import { PendingOrderPageComponent } from './pending-order-page/pending-order-page.component';
 import { CallNumber } from '@ionic-native/call-number/ngx';
+import { FcmService } from '../../fcm.service';
 
 @NgModule({
     imports: [
@@ -19,7 +20,7 @@ import { CallNumber } from '@ionic-native/call-number/ngx';
             },
         ]),
     ],
-    providers: [LoadingScreenService, CallNumber],
+    providers: [LoadingScreenService, CallNumber, FcmService],
     declarations: [PendingOrderPageComponent],
     exports: [],
 })

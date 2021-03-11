@@ -16,7 +16,7 @@ export class fetch_food_category_of_partner extends BaseDao<IGetFoodCategory[]> 
         name,
         is_active,
         profile_picture,
-        partner_row_uuid,
+        owner_row_uuid,
         offer_percentage,
         offer_start_datetime,
         offer_end_datetime,
@@ -25,9 +25,9 @@ export class fetch_food_category_of_partner extends BaseDao<IGetFoodCategory[]> 
         row_uuid
 
         FROM food_category
-        WHERE partner_row_uuid = :partner_row_uuid:
+        WHERE owner_row_uuid = :owner_row_uuid:
     ;`)
-    fetch(partner_row_uuid: string) {
+    fetch(owner_row_uuid: string) {
         return this.baseFetch(this.DBData);
     }
 }

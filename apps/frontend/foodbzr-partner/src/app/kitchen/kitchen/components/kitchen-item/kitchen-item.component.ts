@@ -62,6 +62,10 @@ export class KitchenItemComponent implements OnInit, OnDestroy {
 
                     this.ngZone.run(() => {
                         this.allKitchens = val;
+                        // set the local storage
+                        this.allKitchens.forEach((kit) => {
+                            localStorage.setItem(`${kit.row_uuid}_can_edit`, kit.can_edit_partner);
+                        });
                     });
                 });
 

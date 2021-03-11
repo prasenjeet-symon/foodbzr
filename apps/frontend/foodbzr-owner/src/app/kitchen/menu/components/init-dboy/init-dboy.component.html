@@ -1,0 +1,27 @@
+<!-- dboy mobile number -->
+<!-- Number type input -->
+<ion-list>
+    <ion-item class="ion-padding">
+        <ion-avatar sloat="start"> <img src="../../../../../assets/icon/street-map.png" alt="" srcset="" /> </ion-avatar>
+        <ion-label> <h2>Add delivery boy</h2> </ion-label>
+    </ion-item>
+
+    <div class="ion-padding">
+        <ion-item>
+            <ion-label> Full Name </ion-label>
+            <ion-input [(ngModel)]="full_name" type="text" placeholder="Full Name"></ion-input>
+        </ion-item>
+
+        <ion-item>
+            <ion-label> Mobile Number </ion-label>
+            <ion-input [(ngModel)]="mobile_number" type="number" placeholder="Mobile Number"></ion-input>
+        </ion-item>
+    </div>
+</ion-list>
+
+<div class="actions">
+    <div></div>
+    <div>
+        <ion-button (click)="closeModal()" color="secondary"> Add </ion-button>
+    </div>
+</div>

@@ -22,6 +22,10 @@ export class fetch_push_message_fcm_tokens extends BaseDao<IGetPushAddress[]> {
     WHERE entity = :entity: AND entity_row_uuid = :entity_row_uuid:
     ;`)
     fetch(entity: foodbzr_entity, entity_row_uuid: string) {
-        return this.baseFetch(this.DBData);
+        return this.baseFetch(
+            this.DBData.map((p) => {
+                return { ...p, push_address: JSON.parse(p.push_address).value };
+            })
+        );
     }
 }

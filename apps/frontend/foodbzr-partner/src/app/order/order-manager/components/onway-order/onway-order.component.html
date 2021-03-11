@@ -1,0 +1,40 @@
+<ion-list>
+    <ion-list-header>
+        <ion-label color="tertiary">On it's way</ion-label>
+    </ion-list-header>
+    <ion-item-sliding *ngFor="let onway of onitsway_arr; trackBy: onitsWayOrderTracker">
+        <ion-item>
+            <ion-avatar slot="start">
+                <img src="../../../../../assets/icon/street-map.png" alt="" srcset="" />
+            </ion-avatar>
+            <ion-avatar slot="end">
+                <img [src]="onway.dboy_profile_picture" alt="" srcset="" />
+            </ion-avatar>
+            <ion-label class="ion-text-wrap">
+                <h2>Order id #{{ onway.food_order_row_id }} on it's way</h2>
+                <p>
+                    Food with
+                    <b
+                        ><i>order id #{{ onway.food_order_row_id }}</i></b
+                    >
+                    is being delivered by the delivery boy <b>{{ onway.dboy_full_name }}</b>
+                </p>
+            </ion-label>
+        </ion-item>
+
+        <ion-item-options side="start">
+            <ion-item-option disabled="true" (click)="changeOrderStatus('canceled', onway.food_order_row_uuid)" color="danger">
+                <ion-icon slot="icon-only" name="close-outline"></ion-icon>
+            </ion-item-option>
+            <ion-item-option (click)="openOrderDetailPage(onway)" color="warning">
+                <ion-icon slot="icon-only" name="list"></ion-icon>
+            </ion-item-option>
+        </ion-item-options>
+
+        <ion-item-options side="end">
+            <ion-item-option disabled="true" color="tertiary">
+                <ion-icon slot="icon-only" name="navigate-circle"></ion-icon>
+            </ion-item-option>
+        </ion-item-options>
+    </ion-item-sliding>
+</ion-list>

@@ -1,0 +1,39 @@
+
+<ion-header>
+    <ion-toolbar>
+        <ion-segment scrollable (ionChange)="segmentChanged($event)" color="secondary" value="pending">
+            <ion-segment-button value="pending">
+                <ion-icon name="stopwatch"></ion-icon>
+            </ion-segment-button>
+            <ion-segment-button value="cooking">
+                <ion-icon name="beaker"></ion-icon>
+            </ion-segment-button>
+            <ion-segment-button value="onway">
+                <ion-icon name="map"></ion-icon>
+            </ion-segment-button>
+            <ion-segment-button value="delivered">
+                <ion-icon name="checkmark-done-circle"></ion-icon>
+            </ion-segment-button>
+            <ion-segment-button value="canceled">
+                <ion-icon name="close-circle"></ion-icon>
+            </ion-segment-button>
+        </ion-segment>
+    </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+    <!--  list the items -->
+    <div *ngIf="selectedPartners.length !== 0" [ngSwitch]="visible_table">
+        <foodbzr-pending-order [partnerSelected]="partnerSelected" [selectedPartners]="selectedPartners" *ngSwitchCase="'pending'"></foodbzr-pending-order>
+        <foodbzr-cooking-order [partnerSelected]="partnerSelected" [selectedPartners]="selectedPartners" *ngSwitchCase="'cooking'"></foodbzr-cooking-order>
+        <foodbzr-onway-order [partnerSelected]="partnerSelected" [selectedPartners]="selectedPartners" *ngSwitchCase="'onway'"></foodbzr-onway-order>
+        <foodbzr-delivered-order [partnerSelected]="partnerSelected" [selectedPartners]="selectedPartners" *ngSwitchCase="'delivered'"></foodbzr-delivered-order>
+        <foodbzr-canceled-order [partnerSelected]="partnerSelected" [selectedPartners]="selectedPartners" *ngSwitchCase="'canceled'"></foodbzr-canceled-order>
+    </div>
+
+    <ion-fab vertical="bottom" horizontal="end" slot="fixed">
+        <ion-fab-button (click)="choosePartner()">
+            <ion-icon name="add"></ion-icon>
+        </ion-fab-button>
+    </ion-fab>
+</ion-content>

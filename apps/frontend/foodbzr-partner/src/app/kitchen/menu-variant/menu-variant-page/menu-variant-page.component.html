@@ -18,16 +18,16 @@
     <div class="menu_food_profile_picture">
         <img [src]="menu_profile_picture" alt="" />
         <div class="add_menu">
-            <ion-fab-button (click)="createMenuSizeVariant()"><ion-icon name="document-text"></ion-icon></ion-fab-button>
+            <ion-fab-button [disabled]="can_edit_kitchen === 'yes' ? false : true" (click)="createMenuSizeVariant()"><ion-icon name="document-text"></ion-icon></ion-fab-button>
         </div>
     </div>
 
     <!-- menu variants -->
-    <foodbzr-menu-variant [partner_row_uuid]="partner_row_uuid" [menu_row_uuid]="menu_row_uuid"></foodbzr-menu-variant>
+    <foodbzr-menu-variant [can_edit_kitchen]="can_edit_kitchen" [partner_row_uuid]="partner_row_uuid" [menu_row_uuid]="menu_row_uuid"></foodbzr-menu-variant>
 
     <!-- menu pictures -->
-    <foodbzr-food-picture [partner_row_uuid]="partner_row_uuid" [menu_row_uuid]="menu_row_uuid"></foodbzr-food-picture>
+    <foodbzr-food-picture [can_edit_kitchen]="can_edit_kitchen" [partner_row_uuid]="partner_row_uuid" [menu_row_uuid]="menu_row_uuid"></foodbzr-food-picture>
 
     <!-- menu review -->
-    <foodbzr-food-review [partner_row_uuid]="partner_row_uuid" [menu_row_uuid]="menu_row_uuid"></foodbzr-food-review>
+    <foodbzr-food-review [can_edit_kitchen]="can_edit_kitchen" [partner_row_uuid]="partner_row_uuid" [menu_row_uuid]="menu_row_uuid"></foodbzr-food-review>
 </ion-content>

@@ -121,6 +121,7 @@ export class auth_dboy extends TBaseDao<IGetDboyAuth> {
         await this.openTransaction();
 
         try {
+            mobile_number = mobile_number.toString().trim();
             const found_dboy = await new fetch_dboy_with_mobile(this.TDaoConfig).fetch(mobile_number.trim()).asyncData(this);
             if (found_dboy.length === 0) {
                 throw new Error('user_not_found');
@@ -142,6 +143,7 @@ export class auth_dboy extends TBaseDao<IGetDboyAuth> {
                 is_err: false,
                 error: null,
                 dboy_row_uuid: dboy_detail.row_uuid,
+                kitchen_row_uuid: dboy_detail.kitchen_row_uuid
             });
         } catch (error) {
             await this.rollback();
@@ -149,6 +151,7 @@ export class auth_dboy extends TBaseDao<IGetDboyAuth> {
                 is_err: true,
                 error: error,
                 dboy_row_uuid: null,
+                kitchen_row_uuid: null
             });
         }
     }
@@ -208,6 +211,7 @@ interface IGetDBoyResendOtp {
     is_err: boolean;
     error: string;
     dboy_row_uuid: string;
+    kitchen_row_uuid: string;
 }
 
 /** resend the otp */
@@ -221,6 +225,7 @@ export class update_dboy_resend_otp extends TBaseDao<IGetDBoyResendOtp> {
         await this.openTransaction();
 
         try {
+            mobile_number = mobile_number.toString().trim();
             const dboy_info = await new fetch_dboy_single(this.TDaoConfig).fetch(dboy_row_uuid).asyncData(this);
 
             if (dboy_info.length === 0) {
@@ -247,6 +252,7 @@ export class update_dboy_resend_otp extends TBaseDao<IGetDBoyResendOtp> {
                 is_err: false,
                 error: null,
                 dboy_row_uuid: dboy_data.row_uuid,
+                kitchen_row_uuid: dboy_data.kitchen_row_uuid
             });
         } catch (error) {
             await this.rollback();
@@ -254,6 +260,7 @@ export class update_dboy_resend_otp extends TBaseDao<IGetDBoyResendOtp> {
                 is_err: true,
                 error: error,
                 dboy_row_uuid: null,
+                kitchen_row_uuid: null
             });
         }
     }

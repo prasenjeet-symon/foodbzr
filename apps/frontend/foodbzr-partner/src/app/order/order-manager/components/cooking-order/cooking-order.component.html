@@ -1,0 +1,43 @@
+<ion-list>
+    <ion-list-header>
+        <ion-label color="warning">Cooking</ion-label>
+    </ion-list-header>
+    <ion-item-sliding *ngFor="let item_cooking of cooking_arr; trackBy: cookingOrderTracker">
+        <ion-item>
+            <ion-avatar slot="start">
+                <img src="../../../../../assets/icon/boiling.png" alt="" srcset="" />
+            </ion-avatar>
+            <ion-avatar *ngIf="item_cooking.dboy_row_uuid" slot="end">
+                <img [src]="item_cooking.dboy_profile_picture" alt="" srcset="" />
+            </ion-avatar>
+            <ion-label class="ion-text-wrap">
+                <h2>Oder id #{{ item_cooking.food_order_row_id }}</h2>
+                <p *ngIf="item_cooking.dboy_row_uuid">
+                    Food with
+                    <strong
+                        ><i>order id #{{ item_cooking.food_order_row_id }}</i></strong
+                    >
+                    will be delivered by the delivery boy <b>{{ item_cooking.dboy_full_name }}</b>
+                </p>
+                <p *ngIf="!item_cooking.dboy_row_uuid">No delivery boy is selected to deliver this food. Please choose one by <b>sliding right</b></p>
+            </ion-label>
+        </ion-item>
+
+        <ion-item-options side="start">
+            <ion-item-option disabled="true" (click)="changeOrderStatus('canceled', item_cooking.food_order_row_uuid)" color="danger">
+                <ion-icon slot="icon-only" name="close-outline"></ion-icon>
+            </ion-item-option>
+            <ion-item-option (click)="openOrderDetailPage(item_cooking)" color="warning">
+                <ion-icon slot="icon-only" name="list"></ion-icon>
+            </ion-item-option>
+        </ion-item-options>
+
+        <ion-item-options side="end">
+            <ion-item-option disabled="true" (click)="chooseDeliveryBoy(item_cooking.dboy_row_uuid, item_cooking.kitchen_row_uuid, item_cooking.food_order_row_uuid)" color="tertiary">
+                <ion-avatar>
+                    <img src="../../../../../assets/icon/food-delivery.png" alt="" srcset="" />
+                </ion-avatar>
+            </ion-item-option>
+        </ion-item-options>
+    </ion-item-sliding>
+</ion-list>

@@ -31,9 +31,10 @@
                     <!-- user info -->
                     <ion-item>
                         <ion-avatar slot="start"><img [src]="selectedOrder.user_profile_picture" alt="" srcset="" /></ion-avatar>
-                        <ion-label>
+                        <ion-label class="ion-text-wrap">
                             <h3>{{ selectedOrder.user_full_name }}</h3>
                             <p>+91 {{ selectedOrder.user_mobile_number }}</p>
+                            <p>{{ selectedOrder.delivery_address }}</p>
                         </ion-label>
                         <ion-fab-button (click)="callNumber(selectedOrder.user_mobile_number)" color="tertiary" size="small" slot="end">
                             <ion-icon name="call"></ion-icon>
@@ -44,6 +45,28 @@
                     <div class="deliver_button">
                         <ion-button (click)="deliverOrderNow()" expand="full" color="primary">Deliver Now</ion-button>
                     </div>
+
+                    <ion-list>
+                        <ion-list-header>
+                            <ion-label color="secondary"> Menus </ion-label>
+                        </ion-list-header>
+
+                        <ion-item *ngFor="let item of selectedOrder.order_menu">
+                            <ion-avatar slot="start"><img src="../../../../../assets/icon/order-food.png" alt="" srcset="" /></ion-avatar>
+                            <ion-label class="ion-text-wrap">
+                                <h2>{{ item.menu_row_name }} ({{ item.menu_size_variant_name }})</h2>
+                                <p>
+                                    <b>Instruction: </b> <code>{{ item.cooking_instruction }}</code>
+                                </p>
+                                <ion-chip outline color="warning">
+                                    <ion-icon name="restaurant"></ion-icon>
+                                    <ion-label>{{ item.amount }} items</ion-label>
+                                </ion-chip>
+                            </ion-label>
+                        </ion-item>
+                    </ion-list>
+
+                    <!--  menu button -->
                 </ion-card-content>
             </ion-card>
         </div>

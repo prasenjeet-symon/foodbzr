@@ -72,7 +72,7 @@
                     <h2>{{ item.full_name }}</h2>
                     <p>+91 {{ item.mobile_number }}</p>
                 </ion-label>
-                <ion-chip outline color="success" slot="end">
+                <ion-chip *ngIf="item.commission" outline color="success" slot="end">
                     <ion-icon name="pricetag"></ion-icon>
                     <ion-label>{{ item.commission }} %</ion-label>
                 </ion-chip>

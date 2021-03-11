@@ -32,11 +32,8 @@ export class delivery_address {
     @Column({ dataType: MYSQL_DATATYPE.TINYTEXT })
     private country: string;
 
-    @Column({ dataType: MYSQL_DATATYPE.DOUBLE() })
-    private latitude: number;
-
-    @Column({ dataType: MYSQL_DATATYPE.DOUBLE() })
-    private longitude: number;
+    @Column({ dataType: MYSQL_DATATYPE.POINT(4326) })
+    private coordinate: string;
 
     @Column({ dataType: MYSQL_DATATYPE.DATETIME })
     private date_created: string;

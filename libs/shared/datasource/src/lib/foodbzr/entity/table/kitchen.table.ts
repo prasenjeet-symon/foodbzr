@@ -15,8 +15,14 @@ export class kitchen {
     @Column({ dataType: MYSQL_DATATYPE.TEXT() })
     private partner_row_uuid: string;
 
+    @Column({ dataType: MYSQL_DATATYPE.TEXT() })
+    private owner_row_uuid: string;
+
     @Column({ dataType: MYSQL_DATATYPE.ENUM(is_active_values), defaultValue: e_is_active.yes })
     private is_active: is_active;
+
+    @Column({ dataType: MYSQL_DATATYPE.ENUM(is_active_values), defaultValue: e_is_active.no })
+    private can_edit_partner: is_active;
 
     /** kitchen login info */
     @Column({ dataType: MYSQL_DATATYPE.TEXT() })
@@ -37,11 +43,8 @@ export class kitchen {
     @Column({ dataType: MYSQL_DATATYPE.DOUBLE(), defaultValue: 10 })
     private radius: number;
 
-    @Column({ dataType: MYSQL_DATATYPE.DOUBLE() })
-    private latitude: string;
-
-    @Column({ dataType: MYSQL_DATATYPE.DOUBLE() })
-    private longitude: string;
+    @Column({ dataType: MYSQL_DATATYPE.POINT(4326) })
+    private coordinate: string;
 
     @Column({ dataType: MYSQL_DATATYPE.DATETIME })
     private opening_time: string;
@@ -49,7 +52,7 @@ export class kitchen {
     @Column({ dataType: MYSQL_DATATYPE.DATETIME })
     private closing_time: string;
 
-    @Column({ dataType: MYSQL_DATATYPE.TINYTEXT })
+    @Column({ dataType: MYSQL_DATATYPE.TEXT() })
     private open_week_list: string; // JSON.stringfy(['sunday', 'monday']);
 
     /**Offers information */

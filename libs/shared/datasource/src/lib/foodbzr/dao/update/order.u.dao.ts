@@ -4,11 +4,10 @@
  */
 
 import { delivery_status, IModificationDaoStatus, order_lifecycle_state, pay_status, PUSH_MESSAGE_TYPE } from '@foodbzr/shared/types';
-import { find_unique_items, generate_otp, send_push_message } from '@foodbzr/shared/util';
+import { generate_otp, send_push_message_to_dboy, send_push_message_to_owner, send_push_message_to_partner, send_push_message_to_user } from '@foodbzr/shared/util';
 import { BaseDao, IDaoConfig, Query, TBaseDao, TQuery } from '@sculify/node-room';
 import * as moment from 'moment';
 import { fetch_order_single } from '../select/order.s.dao';
-import { fetch_push_message_fcm_tokens } from '../select/push_message.s.dao';
 
 export class update_order_add_otp extends BaseDao<IModificationDaoStatus> {
     constructor(config: IDaoConfig) {
@@ -277,49 +276,33 @@ export class update_t_order_lifecycle extends TBaseDao<IModificationDaoStatus> {
                      * Send the push message
                      */
                     await (async () => {
-                        /** send the push to user */
-                        const userPushData = await new fetch_push_message_fcm_tokens(this.TDaoConfig).fetch('user', order_detail.user_row_uuid).asyncData(this);
-                        if (userPushData.length !== 0) {
-                            const heading = `Order pickedup`;
-                            const body = `Order with order id #${order_row_uuid} pickedup by one of our delivery boy and it will reach to you shortly.`;
-                            const data = {
-                                order_row_uuid: order_row_uuid,
-                                type: PUSH_MESSAGE_TYPE.order_pickedup,
-                                kitchen_row_uuid: order_detail.kitchen_row_uuid,
-                                user_row_uuid: order_detail.user_row_uuid,
-                            };
-                            send_push_message(
-                                heading,
-                                body,
-                                'https://image.freepik.com/free-vector/delivery-staff-ride-motorcycles-shopping-concept_1150-34879.jpg ',
-                                data,
-                                find_unique_items(userPushData, 'push_address').map((p) => p.push_address)
-                            );
-                        }
-                    })();
-                    /** send message to partner */
-                    await (async () => {
-                        /** send the push to user */
-                        const partnerPushData = await new fetch_push_message_fcm_tokens(this.TDaoConfig).fetch('partner', order_detail.partner_row_uuid).asyncData(this);
-                        if (partnerPushData.length !== 0) {
-                            const heading = `Order pickedup`;
-                            const body = `Order with order id #${order_row_uuid} pickedup by one of your delivery boy and it will reach to user shortly.`;
-                            const data = {
-                                order_row_uuid: order_row_uuid,
-                                type: PUSH_MESSAGE_TYPE.order_pickedup,
-                                kitchen_row_uuid: order_detail.kitchen_row_uuid,
-                                user_row_uuid: order_detail.user_row_uuid,
-                            };
-                            send_push_message(
-                                heading,
-                                body,
-                                'https://image.freepik.com/free-vector/delivery-staff-ride-motorcycles-shopping-concept_1150-34879.jpg ',
-                                data,
-                                find_unique_items(partnerPushData, 'push_address').map((p) => p.push_address)
-                            );
-                        }
+                        /** send the push message to user */
+                        const heading = `Order pickedup`;
+                        const body = `Order with order id #${order_row_uuid} pickedup by one of our delivery boy and it will reach to you shortly.`;
+                        const data = {
+                            order_row_uuid: order_row_uuid,
+                            type: PUSH_MESSAGE_TYPE.order_pickedup,
+                            kitchen_row_uuid: order_detail.kitchen_row_uuid,
+                            user_row_uuid: order_detail.user_row_uuid,
+                        };
+                        const image_uri = 'https://image.freepik.com/free-vector/delivery-staff-ride-motorcycles-shopping-concept_1150-34879.jpg ';
+                        send_push_message_to_user(this.TDaoConfig, order_detail.user_row_uuid, heading, body, image_uri, data);
                     })();
 
+                    await (async () => {
+                        /** send message to partner */
+                        const heading = `Order pickedup`;
+                        const body = `Order with order id #${order_row_uuid} pickedup by one of your delivery boy and it will reach to user shortly.`;
+                        const data = {
+                            order_row_uuid: order_row_uuid,
+                            type: PUSH_MESSAGE_TYPE.order_pickedup,
+                            kitchen_row_uuid: order_detail.kitchen_row_uuid,
+                            user_row_uuid: order_detail.user_row_uuid,
+                        };
+                        const image_uri = 'https://image.freepik.com/free-vector/delivery-staff-ride-motorcycles-shopping-concept_1150-34879.jpg ';
+
+                        send_push_message_to_partner(this.TDaoConfig, order_detail.partner_row_uuid, heading, body, image_uri, data);
+                    })();
                     break;
 
                 case 'order confirmed then cooking':
@@ -327,27 +310,20 @@ export class update_t_order_lifecycle extends TBaseDao<IModificationDaoStatus> {
                     await cooking_order();
 
                     await (async () => {
-                        /** send the push to user */
-                        const userPushData = await new fetch_push_message_fcm_tokens(this.TDaoConfig).fetch('user', order_detail.user_row_uuid).asyncData(this);
-                        if (userPushData.length !== 0) {
-                            const heading = `Order cooking`;
-                            const body = `Order with order id #${order_row_uuid} is currently being cooked by one of our best chef.`;
-                            const data = {
-                                order_row_uuid: order_row_uuid,
-                                type: PUSH_MESSAGE_TYPE.order_cooking,
-                                kitchen_row_uuid: order_detail.kitchen_row_uuid,
-                                user_row_uuid: order_detail.user_row_uuid,
-                            };
-                            send_push_message(
-                                heading,
-                                body,
-                                'https://img.freepik.com/free-vector/pizzeria-flat-composition-with-chefs-bake-pizza-oven-kitchen-gives-order-courier-vector-illustration_1284-30692.jpg?size=626&ext=jpg',
-                                data,
-                                find_unique_items(userPushData, 'push_address').map((p) => p.push_address)
-                            );
-                        }
-                    })();
+                        /** send the push message to user */
+                        const heading = `Order cooking`;
+                        const body = `Order with order id #${order_row_uuid} is currently being cooked by one of our best chef.`;
+                        const data = {
+                            order_row_uuid: order_row_uuid,
+                            type: PUSH_MESSAGE_TYPE.order_cooking,
+                            kitchen_row_uuid: order_detail.kitchen_row_uuid,
+                            user_row_uuid: order_detail.user_row_uuid,
+                        };
 
+                        const image_uri =
+                            'https://img.freepik.com/free-vector/pizzeria-flat-composition-with-chefs-bake-pizza-oven-kitchen-gives-order-courier-vector-illustration_1284-30692.jpg?size=626&ext=jpg';
+                        send_push_message_to_user(this.TDaoConfig, order_detail.user_row_uuid, heading, body, image_uri, data);
+                    })();
                     break;
 
                 case 'order placed':
@@ -360,25 +336,16 @@ export class update_t_order_lifecycle extends TBaseDao<IModificationDaoStatus> {
                      * Send the push message
                      */
                     await (async () => {
-                        /** send the push to user */
-                        const userPushData = await new fetch_push_message_fcm_tokens(this.TDaoConfig).fetch('user', order_detail.user_row_uuid).asyncData(this);
-                        if (userPushData.length !== 0) {
-                            const heading = `Order confirmed`;
-                            const body = `Order with order id #${order_row_uuid} confirmed by kitchen.`;
-                            const data = {
-                                order_row_uuid: order_row_uuid,
-                                type: PUSH_MESSAGE_TYPE.order_confirmed,
-                                kitchen_row_uuid: order_detail.kitchen_row_uuid,
-                                user_row_uuid: order_detail.user_row_uuid,
-                            };
-                            send_push_message(
-                                heading,
-                                body,
-                                '',
-                                data,
-                                find_unique_items(userPushData, 'push_address').map((p) => p.push_address)
-                            );
-                        }
+                        /** send the push message to user */
+                        const heading = `Order confirmed`;
+                        const body = `Order with order id #${order_row_uuid} confirmed by kitchen.`;
+                        const data = {
+                            order_row_uuid: order_row_uuid,
+                            type: PUSH_MESSAGE_TYPE.order_confirmed,
+                            kitchen_row_uuid: order_detail.kitchen_row_uuid,
+                            user_row_uuid: order_detail.user_row_uuid,
+                        };
+                        send_push_message_to_user(this.TDaoConfig, order_detail.user_row_uuid, heading, body, '', data);
                     })();
 
                     break;
@@ -387,77 +354,65 @@ export class update_t_order_lifecycle extends TBaseDao<IModificationDaoStatus> {
                     await cooking_order();
 
                     await (async () => {
-                        /** send the push to user */
-                        const userPushData = await new fetch_push_message_fcm_tokens(this.TDaoConfig).fetch('user', order_detail.user_row_uuid).asyncData(this);
-                        if (userPushData.length !== 0) {
-                            const heading = `Order cooking`;
-                            const body = `Order with order id #${order_row_uuid} is currently being cooked by one of our best chef.`;
-                            const data = {
-                                order_row_uuid: order_row_uuid,
-                                type: PUSH_MESSAGE_TYPE.order_cooking,
-                                kitchen_row_uuid: order_detail.kitchen_row_uuid,
-                                user_row_uuid: order_detail.user_row_uuid,
-                            };
-                            send_push_message(
-                                heading,
-                                body,
-                                'https://img.freepik.com/free-vector/pizzeria-flat-composition-with-chefs-bake-pizza-oven-kitchen-gives-order-courier-vector-illustration_1284-30692.jpg?size=626&ext=jpg',
-                                data,
-                                find_unique_items(userPushData, 'push_address').map((p) => p.push_address)
-                            );
-                        }
-                    })();
+                        const heading = `Order cooking`;
+                        const body = `Order with order id #${order_row_uuid} is currently being cooked by one of our best chef.`;
+                        const data = {
+                            order_row_uuid: order_row_uuid,
+                            type: PUSH_MESSAGE_TYPE.order_cooking,
+                            kitchen_row_uuid: order_detail.kitchen_row_uuid,
+                            user_row_uuid: order_detail.user_row_uuid,
+                        };
+                        const image_uri =
+                            'https://img.freepik.com/free-vector/pizzeria-flat-composition-with-chefs-bake-pizza-oven-kitchen-gives-order-courier-vector-illustration_1284-30692.jpg?size=626&ext=jpg';
 
+                        send_push_message_to_user(this.TDaoConfig, order_detail.user_row_uuid, heading, body, image_uri, data);
+                    })();
                     break;
 
                 case 'order pickedup':
                     await order_picked_up();
-                    /**
-                     * Send the push message
-                     */
                     await (async () => {
-                        /** send the push to user */
-                        const userPushData = await new fetch_push_message_fcm_tokens(this.TDaoConfig).fetch('user', order_detail.user_row_uuid).asyncData(this);
-                        if (userPushData.length !== 0) {
-                            const heading = `Order pickedup`;
-                            const body = `Order with order id #${order_row_uuid} pickedup by one of our delivery boy and it will reach to you shortly.`;
-                            const data = {
-                                order_row_uuid: order_row_uuid,
-                                type: PUSH_MESSAGE_TYPE.order_pickedup,
-                                kitchen_row_uuid: order_detail.kitchen_row_uuid,
-                                user_row_uuid: order_detail.user_row_uuid,
-                            };
-                            send_push_message(
-                                heading,
-                                body,
-                                'https://image.freepik.com/free-vector/delivery-staff-ride-motorcycles-shopping-concept_1150-34879.jpg ',
-                                data,
-                                find_unique_items(userPushData, 'push_address').map((p) => p.push_address)
-                            );
-                        }
+                        /** send the push message to user */
+                        const heading = `Order pickedup`;
+                        const body = `Order with order id #${order_row_uuid} pickedup by one of our delivery boy and it will reach to you shortly.`;
+                        const data = {
+                            order_row_uuid: order_row_uuid,
+                            type: PUSH_MESSAGE_TYPE.order_pickedup,
+                            kitchen_row_uuid: order_detail.kitchen_row_uuid,
+                            user_row_uuid: order_detail.user_row_uuid,
+                        };
+                        const image_uri = 'https://image.freepik.com/free-vector/delivery-staff-ride-motorcycles-shopping-concept_1150-34879.jpg ';
+                        send_push_message_to_user(this.TDaoConfig, order_detail.user_row_uuid, heading, body, image_uri, data);
                     })();
 
-                    /** send message to partner */
                     await (async () => {
-                        /** send the push to user */
-                        const partnerPushData = await new fetch_push_message_fcm_tokens(this.TDaoConfig).fetch('partner', order_detail.partner_row_uuid).asyncData(this);
-                        if (partnerPushData.length !== 0) {
-                            const heading = `Order pickedup`;
-                            const body = `Order with order id #${order_row_uuid} pickedup by one of your delivery boy and it will reach to user shortly.`;
-                            const data = {
-                                order_row_uuid: order_row_uuid,
-                                type: PUSH_MESSAGE_TYPE.order_pickedup,
-                                kitchen_row_uuid: order_detail.kitchen_row_uuid,
-                                user_row_uuid: order_detail.user_row_uuid,
-                            };
-                            send_push_message(
-                                heading,
-                                body,
-                                'https://image.freepik.com/free-vector/delivery-staff-ride-motorcycles-shopping-concept_1150-34879.jpg ',
-                                data,
-                                find_unique_items(partnerPushData, 'push_address').map((p) => p.push_address)
-                            );
-                        }
+                        /** send message to partner */
+                        const heading = `Order pickedup`;
+                        const body = `Order with order id #${order_row_uuid} pickedup by one of your delivery boy and it will reach to user shortly.`;
+                        const data = {
+                            order_row_uuid: order_row_uuid,
+                            type: PUSH_MESSAGE_TYPE.order_pickedup,
+                            kitchen_row_uuid: order_detail.kitchen_row_uuid,
+                            user_row_uuid: order_detail.user_row_uuid,
+                        };
+                        const image_uri = 'https://image.freepik.com/free-vector/delivery-staff-ride-motorcycles-shopping-concept_1150-34879.jpg ';
+
+                        send_push_message_to_partner(this.TDaoConfig, order_detail.partner_row_uuid, heading, body, image_uri, data);
+                    })();
+
+                    await (async () => {
+                        /** send message to partner */
+                        const heading = `Order pickedup`;
+                        const body = `Order with order id #${order_row_uuid} pickedup by one of your delivery boy and it will reach to user shortly.`;
+                        const data = {
+                            order_row_uuid: order_row_uuid,
+                            type: PUSH_MESSAGE_TYPE.order_pickedup,
+                            kitchen_row_uuid: order_detail.kitchen_row_uuid,
+                            user_row_uuid: order_detail.user_row_uuid,
+                        };
+                        const image_uri = 'https://image.freepik.com/free-vector/delivery-staff-ride-motorcycles-shopping-concept_1150-34879.jpg ';
+
+                        send_push_message_to_owner(this.TDaoConfig, order_detail.owner_row_uuid, heading, body, image_uri, data);
                     })();
 
                     break;
@@ -468,50 +423,56 @@ export class update_t_order_lifecycle extends TBaseDao<IModificationDaoStatus> {
 
                 case 'order delivered':
                     await order_delivered();
-                    /**
-                     * Send the push message
-                     */
                     await (async () => {
-                        /** send the push to user */
-                        const userPushData = await new fetch_push_message_fcm_tokens(this.TDaoConfig).fetch('user', order_detail.user_row_uuid).asyncData(this);
-                        if (userPushData.length !== 0) {
-                            const heading = `Order delivered`;
-                            const body = `Order with order id #${order_row_uuid} delivered by one of our delivery boy. Thanks for choosing us`;
-                            const data = {
-                                order_row_uuid: order_row_uuid,
-                                type: PUSH_MESSAGE_TYPE.order_delivered,
-                                kitchen_row_uuid: order_detail.kitchen_row_uuid,
-                                user_row_uuid: order_detail.user_row_uuid,
-                            };
-                            send_push_message(
-                                heading,
-                                body,
-                                'https://static.vecteezy.com/system/resources/previews/001/969/072/non_2x/delivery-concept-illustration-vector.jpg',
-                                data,
-                                find_unique_items(userPushData, 'push_address').map((p) => p.push_address)
-                            );
-                        }
+                        const heading = `Order delivered`;
+                        const body = `Order with order id #${order_row_uuid} delivered by one of our delivery boy. Thanks for choosing us`;
+                        const data = {
+                            order_row_uuid: order_row_uuid,
+                            type: PUSH_MESSAGE_TYPE.order_delivered,
+                            kitchen_row_uuid: order_detail.kitchen_row_uuid,
+                            user_row_uuid: order_detail.user_row_uuid,
+                        };
+                        const image_uri = 'https://static.vecteezy.com/system/resources/previews/001/969/072/non_2x/delivery-concept-illustration-vector.jpg';
+                        send_push_message_to_user(this.TDaoConfig, order_detail.user_row_uuid, heading, body, image_uri, data);
                     })();
-                    /** send the push to partner */
+
                     await (async () => {
-                        const partnerData = await new fetch_push_message_fcm_tokens(this.TDaoConfig).fetch('partner', order_detail.partner_row_uuid).asyncData(this);
-                        if (partnerData.length !== 0) {
-                            const heading = `Order delivered`;
-                            const body = `Order with order id #${order_row_uuid} delivered by one of your delivery boy named ${order_detail.full_name}`;
-                            const data = {
-                                order_row_uuid: order_row_uuid,
-                                type: PUSH_MESSAGE_TYPE.order_delivered,
-                                kitchen_row_uuid: order_detail.kitchen_row_uuid,
-                                user_row_uuid: order_detail.user_row_uuid,
-                            };
-                            send_push_message(
-                                heading,
-                                body,
-                                'https://static.vecteezy.com/system/resources/previews/001/969/072/non_2x/delivery-concept-illustration-vector.jpg',
-                                data,
-                                find_unique_items(partnerData, 'push_address').map((p) => p.push_address)
-                            );
-                        }
+                        const heading = `Order delivered`;
+                        const body = `Order with order id #${order_row_uuid} delivered by one of your delivery boy named ${order_detail.full_name}`;
+                        const data = {
+                            order_row_uuid: order_row_uuid,
+                            type: PUSH_MESSAGE_TYPE.order_delivered,
+                            kitchen_row_uuid: order_detail.kitchen_row_uuid,
+                            user_row_uuid: order_detail.user_row_uuid,
+                        };
+                        const image_uri = 'https://static.vecteezy.com/system/resources/previews/001/969/072/non_2x/delivery-concept-illustration-vector.jpg';
+                        send_push_message_to_partner(this.TDaoConfig, order_detail.partner_row_uuid, heading, body, image_uri, data);
+                    })();
+
+                    await (async () => {
+                        const heading = `Order delivered`;
+                        const body = `Order with order id #${order_row_uuid} delivered by one of your delivery boy named ${order_detail.full_name}`;
+                        const data = {
+                            order_row_uuid: order_row_uuid,
+                            type: PUSH_MESSAGE_TYPE.order_delivered,
+                            kitchen_row_uuid: order_detail.kitchen_row_uuid,
+                            user_row_uuid: order_detail.user_row_uuid,
+                        };
+                        const image_uri = 'https://static.vecteezy.com/system/resources/previews/001/969/072/non_2x/delivery-concept-illustration-vector.jpg';
+                        send_push_message_to_owner(this.TDaoConfig, order_detail.owner_row_uuid, heading, body, image_uri, data);
+                    })();
+
+                    await (async () => {
+                        const heading = `Order delivered`;
+                        const body = `Order with order id #${order_row_uuid} delivered. Good work ${order_detail.full_name}`;
+                        const data = {
+                            order_row_uuid: order_row_uuid,
+                            type: PUSH_MESSAGE_TYPE.order_delivered,
+                            kitchen_row_uuid: order_detail.kitchen_row_uuid,
+                            user_row_uuid: order_detail.user_row_uuid,
+                        };
+                        const image_uri = 'https://static.vecteezy.com/system/resources/previews/001/969/072/non_2x/delivery-concept-illustration-vector.jpg';
+                        send_push_message_to_dboy(this.TDaoConfig, order_detail.dboy_row_uuid, heading, body, image_uri, data);
                     })();
 
                     break;
@@ -521,51 +482,43 @@ export class update_t_order_lifecycle extends TBaseDao<IModificationDaoStatus> {
                         await new update_order_delivery_status(this.TDaoConfig).fetch('canceled', order_row_uuid).asyncData(this);
                     })();
 
-                    /**
-                     * Send the push message
-                     */
                     await (async () => {
-                        /** send the push to user */
-                        const userPushData = await new fetch_push_message_fcm_tokens(this.TDaoConfig).fetch('user', order_detail.user_row_uuid).asyncData(this);
-                        if (userPushData.length !== 0) {
-                            const heading = `Order canceled`;
-                            const body = `Order with order id #${order_row_uuid} canceled. We are committed to improve our service for you.`;
-                            const data = {
-                                order_row_uuid: order_row_uuid,
-                                type: PUSH_MESSAGE_TYPE.order_canceled,
-                                kitchen_row_uuid: order_detail.kitchen_row_uuid,
-                                user_row_uuid: order_detail.user_row_uuid,
-                            };
-                            send_push_message(
-                                heading,
-                                body,
-                                'https://image.freepik.com/free-vector/cancelled-events-announcement_23-2148566105.jpg',
-                                data,
-                                find_unique_items(userPushData, 'push_address').map((p) => p.push_address)
-                            );
-                        }
+                        const heading = `Order canceled`;
+                        const body = `Order with order id #${order_row_uuid} canceled. We are committed to improve our service for you.`;
+                        const data = {
+                            order_row_uuid: order_row_uuid,
+                            type: PUSH_MESSAGE_TYPE.order_canceled,
+                            kitchen_row_uuid: order_detail.kitchen_row_uuid,
+                            user_row_uuid: order_detail.user_row_uuid,
+                        };
+                        const image_uri = 'https://image.freepik.com/free-vector/cancelled-events-announcement_23-2148566105.jpg';
+                        send_push_message_to_user(this.TDaoConfig, order_detail.user_row_uuid, heading, body, image_uri, data);
                     })();
 
-                    /** send the push to partner */
                     await (async () => {
-                        const partnerPushData = await new fetch_push_message_fcm_tokens(this.TDaoConfig).fetch('partner', order_detail.partner_row_uuid).asyncData(this);
-                        if (partnerPushData.length !== 0) {
-                            const heading = `Order canceled`;
-                            const body = `Order with order id #${order_row_uuid} canceled. Please make sure to improve your services.`;
-                            const data = {
-                                order_row_uuid: order_row_uuid,
-                                type: PUSH_MESSAGE_TYPE.order_canceled,
-                                kitchen_row_uuid: order_detail.kitchen_row_uuid,
-                                user_row_uuid: order_detail.user_row_uuid,
-                            };
-                            send_push_message(
-                                heading,
-                                body,
-                                'https://image.freepik.com/free-vector/cancelled-events-announcement_23-2148566105.jpg',
-                                data,
-                                find_unique_items(partnerPushData, 'push_address').map((p) => p.push_address)
-                            );
-                        }
+                        const heading = `Order canceled`;
+                        const body = `Order with order id #${order_row_uuid} canceled. Please make sure to improve your services.`;
+                        const data = {
+                            order_row_uuid: order_row_uuid,
+                            type: PUSH_MESSAGE_TYPE.order_canceled,
+                            kitchen_row_uuid: order_detail.kitchen_row_uuid,
+                            user_row_uuid: order_detail.user_row_uuid,
+                        };
+                        const image_uri = 'https://image.freepik.com/free-vector/cancelled-events-announcement_23-2148566105.jpg';
+                        send_push_message_to_partner(this.TDaoConfig, order_detail.partner_row_uuid, heading, body, image_uri, data);
+                    })();
+
+                    await (async () => {
+                        const heading = `Order canceled`;
+                        const body = `Order with order id #${order_row_uuid} canceled. Please make sure to improve your services.`;
+                        const data = {
+                            order_row_uuid: order_row_uuid,
+                            type: PUSH_MESSAGE_TYPE.order_canceled,
+                            kitchen_row_uuid: order_detail.kitchen_row_uuid,
+                            user_row_uuid: order_detail.user_row_uuid,
+                        };
+                        const image_uri = 'https://image.freepik.com/free-vector/cancelled-events-announcement_23-2148566105.jpg';
+                        send_push_message_to_owner(this.TDaoConfig, order_detail.owner_row_uuid, heading, body, image_uri, data);
                     })();
 
                     break;

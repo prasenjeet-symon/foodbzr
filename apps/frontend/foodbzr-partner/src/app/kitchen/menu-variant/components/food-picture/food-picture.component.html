@@ -2,7 +2,7 @@
     <ion-list>
         <ion-list-header>
             <ion-label color="secondary"> Menu's Pictures </ion-label>
-            <ion-button (click)="takePicture()"> ADD </ion-button>
+            <ion-button [disabled]="can_edit_kitchen === 'yes' ? false : true" (click)="takePicture()"> ADD </ion-button>
         </ion-list-header>
     </ion-list>
     <ion-item>

@@ -1,6 +1,6 @@
 import { Component, Input, NgZone, OnDestroy, OnInit } from '@angular/core';
 import { fetch_menu_size_variant_of_menu, FoodbzrDatasource } from '@foodbzr/datasource';
-import { IGetMenuSizeVariant } from '@foodbzr/shared/types';
+import { IGetMenuSizeVariant, is_active } from '@foodbzr/shared/types';
 import { ModalController, Platform } from '@ionic/angular';
 import { daoConfig, DaoLife, NetworkManager } from '@sculify/node-room-client';
 import { LoadingScreenService } from '../../../../loading-screen.service';
@@ -14,7 +14,7 @@ import { UpdateMenuVariantComponent } from '../update-menu-variant/update-menu-v
 export class MenuVariantComponent implements OnInit, OnDestroy {
     @Input() menu_row_uuid: string;
     @Input() partner_row_uuid: string;
-
+    @Input() can_edit_kitchen: is_active;
     public daosLife: DaoLife;
     public database = {
         fetch_menu_size_variant_of_menu: FoodbzrDatasource.getInstance().fetch_menu_size_variant_of_menu,

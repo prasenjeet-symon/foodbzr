@@ -8,6 +8,7 @@ import { NativeGeocoder } from '@ionic-native/native-geocoder/ngx';
 import { ModalController, Platform, ToastController } from '@ionic/angular';
 import { daoConfig, DaoLife, NetworkManager } from '@sculify/node-room-client';
 import * as moment from 'moment';
+import { combineLatest } from 'rxjs';
 import { v4 as uuid } from 'uuid';
 import { LoadingScreenService } from '../../../loading-screen.service';
 import { SearchLocationComponent } from '../components/choose-location/choose-location.component';
@@ -26,7 +27,6 @@ export class AddressPageComponent implements OnInit, OnDestroy {
         insert_delivery_address: FoodbzrDatasource.getInstance().insert_delivery_address,
         fetch_user_single: FoodbzrDatasource.getInstance().fetch_user_single,
     };
-
     public daosLife: DaoLife;
 
     /** daos */
@@ -43,9 +43,11 @@ export class AddressPageComponent implements OnInit, OnDestroy {
     private mobile_number: string;
     public lat: number;
     public lng: number;
+    public areWeUsingGps = false;
 
     /** subscriptions */
     public networkSubscription: any;
+    public combineLatestSubs: any;
 
     constructor(
         private loadingScreen: LoadingScreenService,
@@ -66,6 +68,9 @@ export class AddressPageComponent implements OnInit, OnDestroy {
         if (this.networkSubscription) {
             this.networkSubscription.unsubscribe();
         }
+        if (this.combineLatestSubs) {
+            this.combineLatestSubs.unsubscribe();
+        }
     }
 
     ngOnInit() {
@@ -75,9 +80,10 @@ export class AddressPageComponent implements OnInit, OnDestroy {
             }
         });
 
+        this.daosLife.softKill();
         this.initScreen();
         this.networkSubscription = NetworkManager.getInstance().reloadCtx.subscribe((val) => {
-            if (val) {
+            if (val && !this.areWeUsingGps) {
                 this.daosLife.softKill();
                 this.initScreen(false);
             }
@@ -88,47 +94,42 @@ export class AddressPageComponent implements OnInit, OnDestroy {
         this.platform.ready().then(() => {
             /** fetch the user delivery address */
             this.fetch_delivery_address_of_user__ = new this.database.fetch_delivery_address_of_user(daoConfig);
-            this.fetch_delivery_address_of_user__.observe(this.daosLife).subscribe((val) => {
-                this.ngZone.run(() => {
-                    if (this.loadingScreen.dailogRef.isConnected) {
-                        this.loadingScreen.dailogRef.dismiss();
-                    }
-
-                    if (!this.selectedAddress) {
-                        this.allAddress = val.map((p) => {
-                            return { ...p, is_selected: false };
-                        });
-
-                        /** choose the first list */
-                        if (val.length !== 0) {
-                            this.addressSelected(this.allAddress[0]);
-                        }
-                    } else {
-                        this.allAddress = val.map((p) => {
-                            if (p.row_uuid === this.selectedAddress.row_uuid) {
-                                return { ...p, is_selected: true };
-                            } else {
-                                return { ...p, is_selected: false };
-                            }
-                        });
-                    }
-                });
-            });
-
-            /** fetch the user details */
             this.fetch_user_single__ = new this.database.fetch_user_single(daoConfig);
-            this.fetch_user_single__.observe(this.daosLife).subscribe((val) => {
-                this.ngZone.run(() => {
-                    if (this.loadingScreen.dailogRef.isConnected) {
-                        this.loadingScreen.dailogRef.dismiss();
-                    }
 
-                    if (val.length !== 0) {
-                        this.userDetail = val[0];
-                        this.user_full_name = this.userDetail.full_name;
-                        this.mobile_number = this.userDetail.mobile_number;
+            const combinedLatestObs$ = combineLatest([this.fetch_delivery_address_of_user__.observe(this.daosLife), this.fetch_user_single__.observe(this.daosLife)]);
+            this.combineLatestSubs = combinedLatestObs$.subscribe((val) => {
+                if (this.loadingScreen.dailogRef.isConnected) {
+                    this.loadingScreen.dailogRef.dismiss();
+                }
+
+                /** address */
+                const address = val[0];
+                if (!this.selectedAddress) {
+                    this.allAddress = address.map((p) => {
+                        return { ...p, is_selected: false };
+                    });
+
+                    /** choose the first list */
+                    if (address.length !== 0) {
+                        this.addressSelected(this.allAddress[0]);
                     }
-                });
+                } else {
+                    this.allAddress = address.map((p) => {
+                        if (p.row_uuid === this.selectedAddress.row_uuid) {
+                            return { ...p, is_selected: true };
+                        } else {
+                            return { ...p, is_selected: false };
+                        }
+                    });
+                }
+
+                /** user info */
+                const userInfo = val[1];
+                if (userInfo.length !== 0) {
+                    this.userDetail = userInfo[0];
+                    this.user_full_name = this.userDetail.full_name;
+                    this.mobile_number = this.userDetail.mobile_number;
+                }
             });
 
             if (can_show_loading) {
@@ -146,11 +147,15 @@ export class AddressPageComponent implements OnInit, OnDestroy {
     /** get the current location */
     async getCurrentPosition() {
         this.platform.ready().then(async () => {
+            this.areWeUsingGps = true;
+
             try {
                 await Geolocation.requestPermissions();
 
                 const coordinates = await Geolocation.getCurrentPosition();
                 if (coordinates) {
+                    this.areWeUsingGps = false;
+
                     const lat = coordinates.coords.latitude;
                     const lng = coordinates.coords.longitude;
                     this.lat = lat;
@@ -170,8 +175,8 @@ export class AddressPageComponent implements OnInit, OnDestroy {
     public getReverseGeocodingData(lat: number, lng: number) {
         return new Promise((resolve, reject) => {
             var latlng = new google.maps.LatLng(lat, lng);
-            // This is making the Geocode request
             var geocoder = new google.maps.Geocoder();
+
             geocoder.geocode({ latLng: latlng }, (results: any, status: any) => {
                 if (status !== google.maps.GeocoderStatus.OK) {
                     this.printMessage(status);
@@ -201,13 +206,19 @@ export class AddressPageComponent implements OnInit, OnDestroy {
 
     /** make new address */
     public makeNewAddress(street: string, city: string, pincode: string, state: string, country: string, latitude: number, longitude: number) {
-        this.loadingScreen.showLoadingScreen().then(() => {
-            const date_created: string = moment(new Date()).format('YYYY-MM-DD HH:mm:ss');
-            const daoLife = new DaoLife();
-            const insert_delivery_address = new this.database.insert_delivery_address(daoConfig);
-            insert_delivery_address.observe(daoLife).subscribe((val) => console.log('added new address'));
-            insert_delivery_address.fetch(this.user_row_uuid, street, pincode, city, state, country, latitude, longitude, date_created, uuid()).obsData();
-            daoLife.softKill();
+        this.platform.ready().then(() => {
+            this.loadingScreen.showLoadingScreen().then((ref) => {
+                const date_created: string = moment(new Date()).format('YYYY-MM-DD HH:mm:ss');
+                const daoLife = new DaoLife();
+                const insert_delivery_address = new this.database.insert_delivery_address(daoConfig);
+                insert_delivery_address.observe(daoLife).subscribe((val) => {
+                    if (ref.isConnected) {
+                        ref.dismiss();
+                    }
+                });
+                insert_delivery_address.fetch(this.user_row_uuid, street, pincode, city, state, country, latitude, longitude, date_created, uuid()).obsData();
+                daoLife.softKill();
+            });
         });
     }
 

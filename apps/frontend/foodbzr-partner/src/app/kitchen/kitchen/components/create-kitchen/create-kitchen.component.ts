@@ -16,6 +16,7 @@ import { SearchLocationComponent } from '../search-location/search-location.comp
 export class CreateKitchenComponent implements OnInit {
     @Input() database: { insert_kitchen: databaseDao<insert_kitchen> };
     @Input() partner_row_uuid: string;
+    private owner_row_uuid: string;
 
     public choosen_profile_picture: string = 'https://i.ibb.co/fMwhNyM/image.jpg';
 
@@ -40,7 +41,9 @@ export class CreateKitchenComponent implements OnInit {
     public latitude: number;
     public longitude: number;
 
-    constructor(private modal: ModalController, private ngZone: NgZone, private location_modal: ModalController, private platform: Platform, private loading: LoadingScreenService) {}
+    constructor(private modal: ModalController, private ngZone: NgZone, private location_modal: ModalController, private platform: Platform, private loading: LoadingScreenService) {
+        this.owner_row_uuid = localStorage.getItem('owner_row_uuid');
+    }
 
     ngOnInit() {}
 
@@ -109,6 +112,7 @@ export class CreateKitchenComponent implements OnInit {
             insert_kitchen__
                 .fetch(
                     this.partner_row_uuid,
+                    this.owner_row_uuid,
                     kitchen_user_id,
                     kitchen_password,
                     kitchen_name,

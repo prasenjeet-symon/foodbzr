@@ -1,0 +1,17 @@
+<ion-list>
+    <ion-list-header>
+        <ion-label color="secondary"> Choose partners to observe </ion-label>
+    </ion-list-header>
+
+    <ion-item>
+        <ion-label>Choose partners</ion-label>
+        <ion-select multiple [(ngModel)]="selectedPartners">
+            <ion-select-option *ngFor="let partner of partners" [value]="partner">{{ partner.full_name }}</ion-select-option>
+        </ion-select>
+    </ion-item>
+</ion-list>
+
+<div class="actions">
+    <div></div>
+    <div><ion-button (click)="dismissModel()" color="secondary"> Done </ion-button></div>
+</div>

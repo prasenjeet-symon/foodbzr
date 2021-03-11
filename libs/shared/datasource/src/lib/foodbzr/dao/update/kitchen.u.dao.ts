@@ -2,7 +2,7 @@
  * Update the kitchen information of single kitchen
  */
 
-import { IModificationDaoStatus } from '@foodbzr/shared/types';
+import { IModificationDaoStatus, is_active } from '@foodbzr/shared/types';
 import { BaseDao, IDaoConfig, Query, TBaseDao } from '@sculify/node-room';
 import { fetch_kitchen_password } from '../select/kitchen.s.dao';
 
@@ -134,12 +134,30 @@ export class update_kitchen_address extends BaseDao<IModificationDaoStatus> {
         city = :city:,
         state = :state:,
         country = :country:,
-        latitude = :latitude:,
-        longitude = :longitude:
+        coordinate = ST_GeomFromText('POINT(:latitude: :longitude:)', 4326)
 
         WHERE row_uuid = :kitchen_row_uuid:
     ;`)
     fetch(street: string, pincode: string, city: string, state: string, country: string, latitude: number, longitude: number, kitchen_row_uuid: string) {
+        return this.baseFetch(this.DBData);
+    }
+}
+
+/** update the kitchen partner ref */
+export class update_kitchen_partner_ref extends BaseDao<IModificationDaoStatus> {
+    constructor(config: IDaoConfig) {
+        super(config);
+    }
+
+    @Query(`
+        UPDATE kitchen
+        SET
+        partner_row_uuid = :partner_row_uuid:,
+        can_edit_partner = :can_edit_partner:
+
+        WHERE row_uuid = :kitchen_row_uuid:
+    ;`)
+    fetch(partner_row_uuid: string, can_edit_partner: is_active, kitchen_row_uuid: string) {
         return this.baseFetch(this.DBData);
     }
 }

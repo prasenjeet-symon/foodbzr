@@ -112,7 +112,7 @@ export class OrderReportPageComponent implements OnInit, AfterViewInit, OnDestro
                     {
                         label: 'Canceled',
                         data: this.canceled_data,
-                        backgroundColor: '#FAEBCC', // yellow
+                        backgroundColor: 'red', // yellow
                     },
                 ],
             },

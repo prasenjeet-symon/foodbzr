@@ -4,6 +4,7 @@
 
 import { BaseDao, IDaoConfig, Query } from '@sculify/node-room';
 import { IGetPartner, is_active } from '@foodbzr/shared/types';
+import { media_server_url } from '@foodbzr/shared/util';
 
 export class fetch_partner_single extends BaseDao<IGetPartner[]> {
     constructor(config: IDaoConfig) {
@@ -22,13 +23,18 @@ export class fetch_partner_single extends BaseDao<IGetPartner[]> {
         bio,
         last_otp,
         date_created,
-        row_uuid
+        row_uuid,
+        can_add_kitchen
 
         FROM partner
         WHERE row_uuid = :partner_row_uuid:
     ;`)
     fetch(partner_row_uuid: string) {
-        return this.baseFetch(this.DBData);
+        return this.baseFetch(
+            this.DBData.map((p) => {
+                return { ...p, profile_picture: p.profile_picture.includes('http') ? p.profile_picture : `${media_server_url}${p.profile_picture}` };
+            })
+        );
     }
 }
 
@@ -53,7 +59,8 @@ export class fetch_partners_of_owner extends BaseDao<IGetPartner[]> {
         mobile_number,
         bio,
         date_created,
-        row_uuid
+        row_uuid,
+        can_add_kitchen
 
         FROM partner
         WHERE owner_row_uuid = :owner_row_uuid: AND is_active = :is_active:
@@ -106,7 +113,8 @@ export class fetch_partner_all extends BaseDao<IGetPartner[]> {
         mobile_number,
         bio,
         date_created,
-        row_uuid
+        row_uuid,
+        can_add_kitchen
 
         FROM partner
     ;`)
@@ -137,7 +145,8 @@ export class fetch_partner_for_owner extends BaseDao<IGetPartner[]> {
         mobile_number,
         bio,
         date_created,
-        row_uuid
+        row_uuid,
+        can_add_kitchen
 
         FROM partner
         WHERE owner_row_uuid = :owner_row_uuid:

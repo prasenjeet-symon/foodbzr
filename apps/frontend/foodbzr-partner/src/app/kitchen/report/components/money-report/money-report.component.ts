@@ -129,7 +129,7 @@ export class MoneyReportComponent implements OnInit, OnDestroy {
                     {
                         label: 'Canceled',
                         data: this.canceled_data,
-                        backgroundColor: '#FAEBCC', // yellow
+                        backgroundColor: 'red', // yellow
                     },
                 ],
             },

@@ -125,7 +125,7 @@ export class OrderReportComponent implements OnInit, OnDestroy {
                     {
                         label: 'Canceled',
                         data: this.canceled_data,
-                        backgroundColor: '#FAEBCC', // yellow
+                        backgroundColor: 'red', // yellow
                     },
                 ],
             },

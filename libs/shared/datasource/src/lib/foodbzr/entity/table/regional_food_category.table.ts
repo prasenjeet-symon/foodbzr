@@ -23,7 +23,7 @@ export class regional_food_category {
     private profile_picture: string;
 
     @Column({ dataType: MYSQL_DATATYPE.TINYTEXT })
-    private partner_row_uuid: string;
+    private owner_row_uuid: string;
 
     /** offer information */
     @Column({ dataType: MYSQL_DATATYPE.DOUBLE() })

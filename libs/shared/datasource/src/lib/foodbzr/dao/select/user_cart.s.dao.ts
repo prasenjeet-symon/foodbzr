@@ -124,6 +124,7 @@ export class fetch_user_cart_for_checkout extends BaseDao<IGetUserCartGroupedKit
         kit.offer_start_datetime as kitchen_offer_start_datetime,
         kit.offer_end_datetime as kitchen_offer_end_datetime, 
         kit.partner_row_uuid as kitchen_partner_row_uuid,
+        kit.owner_row_uuid as owner_row_uuid,
 
         kit.street as kitchen_street,
         kit.pincode as kitchen_pincode,
@@ -247,6 +248,7 @@ export class fetch_user_cart_for_checkout extends BaseDao<IGetUserCartGroupedKit
                         kitchen_row_uuid: p.kitchen_row_uuid,
                         address: `${p.kitchen_street}, ${p.kitchen_city}, ${p.kitchen_pincode}, ${p.kitchen_state}, ${p.kitchen_country}`,
                         can_take_order: can_apply_offer(p.kitchen_opening_time, current_date, p.kitchen_closing_time),
+                        owner_row_uuid: p.owner_row_uuid
                     },
                     orders: [
                         {

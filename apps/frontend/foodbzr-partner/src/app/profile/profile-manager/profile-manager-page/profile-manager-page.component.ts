@@ -1,4 +1,4 @@
-import { Component, NgZone, OnDestroy, OnInit } from '@angular/core';
+import { AfterViewInit, Component, NgZone, OnDestroy, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { CameraResultType, Plugins } from '@capacitor/core';
 import { fetch_partner_single, FoodbzrDatasource } from '@foodbzr/datasource';
@@ -19,7 +19,7 @@ const { Camera } = Plugins;
     templateUrl: './profile-manager-page.component.html',
     styleUrls: ['./profile-manager-page.component.scss'],
 })
-export class ProfileManagerPage implements OnInit, OnDestroy {
+export class ProfileManagerPage implements OnInit, OnDestroy, AfterViewInit {
     public database = {
         fetch_partner_single: FoodbzrDatasource.getInstance().fetch_partner_single,
         update_partner_bio: FoodbzrDatasource.getInstance().update_partner_bio,
@@ -41,6 +41,8 @@ export class ProfileManagerPage implements OnInit, OnDestroy {
         this.daosLife = new DaoLife();
     }
 
+    ngAfterViewInit() {}
+
     ngOnDestroy() {
         if (this.networkSubscription) {
             this.networkSubscription.unsubscribe();
@@ -60,7 +62,6 @@ export class ProfileManagerPage implements OnInit, OnDestroy {
 
     public initScreen(can_show_loading = true) {
         this.platform.ready().then(() => {
-            this.toogleDarkMode();
             this.fetch_partner_single__ = new this.database.fetch_partner_single(daoConfig);
             this.fetch_partner_single__.observe(this.daosLife).subscribe((val) => {
                 if (this.loading.dailogRef.isConnected) {
@@ -157,17 +158,18 @@ export class ProfileManagerPage implements OnInit, OnDestroy {
             return;
         }
 
-        var imageUrl = image.base64String;
+        var imageUrl = `data:image/${image.format};base64,${image.base64String}`;
+
         /** convert the base64 to blob */
         const image_blob = await uri_to_blob(imageUrl);
-
         const form_data = new FormData();
-        form_data.append('avatar', image_blob);
+        form_data.append('avatar', image_blob, `${+new Date()}_.${image.format}`);
         const domain_name = localStorage.getItem('domain_name');
-        if (domain_name) {
+        if (!domain_name) {
             return;
         }
-        const upload_uri = domain_name + 'upload_profile_picture';
+
+        const upload_uri = domain_name + '/upload_profile_picture';
         const uploaded_image = await Axios.post(upload_uri, form_data, {
             headers: {
                 'Content-Type': 'multipart/form-data',
@@ -175,8 +177,9 @@ export class ProfileManagerPage implements OnInit, OnDestroy {
         });
 
         const image_data = uploaded_image.data;
+
         /** change the profile picture of the partner */
-        if (image_data) {
+        if (!image_data) {
             return;
         }
 
@@ -187,6 +190,7 @@ export class ProfileManagerPage implements OnInit, OnDestroy {
                 this.loading.dailogRef.dismiss();
             }
         });
+
         this.loading.showLoadingScreen().then(() => {
             update_partner__.fetch(image_data.pic_uri, this.partnerDetail.gender, this.partnerDetail.full_name, this.partnerDetail.bio, this.partnerDetail.row_uuid).obsData();
         });

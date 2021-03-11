@@ -5,6 +5,8 @@ import { IGetRegionalFoodCategory } from '@foodbzr/shared/types';
 import { Platform } from '@ionic/angular';
 import { daoConfig, DaoLife, NetworkManager } from '@sculify/node-room-client';
 import * as moment from 'moment';
+import { VirtualTimeScheduler } from 'rxjs';
+import { combineLatest } from 'rxjs';
 import { v4 as uuid } from 'uuid';
 import { LoadingScreenService } from '../../../loading-screen.service';
 
@@ -32,6 +34,8 @@ export class KitchenPageComponent implements OnInit, OnDestroy {
     public is_fav_kitchen: boolean;
     public user_row_uuid: string;
     public user_fav_kitchen_row_uuid: string;
+    public owner_row_uuid: string;
+    public is_first_time_init = true;
 
     /** daos */
     fetch_regional_food_category_of_partner__: fetch_regional_food_category_of_partner;
@@ -39,10 +43,12 @@ export class KitchenPageComponent implements OnInit, OnDestroy {
 
     /** subscriptions */
     public networkSubscription: any;
+    public combinedLatestObs$: any;
 
     constructor(private ngZone: NgZone, private router: Router, private activatedRoute: ActivatedRoute, private loading: LoadingScreenService, private platform: Platform) {
         this.daosLife = new DaoLife();
         this.user_row_uuid = localStorage.getItem('user_row_uuid');
+        this.owner_row_uuid = localStorage.getItem('owner_row_uuid');
     }
 
     ngOnInit() {
@@ -54,14 +60,16 @@ export class KitchenPageComponent implements OnInit, OnDestroy {
                 this.kitchen_name = param.get('name');
                 this.kitchen_address = param.get('address');
 
-                this.daosLife.softKill();
-                this.initScreen();
-                this.networkSubscription = NetworkManager.getInstance().reloadCtx.subscribe((val) => {
-                    if (val) {
-                        this.daosLife.softKill();
-                        this.initScreen(false);
-                    }
-                });
+                if (this.is_first_time_init) {
+                    this.daosLife.softKill();
+                    this.initScreen();
+                    this.networkSubscription = NetworkManager.getInstance().reloadCtx.subscribe((val) => {
+                        if (val) {
+                            this.daosLife.softKill();
+                            this.initScreen(false);
+                        }
+                    });
+                }
             }
         });
     }
@@ -71,46 +79,43 @@ export class KitchenPageComponent implements OnInit, OnDestroy {
         if (this.networkSubscription) {
             this.networkSubscription.unsubscribe();
         }
+        if (this.combinedLatestObs$) {
+            this.combinedLatestObs$.unsubscribe();
+        }
     }
 
     public initScreen(can_show_loading = true) {
+        this.is_first_time_init = false;
         this.platform.ready().then(() => {
-            /** fetch the regional cat */
             this.fetch_regional_food_category_of_partner__ = new this.database.fetch_regional_food_category_of_partner(daoConfig);
-            this.fetch_regional_food_category_of_partner__.observe(this.daosLife).subscribe((val) => {
-                this.ngZone.run(() => {
-                    if (this.loading.dailogRef.isConnected) {
-                        this.loading.dailogRef.dismiss();
-                    }
-
-                    this.kitchen_reg_menus = val;
-                });
-            });
-
-            /** is fav kitchen */
             this.fetch_user_fav_kitchen_is_fav__ = new this.database.fetch_user_fav_kitchen_is_fav(daoConfig);
-            this.fetch_user_fav_kitchen_is_fav__.observe(this.daosLife).subscribe((val) => {
+
+            const combinedObs$ = combineLatest([this.fetch_regional_food_category_of_partner__.observe(this.daosLife), this.fetch_user_fav_kitchen_is_fav__.observe(this.daosLife)]);
+            this.combinedLatestObs$ = combinedObs$.subscribe((val) => {
+                if (this.loading.dailogRef.isConnected) {
+                    this.loading.dailogRef.dismiss();
+                }
+
                 this.ngZone.run(() => {
-                    if (this.loading.dailogRef.isConnected) {
-                        this.loading.dailogRef.dismiss();
+                    this.kitchen_reg_menus = val[0];
+
+                    /** fav kitchen */
+                    if (val[1].length !== 0) {
+                        this.user_fav_kitchen_row_uuid = val[1][0].row_uuid;
                     }
 
-                    if (val.length !== 0) {
-                        this.user_fav_kitchen_row_uuid = val[0].row_uuid;
-                    }
-
-                    this.is_fav_kitchen = val.length === 0 ? false : true;
+                    this.is_fav_kitchen = val[1].length === 0 ? false : true;
                 });
             });
 
             if (can_show_loading) {
                 this.loading.showLoadingScreen().then(() => {
                     this.fetch_user_fav_kitchen_is_fav__.fetch(this.kitchen_row_uuid, this.user_row_uuid).obsData();
-                    this.fetch_regional_food_category_of_partner__.fetch(this.partner_row_uuid).obsData();
+                    this.fetch_regional_food_category_of_partner__.fetch(this.owner_row_uuid).obsData();
                 });
             } else {
                 this.fetch_user_fav_kitchen_is_fav__.fetch(this.kitchen_row_uuid, this.user_row_uuid).obsData();
-                this.fetch_regional_food_category_of_partner__.fetch(this.partner_row_uuid).obsData();
+                this.fetch_regional_food_category_of_partner__.fetch(this.owner_row_uuid).obsData();
             }
         });
     }

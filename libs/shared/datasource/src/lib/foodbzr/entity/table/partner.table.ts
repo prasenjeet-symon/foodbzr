@@ -21,6 +21,9 @@ export class partner {
     private is_active: is_active;
 
     @Column({ dataType: MYSQL_DATATYPE.ENUM(is_active_values), defaultValue: e_is_active.no })
+    private can_add_kitchen: is_active;
+
+    @Column({ dataType: MYSQL_DATATYPE.ENUM(is_active_values), defaultValue: e_is_active.no })
     private is_verified: is_active;
 
     @Column({ dataType: MYSQL_DATATYPE.DOUBLE(), defaultValue: 0 })

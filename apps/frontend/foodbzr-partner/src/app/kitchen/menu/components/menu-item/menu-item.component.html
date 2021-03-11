@@ -17,16 +17,16 @@
         </ion-item>
 
         <ion-item-options side="start">
-            <ion-item-option color="danger" (click)="deactivateMenu(menu)" *ngIf="menu.is_active === 'yes'">
+            <ion-item-option [disabled]="can_edit_kitchen === 'yes' ? false : true" color="danger" (click)="deactivateMenu(menu)" *ngIf="menu.is_active === 'yes'">
                 <ion-icon slot="icon-only" name="trash"></ion-icon>
             </ion-item-option>
-            <ion-item-option color="tertiary" (click)="activateMenu(menu)" *ngIf="menu.is_active === 'no'">
+            <ion-item-option [disabled]="can_edit_kitchen === 'yes' ? false : true" color="tertiary" (click)="activateMenu(menu)" *ngIf="menu.is_active === 'no'">
                 <ion-icon slot="icon-only" name="arrow-undo"></ion-icon>
             </ion-item-option>
         </ion-item-options>
 
         <ion-item-options side="end">
-            <ion-item-option>
+            <ion-item-option [disabled]="can_edit_kitchen === 'yes' ? false : true">
                 <ion-icon (click)="update_menu.emit(menu)" slot="icon-only" name="create"></ion-icon>
             </ion-item-option>
         </ion-item-options>

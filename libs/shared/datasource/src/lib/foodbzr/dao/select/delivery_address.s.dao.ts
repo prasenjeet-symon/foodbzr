@@ -20,8 +20,8 @@ export class fetch_delivery_address_of_user extends BaseDao<IGetDeliveryAddress[
         city,
         state,
         country,
-        latitude,
-        longitude,
+        ST_X(coordinate) as latitude,
+        ST_Y(coordinate) as longitude,
         date_created,
         date_updated,
         row_uuid

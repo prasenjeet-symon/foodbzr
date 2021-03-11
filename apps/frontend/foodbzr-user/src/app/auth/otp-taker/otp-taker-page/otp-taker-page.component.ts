@@ -72,6 +72,7 @@ export class OtpTakerPageComponent implements OnInit, OnDestroy {
 
                 /** set the local storage */
                 localStorage.setItem('user_row_uuid', val.user_row_uuid);
+                localStorage.setItem('owner_row_uuid', val.owner_row_uuid);
                 this.navToMainPage();
             });
 

@@ -143,6 +143,7 @@ interface IGetUserAuth {
     is_err: boolean;
     error: string;
     user_row_uuid: string;
+    owner_row_uuid: string;
 }
 
 export class update_user_auth extends TBaseDao<IGetUserAuth> {
@@ -155,6 +156,8 @@ export class update_user_auth extends TBaseDao<IGetUserAuth> {
         await this.openTransaction();
 
         try {
+            mobile_number = mobile_number.toString().trim();
+
             /** fetch the user with mobile number */
             const found_user = await new fetch_user_with_mobile_number(this.TDaoConfig).fetch(mobile_number).asyncData(this);
             if (found_user.length === 0) {
@@ -181,6 +184,7 @@ export class update_user_auth extends TBaseDao<IGetUserAuth> {
                     is_err: false,
                     error: null,
                     user_row_uuid: user_row_uuid,
+                    owner_row_uuid: owner_data.row_uuid
                 });
             }
 
@@ -199,6 +203,7 @@ export class update_user_auth extends TBaseDao<IGetUserAuth> {
                 is_err: false,
                 error: null,
                 user_row_uuid: user_data.row_uuid,
+                owner_row_uuid: user_data.owner_row_uuid
             });
         } catch (error) {
             await this.rollback();
@@ -206,6 +211,7 @@ export class update_user_auth extends TBaseDao<IGetUserAuth> {
                 is_err: true,
                 error: error,
                 user_row_uuid: null,
+                owner_row_uuid: null
             });
         }
     }
@@ -216,6 +222,7 @@ interface IGetUserAuthVerifyOTP {
     is_err: boolean;
     error: string;
     user_row_uuid: string;
+    owner_row_uuid: string;
 }
 
 export class update_user_verify_otp extends TBaseDao<IGetUserAuthVerifyOTP> {
@@ -228,6 +235,8 @@ export class update_user_verify_otp extends TBaseDao<IGetUserAuthVerifyOTP> {
         await this.openTransaction();
 
         try {
+            mobile_number = mobile_number.toString().trim();
+
             const found_user = await new fetch_user_single(this.TDaoConfig).fetch(user_row_uuid).asyncData(this);
             if (found_user.length === 0) {
                 throw new Error('user_not_found');
@@ -239,7 +248,7 @@ export class update_user_verify_otp extends TBaseDao<IGetUserAuthVerifyOTP> {
                 throw new Error('wrong_otp');
             }
 
-            if (user_data.mobile_number !== mobile_number) {
+            if (+user_data.mobile_number !== +mobile_number) {
                 throw new Error('wrong_mobile_number');
             }
 
@@ -248,6 +257,7 @@ export class update_user_verify_otp extends TBaseDao<IGetUserAuthVerifyOTP> {
                 is_err: false,
                 error: null,
                 user_row_uuid: user_data.row_uuid,
+                owner_row_uuid: user_data.owner_row_uuid,
             });
         } catch (error) {
             await this.rollback();
@@ -255,6 +265,7 @@ export class update_user_verify_otp extends TBaseDao<IGetUserAuthVerifyOTP> {
                 is_err: true,
                 error: error,
                 user_row_uuid: null,
+                owner_row_uuid: null,
             });
         }
     }
@@ -265,6 +276,7 @@ interface IGetUserAuthResendOTP {
     is_err: boolean;
     error: string;
     user_row_uuid: string;
+    owner_row_uuid: string;
 }
 
 export class update_user_resend_otp extends TBaseDao<IGetUserAuthResendOTP> {
@@ -277,6 +289,8 @@ export class update_user_resend_otp extends TBaseDao<IGetUserAuthResendOTP> {
         await this.openTransaction();
 
         try {
+            mobile_number = mobile_number.toString().trim();
+
             const found_user = await new fetch_user_single(this.TDaoConfig).fetch(user_row_uuid).asyncData(this);
             if (found_user.length === 0) {
                 throw new Error('user_not_found');
@@ -284,7 +298,7 @@ export class update_user_resend_otp extends TBaseDao<IGetUserAuthResendOTP> {
 
             const user_data = found_user[0];
 
-            if (user_data.mobile_number !== mobile_number) {
+            if (+user_data.mobile_number !== +mobile_number) {
                 throw new Error('wrong_mobile_number');
             }
 
@@ -301,6 +315,7 @@ export class update_user_resend_otp extends TBaseDao<IGetUserAuthResendOTP> {
                 is_err: false,
                 error: null,
                 user_row_uuid: user_data.row_uuid,
+                owner_row_uuid: user_data.owner_row_uuid,
             });
         } catch (error) {
             await this.rollback();
@@ -308,6 +323,7 @@ export class update_user_resend_otp extends TBaseDao<IGetUserAuthResendOTP> {
                 is_err: true,
                 error: error,
                 user_row_uuid: user_row_uuid,
+                owner_row_uuid: null,
             });
         }
     }

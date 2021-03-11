@@ -199,43 +199,12 @@ export class PartnerManagerPageComponent implements OnInit, OnDestroy {
         const popoverRef = await this.popover.create({
             component: UpdateCommisionComponent,
             componentProps: {
-                prev_commision: partner.commission,
+                partner: partner,
             },
             cssClass: 'popover_width',
         });
 
         await popoverRef.present();
-
-        const { data } = await popoverRef.onWillDismiss();
-
-        if (data) {
-            const commission = +data;
-
-            /** update the commission */
-
-            this.allParters = this.allParters.map((p) => {
-                if (p.row_uuid === partner.row_uuid) {
-                    return { ...p, commission: commission };
-                } else {
-                    return { ...p };
-                }
-            });
-
-            this.platform.ready().then(() => {
-                const daoLife = new DaoLife();
-                const update_partner_commision = new this.database.update_partner_commision(daoConfig);
-                update_partner_commision.observe(daoLife).subscribe((val) => {
-                    if (this.loading.dailogRef.isConnected) {
-                        this.loading.dailogRef.dismiss();
-                    }
-                });
-                this.loading.showLoadingScreen().then(() => {
-                    update_partner_commision.fetch(commission, partner.row_uuid).obsData();
-                });
-
-                daoLife.softKill();
-            });
-        }
     }
 
     /** nav to report */

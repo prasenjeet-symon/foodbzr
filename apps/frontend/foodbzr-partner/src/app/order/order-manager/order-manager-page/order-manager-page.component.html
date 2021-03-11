@@ -1,17 +1,32 @@
 <ion-header [translucent]="true">
     <ion-toolbar>
-        <ion-title>Orders</ion-title>
+        <ion-segment scrollable (ionChange)="segmentChanged($event)" color="secondary" value="pending">
+            <ion-segment-button value="pending">
+                <ion-icon name="stopwatch"></ion-icon>
+            </ion-segment-button>
+            <ion-segment-button value="cooking">
+                <ion-icon name="beaker"></ion-icon>
+            </ion-segment-button>
+            <ion-segment-button value="onway">
+                <ion-icon name="map"></ion-icon>
+            </ion-segment-button>
+            <ion-segment-button value="delivered">
+                <ion-icon name="checkmark-done-circle"></ion-icon>
+            </ion-segment-button>
+            <ion-segment-button value="canceled">
+                <ion-icon name="close-circle"></ion-icon>
+            </ion-segment-button>
+        </ion-segment>
     </ion-toolbar>
 </ion-header>
 
 <ion-content [fullscreen]="true">
-    <!-- for ios only header  -->
-    <ion-header collapse="condense">
-        <ion-toolbar>
-            <ion-title size="large">Kitchen's Menu</ion-title>
-        </ion-toolbar>
-    </ion-header>
-
-    <!-- pending order  -->
-    <foodbzr-pending-order></foodbzr-pending-order>
+    <!--  list the items -->
+    <div [ngSwitch]="visible_table">
+        <foodbzr-pending-order *ngSwitchCase="'pending'"></foodbzr-pending-order>
+        <foodbzr-cooking-order *ngSwitchCase="'cooking'"></foodbzr-cooking-order>
+        <foodbzr-onway-order *ngSwitchCase="'onway'"></foodbzr-onway-order>
+        <foodbzr-delivered-order *ngSwitchCase="'delivered'"></foodbzr-delivered-order>
+        <foodbzr-canceled-order *ngSwitchCase="'canceled'"></foodbzr-canceled-order>
+    </div>
 </ion-content>

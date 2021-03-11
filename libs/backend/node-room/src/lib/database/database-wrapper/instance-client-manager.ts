@@ -19,6 +19,7 @@ export class InstanceClientManager {
      */
     addClient = (client: InstanceClient) => {
         this.clients.set(client.client_uuid, client);
+        console.log(this.clients.size, 'clients size after addition')
     };
 
     /**
@@ -27,6 +28,7 @@ export class InstanceClientManager {
      */
     public removeClient = (client_uuid: string) => {
         this.clients.delete(client_uuid);
+        console.log(this.clients.size, 'clients size after delete')
     };
 
     /**

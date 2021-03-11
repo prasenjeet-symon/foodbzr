@@ -1,6 +1,10 @@
 import { query_type } from './main-interface';
 
 export const MYSQL_DATATYPE = {
+    POINT: (SRID: number = 0) => {
+        return `POINT`;
+    },
+
     CHAR: (size: number = 1) => {
         if (size >= 0 && size <= 255 && is_pure_number(size)) {
             return `CHAR(${size})`;

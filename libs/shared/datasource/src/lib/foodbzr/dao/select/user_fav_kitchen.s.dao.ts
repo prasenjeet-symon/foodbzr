@@ -23,9 +23,9 @@ export class fetch_user_fav_kitchen extends BaseDao<IGetUserFavKitchen[]> {
         kit.pincode as pincode,
         kit.state as state,
         kit.country as country,
-        kit.latitude as latitude,
-        kit.longitude as longitude
-
+        ST_X(kit.coordinate) as latitude, 
+        ST_Y(kit.coordinate) as longitude
+        
         FROM user_fav_kitchen as usr_kit
         LEFT OUTER JOIN kitchen as kit
         ON kit.row_uuid = usr_kit.kitchen_row_uuid

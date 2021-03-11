@@ -67,6 +67,7 @@ export class OrderHistoryPageComponent implements OnInit, OnDestroy {
                     }
 
                     this.orderHistory = val.sort((a, b) => +new Date(`${b.date}-01`) - +new Date(`${a.date}-01`));
+                    console.log(this.orderHistory)
                 });
             });
 

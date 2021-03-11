@@ -15,7 +15,7 @@ export class insert_regional_food_category extends BaseDao<IModificationDaoStatu
         (
             name,
             profile_picture,
-            partner_row_uuid,
+            owner_row_uuid,
             offer_percentage,
             offer_start_datetime,
             offer_end_datetime,
@@ -26,7 +26,7 @@ export class insert_regional_food_category extends BaseDao<IModificationDaoStatu
         (
             :name:,
             :profile_picture:,
-            :partner_row_uuid:,
+            :owner_row_uuid:,
             :offer_percentage:,
             :offer_start_datetime:,
             :offer_end_datetime:,
@@ -34,7 +34,7 @@ export class insert_regional_food_category extends BaseDao<IModificationDaoStatu
             :row_uuid:
         )
     ;`)
-    fetch(name: string, profile_picture: string, partner_row_uuid: string, offer_percentage: number, offer_start_datetime: string, offer_end_datetime: string, date_created: string, row_uuid: string) {
+    fetch(name: string, profile_picture: string, owner_row_uuid: string, offer_percentage: number, offer_start_datetime: string, offer_end_datetime: string, date_created: string, row_uuid: string) {
         return this.baseFetch(this.DBData);
     }
 }

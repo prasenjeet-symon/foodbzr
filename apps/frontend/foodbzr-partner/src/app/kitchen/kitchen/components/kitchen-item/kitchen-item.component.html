@@ -16,7 +16,7 @@
     <!-- kitchen actions holder , like edit  and analytics -->
     <div class="ion_card_actions">
         <ion-fab-button (click)="navToReportPage(kitchen)" color="light" size="small"> <ion-icon name="analytics"></ion-icon> </ion-fab-button>
-        <ion-fab-button (click)="edit_kitchen.emit(kitchen)" color="light" size="small"> <ion-icon name="build"></ion-icon> </ion-fab-button>
+        <ion-fab-button *ngIf="kitchen.can_edit_partner === 'yes'" (click)="edit_kitchen.emit(kitchen)" color="light" size="small"> <ion-icon name="build"></ion-icon> </ion-fab-button>
     </div>
 
     <!-- offers indicator , if the oofers is applied then it show it's self otherwise not -->

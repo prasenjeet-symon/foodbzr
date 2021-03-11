@@ -1,11 +1,10 @@
 import { IGetOrder, IModificationDaoStatus, OrderMenu, pay_status, pay_type, PUSH_MESSAGE_TYPE } from '@foodbzr/shared/types';
-import { find_unique_items, get_initial_order_lifecycle, send_push_message } from '@foodbzr/shared/util';
+import { get_initial_order_lifecycle, send_push_message_to_owner, send_push_message_to_partner, send_push_message_to_user } from '@foodbzr/shared/util';
 import { BaseDao, IDaoConfig, Query, TBaseDao, TQuery } from '@sculify/node-room';
 import * as moment from 'moment';
 import { v4 as uuid } from 'uuid';
 import { delete_user_cart } from '../delete/user_cart.d.dao';
 import { fetch_order_single } from '../select/order.s.dao';
-import { fetch_push_message_fcm_tokens } from '../select/push_message.s.dao';
 import { fetch_user_cart_for_checkout } from '../select/user_cart.s.dao';
 
 /**
@@ -73,7 +72,6 @@ export class insert_order extends BaseDao<IModificationDaoStatus> {
 }
 
 /** make new order */
-
 export class insert_order_take_order extends TBaseDao<IGetOrder[]> {
     constructor(config: IDaoConfig) {
         super(config);
@@ -151,8 +149,7 @@ export class insert_order_take_order extends TBaseDao<IGetOrder[]> {
             /**
              * Send the push to user
              */
-            const userPushInfo = await new fetch_push_message_fcm_tokens(this.TDaoConfig).fetch('user', user_row_uuid).asyncData(this);
-            if (userPushInfo.length !== 0) {
+            (() => {
                 const heading = `Order received`;
                 const body = `Order with order id #${order_row_uuid} received by us. Thankyou for choosing us.`;
                 const data = {
@@ -161,19 +158,12 @@ export class insert_order_take_order extends TBaseDao<IGetOrder[]> {
                     kitchen_row_uuid: kitchen_row_uuid,
                     user_row_uuid: user_row_uuid,
                 };
-                send_push_message(
-                    heading,
-                    body,
-                    'https://img.freepik.com/free-vector/people-ordering-food-cafe-online_74855-5913.jpg?size=626&ext=jpg',
-                    data,
-                    find_unique_items(userPushInfo, 'push_address').map((p) => p.push_address)
-                );
-            }
+                const image_uri = 'https://img.freepik.com/free-vector/people-ordering-food-cafe-online_74855-5913.jpg?size=626&ext=jpg';
+                send_push_message_to_user(this.TDaoConfig, user_row_uuid, heading, body, image_uri, data);
+            })();
 
-            /** send the push message to kitchens owner */
-            const partner_row_uuid = found_user_cart.kitchen.kitchen_partner_row_uuid;
-            const partnerPush = await new fetch_push_message_fcm_tokens(this.TDaoConfig).fetch('partner', partner_row_uuid).asyncData(this);
-            if (partnerPush.length !== 0) {
+            (() => {
+                const partner_row_uuid = found_user_cart.kitchen.kitchen_partner_row_uuid;
                 const heading = `Order received`;
                 const body = `New order with order id #${order_row_uuid} received by us.`;
                 const data = {
@@ -182,14 +172,23 @@ export class insert_order_take_order extends TBaseDao<IGetOrder[]> {
                     kitchen_row_uuid: kitchen_row_uuid,
                     user_row_uuid: user_row_uuid,
                 };
-                send_push_message(
-                    heading,
-                    body,
-                    'https://img.freepik.com/free-vector/people-ordering-food-cafe-online_74855-5913.jpg?size=626&ext=jpg',
-                    data,
-                    find_unique_items(partnerPush, 'push_address').map((p) => p.push_address)
-                );
-            }
+                const image_uri = 'https://img.freepik.com/free-vector/people-ordering-food-cafe-online_74855-5913.jpg?size=626&ext=jpg';
+                send_push_message_to_partner(this.TDaoConfig, partner_row_uuid, heading, body, image_uri, data);
+            })();
+
+            (() => {
+                const owner_row_uuid = found_user_cart.kitchen.owner_row_uuid;
+                const heading = `Order received`;
+                const body = `New order with order id #${order_row_uuid} received by us.`;
+                const data = {
+                    order_row_uuid: order_row_uuid,
+                    type: PUSH_MESSAGE_TYPE.new_order,
+                    kitchen_row_uuid: kitchen_row_uuid,
+                    user_row_uuid: user_row_uuid,
+                };
+                const image_uri = 'https://img.freepik.com/free-vector/people-ordering-food-cafe-online_74855-5913.jpg?size=626&ext=jpg';
+                send_push_message_to_owner(this.TDaoConfig, owner_row_uuid, heading, body, image_uri, data);
+            })();
 
             await this.closeTransaction();
             return this.baseFetch(order_details);

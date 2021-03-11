@@ -57,7 +57,6 @@ export class ProfileHomePageComponent implements OnInit, OnDestroy {
 
     public initScreen(can_show_loading = true) {
         this.platform.ready().then(() => {
-            this.toogleDarkMode();
             this.fetch_owner__ = new this.database.fetch_owner(daoConfig);
             this.fetch_owner__.observe(this.daosLife).subscribe((val) => {
                 if (this.loading.dailogRef.isConnected) {

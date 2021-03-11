@@ -19,8 +19,7 @@ export class insert_delivery_address extends BaseDao<IModificationDaoStatus> {
             city,
             state,
             country,
-            latitude,
-            longitude,
+            coordinate,
             date_created,
             row_uuid
         )
@@ -32,8 +31,7 @@ export class insert_delivery_address extends BaseDao<IModificationDaoStatus> {
             :city:,
             :state:,
             :country:,
-            :latitude:,
-            :longitude:,
+            ST_GeomFromText('POINT(:latitude: :longitude:)', 4326),
             :date_created:,
             :row_uuid:
         )

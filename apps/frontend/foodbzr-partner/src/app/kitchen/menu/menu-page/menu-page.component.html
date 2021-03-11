@@ -17,18 +17,18 @@
 
     <div class="kitchen_profile_picture">
         <img [src]="kitchen_profile_picture" alt="" />
-        <div class="add_menu">
+        <div *ngIf="can_edit_kitchen === 'yes'" class="add_menu">
             <ion-fab-button (click)="createMenu()"><ion-icon name="document-text"></ion-icon></ion-fab-button>
         </div>
     </div>
 
     <!-- menu list  -->
     <div class="menu_list">
-        <foodbzr-menu-item [kitchen_row_uuid]="kitchen_row_uuid" (update_menu)="updateMenu($event)"></foodbzr-menu-item>
+        <foodbzr-menu-item [can_edit_kitchen]="can_edit_kitchen" [kitchen_row_uuid]="kitchen_row_uuid" (update_menu)="updateMenu($event)"></foodbzr-menu-item>
     </div>
 
     <!-- delivery boys -->
     <div class="delivery_boys">
-        <foodbzr-dboy-item [kitchen_row_uuid]="kitchen_row_uuid"></foodbzr-dboy-item>
+        <foodbzr-dboy-item [can_edit_kitchen]="can_edit_kitchen" [kitchen_row_uuid]="kitchen_row_uuid"></foodbzr-dboy-item>
     </div>
 </ion-content>

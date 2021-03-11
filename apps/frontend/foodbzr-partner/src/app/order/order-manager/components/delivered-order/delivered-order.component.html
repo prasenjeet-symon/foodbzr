@@ -1,0 +1,38 @@
+<ion-list>
+    <ion-list-header>
+        <ion-label color="success">Delivered Orders </ion-label>
+    </ion-list-header>
+
+    <ion-item-sliding *ngFor="let pending_order of delivered_orders; trackBy: OrderTracker">
+        <ion-item>
+            <ion-avatar slot="start">
+                <img src="../../../../../assets/icon/rich.png" alt="order-food" srcset="" />
+            </ion-avatar>
+            <ion-label>
+                <h2>
+                    Oder id
+                    <i
+                        ><b>#{{ pending_order.food_order_row_id }}</b></i
+                    >
+                    delivered
+                </h2>
+                <ion-text color="success"
+                    ><p>{{ pending_order.food_order_pay_type }}</p></ion-text
+                >
+            </ion-label>
+            <ion-note slot="end"> {{ pending_order.food_order_date_created | date: 'short' }} </ion-note>
+        </ion-item>
+
+        <ion-item-options side="start">
+            <ion-item-option (click)="openOrderDetailPage(pending_order)" color="warning">
+                <ion-icon slot="icon-only" name="list"></ion-icon>
+            </ion-item-option>
+        </ion-item-options>
+
+        <ion-item-options side="end">
+            <ion-item-option (click)="showOrderLocation(pending_order.delivery_address_latitude, pending_order.delivery_address_longitude)" color="tertiary">
+                <ion-icon slot="icon-only" name="location"></ion-icon>
+            </ion-item-option>
+        </ion-item-options>
+    </ion-item-sliding>
+</ion-list>

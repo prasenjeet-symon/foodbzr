@@ -57,7 +57,9 @@ export class FcmService {
         });
 
         PushNotifications.addListener('registrationError', (error: any) => {});
-        PushNotifications.addListener('pushNotificationReceived', async (notification: PushNotification) => {});
+        PushNotifications.addListener('pushNotificationReceived', async (notification: PushNotification) => {
+            this.handleRouting(notification);
+        });
         PushNotifications.addListener('pushNotificationActionPerformed', async (notification: PushNotificationActionPerformed) => {});
     }
 
@@ -76,5 +78,7 @@ export class FcmService {
     }
 
     /** handle routing */
-    public handleRouting(routingData: any) {}
+    public handleRouting(routingData: any) {
+        this.router.navigate(['tabs', 'tab1']);
+    }
 }

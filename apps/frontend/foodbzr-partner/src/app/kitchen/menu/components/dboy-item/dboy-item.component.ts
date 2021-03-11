@@ -1,6 +1,6 @@
 import { Component, Input, NgZone, OnDestroy, OnInit } from '@angular/core';
 import { fetch_dboy_of_kitchen, FoodbzrDatasource } from '@foodbzr/datasource';
-import { IGetDBoy } from '@foodbzr/shared/types';
+import { IGetDBoy, is_active } from '@foodbzr/shared/types';
 import { is_pure_number } from '@foodbzr/shared/util';
 import { Platform, PopoverController } from '@ionic/angular';
 import { daoConfig, DaoLife, NetworkManager } from '@sculify/node-room-client';
@@ -20,6 +20,7 @@ export class DboyItemComponent implements OnInit, OnDestroy {
         insert_dboy_from_partner: FoodbzrDatasource.getInstance().insert_dboy_from_partner,
     };
     @Input() kitchen_row_uuid: string;
+    @Input() can_edit_kitchen: is_active;
 
     allDboys: IGetDBoy[] = [];
     daosLife: DaoLife;

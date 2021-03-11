@@ -1,7 +1,7 @@
 import { Component, Input, NgZone, OnDestroy, OnInit } from '@angular/core';
 import { CameraResultType, Plugins } from '@capacitor/core';
 import { fetch_menu_picture_of_menu, FoodbzrDatasource } from '@foodbzr/datasource';
-import { IGetMenuPicture } from '@foodbzr/shared/types';
+import { IGetMenuPicture, is_active } from '@foodbzr/shared/types';
 import { PhotoViewer, PhotoViewerOptions } from '@ionic-native/photo-viewer/ngx';
 import { Platform } from '@ionic/angular';
 import { daoConfig, DaoLife, NetworkManager } from '@sculify/node-room-client';
@@ -18,7 +18,8 @@ import { ImagePicker } from '@ionic-native/image-picker/ngx';
 export class FoodPictureComponent implements OnInit, OnDestroy {
     @Input() menu_row_uuid: string;
     @Input() partner_row_uuid: string;
-
+    @Input() can_edit_kitchen: is_active;
+    
     daosLife: DaoLife;
     /** data */
     allPics: IGetMenuPicture[] = [];

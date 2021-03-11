@@ -1,10 +1,9 @@
-import { Component } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { PluginListenerHandle, Plugins } from '@capacitor/core';
 import { SplashScreen } from '@ionic-native/splash-screen/ngx';
 import { StatusBar } from '@ionic-native/status-bar/ngx';
 import { Platform, ToastController } from '@ionic/angular';
 import { NetworkManager } from '@sculify/node-room-client';
-import { Subscription } from 'rxjs';
 const { Network } = Plugins;
 
 @Component({
@@ -12,14 +11,16 @@ const { Network } = Plugins;
     templateUrl: 'app.component.html',
     styleUrls: ['app.component.scss'],
 })
-export class AppComponent {
+export class AppComponent implements OnDestroy, OnInit {
     private networkHandler: PluginListenerHandle;
-    private resume_subs: Subscription;
-    private pause_subs: Subscription;
+    private resume_subs: any;
+    private pause_subs: any;
 
     constructor(private platform: Platform, private splashScreen: SplashScreen, private statusBar: StatusBar, private toast: ToastController) {
         this.initializeApp();
     }
+
+    ngOnInit() {}
 
     /** print the message */
     public async printMessage(message: string, color: string) {
@@ -29,7 +30,7 @@ export class AppComponent {
             color: color,
         });
 
-        toastRef.present();
+        await toastRef.present();
     }
 
     ngOnDestroy() {
@@ -47,6 +48,10 @@ export class AppComponent {
     }
 
     initializeApp() {
+        if (this.networkHandler) {
+            this.networkHandler.remove();
+        }
+
         this.platform.ready().then(() => {
             this.statusBar.styleDefault();
             this.splashScreen.hide();
@@ -56,15 +61,14 @@ export class AppComponent {
              *
              *
              */
+            if (this.networkHandler) {
+                this.networkHandler.remove();
+            }
 
-            this.resume_subs = this.platform.resume.subscribe(() => {
-                if (!NetworkManager.getInstance().isConnected()) {
-                    NetworkManager.getInstance().reConnect();
-                }
-            });
+            this.resume_subs = this.platform.resume.subscribe(() => {});
 
             this.pause_subs = this.platform.pause.subscribe(() => {
-                //TODO: need to disconnect the connection for the
+                NetworkManager.getInstance().disconnect();
             });
             /**
              *
@@ -73,11 +77,10 @@ export class AppComponent {
             this.networkHandler = Network.addListener('networkStatusChange', (status) => {
                 if (!status.connected) {
                     this.printMessage('Internet disconnected', 'danger');
+                    NetworkManager.getInstance().disconnect();
                 } else {
                     this.printMessage('Your are online.', 'success');
-                    if (!NetworkManager.getInstance().isConnected()) {
-                        NetworkManager.getInstance().reConnect();
-                    }
+                    NetworkManager.getInstance().reConnect();
                 }
             });
             /**
