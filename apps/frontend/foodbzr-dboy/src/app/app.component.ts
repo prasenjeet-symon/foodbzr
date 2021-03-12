@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { PluginListenerHandle, Plugins } from '@capacitor/core';
 import { SplashScreen } from '@ionic-native/splash-screen/ngx';
 import { StatusBar } from '@ionic-native/status-bar/ngx';
@@ -11,7 +11,7 @@ const { Network } = Plugins;
     templateUrl: 'app.component.html',
     styleUrls: ['app.component.scss'],
 })
-export class AppComponent {
+export class AppComponent implements OnInit, OnDestroy {
     private networkHandler: PluginListenerHandle;
     private resume_subs: any;
     private pause_subs: any;
@@ -19,6 +19,8 @@ export class AppComponent {
     constructor(private platform: Platform, private splashScreen: SplashScreen, private statusBar: StatusBar, private toast: ToastController) {
         this.initializeApp();
     }
+
+    ngOnInit() {}
 
     /** print the message */
     public async printMessage(message: string, color: string) {
@@ -28,7 +30,7 @@ export class AppComponent {
             color: color,
         });
 
-        toastRef.present();
+        await toastRef.present();
     }
 
     ngOnDestroy() {
@@ -46,6 +48,10 @@ export class AppComponent {
     }
 
     initializeApp() {
+        if (this.networkHandler) {
+            this.networkHandler.remove();
+        }
+
         this.platform.ready().then(() => {
             this.statusBar.styleDefault();
             this.splashScreen.hide();
@@ -55,11 +61,11 @@ export class AppComponent {
              *
              *
              */
+            if (this.networkHandler) {
+                this.networkHandler.remove();
+            }
 
-            this.resume_subs = this.platform.resume.subscribe(() => {
-                NetworkManager.getInstance().disconnect();
-                NetworkManager.getInstance().reConnect();
-            });
+            this.resume_subs = this.platform.resume.subscribe(() => {});
 
             this.pause_subs = this.platform.pause.subscribe(() => {
                 NetworkManager.getInstance().disconnect();
@@ -74,7 +80,6 @@ export class AppComponent {
                     NetworkManager.getInstance().disconnect();
                 } else {
                     this.printMessage('Your are online.', 'success');
-                    NetworkManager.getInstance().disconnect();
                     NetworkManager.getInstance().reConnect();
                 }
             });

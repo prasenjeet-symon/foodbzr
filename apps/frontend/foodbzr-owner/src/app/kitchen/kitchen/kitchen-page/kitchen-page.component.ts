@@ -21,6 +21,7 @@ export class KitchenPageComponent implements OnInit {
         update_kitchen_address: FoodbzrDatasource.getInstance().update_kitchen_address,
     };
     public partner_row_uuid: string;
+    public areWeUsingGps = false;
 
     constructor(private modal: ModalController, private ngZone: NgZone, private popover: PopoverController, private platform: Platform, private loading: LoadingScreenService) {
         this.partner_row_uuid = localStorage.getItem('partner_row_uuid');

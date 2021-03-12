@@ -1,8 +1,10 @@
 import { Component, Input, NgZone, OnDestroy, OnInit } from '@angular/core';
 import { fetch_kitchens_of_partner, fetch_kitchen_for_new_partner, FoodbzrDatasource } from '@foodbzr/datasource';
 import { IGetKitchen, IGetPartner } from '@foodbzr/shared/types';
+import { is_pure_number } from '@foodbzr/shared/util';
 import { Platform, PopoverController } from '@ionic/angular';
 import { daoConfig, DaoLife, NetworkManager } from '@sculify/node-room-client';
+import { combineLatest } from 'rxjs';
 import { LoadingScreenService } from '../../../../loading-screen.service';
 
 @Component({
@@ -37,15 +39,21 @@ export class UpdateCommisionComponent implements OnInit, OnDestroy {
 
     /** subscriptions */
     public networkSubs: any;
+    public combineLatestSubs: any;
 
     ngOnDestroy() {
         this.daosLife.softKill();
         if (this.networkSubs) {
             this.networkSubs.unsubscribe();
         }
+        if (this.combineLatestSubs) {
+            this.combineLatestSubs.unsubscribe();
+        }
     }
 
     ngOnInit() {
+        this.commision = +this.partner.commission;
+        this.daosLife.softKill();
         this.initScreen();
         this.networkSubs = NetworkManager.getInstance().reloadCtx.subscribe((val) => {
             if (val) {
@@ -57,29 +65,23 @@ export class UpdateCommisionComponent implements OnInit, OnDestroy {
 
     public initScreen(can_show_loading = true) {
         this.platform.ready().then(() => {
-            this.commision = +this.partner.commission;
-
             /** fetch the partner kit */
             this.fetch_kitchens_of_partner__ = new this.database.fetch_kitchens_of_partner(daoConfig);
-            this.fetch_kitchens_of_partner__.observe(this.daosLife).subscribe((val) => {
-                if (this.loadingScreen.dailogRef.isConnected) {
-                    this.loadingScreen.dailogRef.dismiss();
-                }
+            this.fetch_kitchen_for_new_partner__ = new this.database.fetch_kitchen_for_new_partner(daoConfig);
+
+            const combineLatest$$ = combineLatest([this.fetch_kitchens_of_partner__.observe(this.daosLife), this.fetch_kitchen_for_new_partner__.observe(this.daosLife)]);
+            this.combineLatestSubs = combineLatest$$.subscribe((val) => {
                 this.ngZone.run(() => {
-                    this.selectedKitchens = val;
+                    if (this.loadingScreen.dailogRef.isConnected) {
+                        this.loadingScreen.dailogRef.dismiss();
+                    }
+
+                    const kitchensOfPartners = val[0];
+                    const freeKitchens = val[1];
+                    this.freeKitchens = freeKitchens;
+                    this.selectedKitchens = kitchensOfPartners;
                     const found = this.selectedKitchens.filter((p) => p.can_edit_partner === 'yes');
                     this.canEditMenu = found.length === this.selectedKitchens.length ? true : false;
-                });
-            });
-
-            this.fetch_kitchen_for_new_partner__ = new this.database.fetch_kitchen_for_new_partner(daoConfig);
-            this.fetch_kitchen_for_new_partner__.observe(this.daosLife).subscribe((val) => {
-                if (this.loadingScreen.dailogRef.isConnected) {
-                    this.loadingScreen.dailogRef.dismiss();
-                }
-
-                this.ngZone.run(() => {
-                    this.freeKitchens = val;
                 });
             });
 
@@ -96,7 +98,15 @@ export class UpdateCommisionComponent implements OnInit, OnDestroy {
     }
 
     /** add commision of the partner */
-    public updateCommision() {
+    public updateCommision(commision: number) {
+        if (!commision) {
+            return;
+        }
+
+        if (!is_pure_number(commision)) {
+            return;
+        }
+
         this.platform.ready().then(() => {
             const daoLife = new DaoLife();
             const update_partner_commision = new this.database.update_partner_commision(daoConfig);
@@ -107,14 +117,19 @@ export class UpdateCommisionComponent implements OnInit, OnDestroy {
             });
 
             this.loadingScreen.showLoadingScreen().then(() => {
-                update_partner_commision.fetch(this.commision, this.partner.row_uuid).obsData();
+                update_partner_commision.fetch(commision, this.partner.row_uuid).obsData();
             });
+
             daoLife.softKill();
         });
     }
 
     /** remove the kitchen from the partner */
     public removeKitchenFromPartner(kitchen: IGetKitchen) {
+        if (!kitchen) {
+            return;
+        }
+
         this.platform.ready().then(() => {
             const daoLife = new DaoLife();
             const update_kitchen_partner_ref = new this.database.update_kitchen_partner_ref(daoConfig);
@@ -125,7 +140,7 @@ export class UpdateCommisionComponent implements OnInit, OnDestroy {
             });
 
             this.loadingScreen.showLoadingScreen().then(() => {
-                update_kitchen_partner_ref.fetch(null, kitchen.can_edit_partner, kitchen.row_uuid).obsData();
+                update_kitchen_partner_ref.fetch(null, kitchen.can_edit_partner, [kitchen.row_uuid]).obsData();
             });
 
             daoLife.softKill();
@@ -134,6 +149,10 @@ export class UpdateCommisionComponent implements OnInit, OnDestroy {
 
     /** assing the kitchen to partner  */
     public addKitchenToPartner(kitchen: IGetKitchen) {
+        if (!kitchen) {
+            return;
+        }
+
         this.platform.ready().then(() => {
             const daoLife = new DaoLife();
             const update_kitchen_partner_ref = new this.database.update_kitchen_partner_ref(daoConfig);
@@ -144,7 +163,7 @@ export class UpdateCommisionComponent implements OnInit, OnDestroy {
             });
 
             this.loadingScreen.showLoadingScreen().then(() => {
-                update_kitchen_partner_ref.fetch(this.partner.row_uuid, kitchen.can_edit_partner, kitchen.row_uuid).obsData();
+                update_kitchen_partner_ref.fetch(this.partner.row_uuid, kitchen.can_edit_partner, [kitchen.row_uuid]).obsData();
             });
             daoLife.softKill();
         });
@@ -161,11 +180,17 @@ export class UpdateCommisionComponent implements OnInit, OnDestroy {
                 }
             });
 
-            for (const sKit of this.selectedKitchens) {
-                this.loadingScreen.showLoadingScreen().then(() => {
-                    update_kitchen_partner_ref.fetch(this.partner.row_uuid, checked ? 'yes' : 'no', sKit.row_uuid).obsData();
-                });
-            }
+            this.loadingScreen.showLoadingScreen().then(() => {
+                update_kitchen_partner_ref
+                    .fetch(
+                        this.partner.row_uuid,
+                        checked ? 'yes' : 'no',
+                        this.selectedKitchens.map((p) => p.row_uuid)
+                    )
+                    .obsData();
+            });
+
+            daoLife.softKill();
         });
     }
 
@@ -186,5 +211,9 @@ export class UpdateCommisionComponent implements OnInit, OnDestroy {
 
             daoLife.softKill();
         });
+    }
+
+    tracker(index: number, value: IGetKitchen) {
+        return value.row_uuid;
     }
 }

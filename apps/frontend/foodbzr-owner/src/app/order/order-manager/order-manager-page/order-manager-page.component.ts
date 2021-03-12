@@ -67,7 +67,7 @@ export class OrderManagerPageComponent implements OnInit, OnDestroy {
                     const already_choosen = JSON.parse(localStorage.getItem('selected_partners'));
                     this.selectedPartners = already_choosen;
                 } else {
-                    this.selectedPartners = val;
+                    this.selectedPartners = [val[0]];
                 }
             });
         });

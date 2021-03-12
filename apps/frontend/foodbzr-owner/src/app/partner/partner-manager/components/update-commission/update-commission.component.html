@@ -10,7 +10,7 @@
     <!-- commision -->
     <ion-item>
         <ion-label position="floating">Owner commision</ion-label>
-        <ion-input [value]="commision" debounce="500" (ionChange)="updateCommision()" [(ngModel)]="commision" inputmode="number" type="number"></ion-input>
+        <ion-input #commissionVal [debounce]="2000" (keyup)="updateCommision(commissionVal.value)" [(ngModel)]="commision" inputmode="number" type="number"></ion-input>
     </ion-item>
 
     <!-- choose the kitchens -->
@@ -22,7 +22,7 @@
     </ion-item>
 
     <!-- already selected kitchen -->
-    <ion-item *ngFor="let kit of selectedKitchens">
+    <ion-item *ngFor="let kit of selectedKitchens; trackBy: tracker">
         <ion-icon slot="start" name="restaurant"></ion-icon>
         <ion-label>
             <h2>{{ kit.kitchen_name }}</h2>
@@ -32,16 +32,16 @@
     </ion-item>
 
     <!-- can edit the kitchen -->
-    <ion-item>
+    <ion-item (click)="updateCanEditMenu(checkBoxCanedit.checked)">
         <ion-icon slot="start" name="egg"></ion-icon>
         <ion-label> <h2>Can edit the menus</h2> </ion-label>
-        <ion-checkbox [checked]="canEditMenu" (ionChange)="updateCanEditMenu($event.detail.checked)" slot="end" color="secondary"></ion-checkbox>
+        <ion-checkbox #checkBoxCanedit [checked]="canEditMenu" slot="end" color="secondary"></ion-checkbox>
     </ion-item>
 
     <!-- can add new kitchen -->
-    <ion-item>
+    <ion-item (click)="updateCanAddKitchen(checkBoxAddKit.checked)">
         <ion-icon slot="start" name="logo-bitbucket"></ion-icon>
         <ion-label> <h2>Can add new kitchen</h2> </ion-label>
-        <ion-checkbox [checked]="partner.can_add_kitchen === 'yes' ? true : false" (ionChange)="updateCanAddKitchen($event.detail.checked)" slot="end" color="secondary"></ion-checkbox>
+        <ion-checkbox #checkBoxAddKit [checked]="partner.can_add_kitchen === 'yes' ? true : false" slot="end" color="secondary"></ion-checkbox>
     </ion-item>
 </ion-list>

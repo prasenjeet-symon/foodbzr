@@ -155,9 +155,9 @@ export class update_kitchen_partner_ref extends BaseDao<IModificationDaoStatus> 
         partner_row_uuid = :partner_row_uuid:,
         can_edit_partner = :can_edit_partner:
 
-        WHERE row_uuid = :kitchen_row_uuid:
+        WHERE row_uuid IN ( :kitchen_row_uuid: )
     ;`)
-    fetch(partner_row_uuid: string, can_edit_partner: is_active, kitchen_row_uuid: string) {
+    fetch(partner_row_uuid: string, can_edit_partner: is_active, kitchen_row_uuid: string[]) {
         return this.baseFetch(this.DBData);
     }
 }
