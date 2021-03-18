@@ -21,7 +21,6 @@ export class update_food_category extends BaseDao<IModificationDaoStatus> {
         offer_end_datetime  = :offer_end_datetime:
 
         WHERE row_uuid = :food_category_row_uuid:
-
     ;`)
     fetch(name: string, profile_picture: string, offer_percentage: number, offer_start_datetime: string, offer_end_datetime: string, food_category_row_uuid: string) {
         return this.baseFetch(this.DBData);

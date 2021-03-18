@@ -45,7 +45,7 @@ export class fetch_order_single extends BaseDao<IGetOrder[]> {
     fo.row_id,
     fo.user_row_uuid,
     fo.partner_row_uuid,
-    fo.kitchen_row_uuid,
+    fo.kitchen_location_row_uuid,
     fo.dboy_row_uuid,
     fo.delivery_status,
     fo.pay_type,
@@ -61,9 +61,11 @@ export class fetch_order_single extends BaseDao<IGetOrder[]> {
     fo.date_created,
     fo.date_updated,
     fo.row_uuid,
+
     db.profile_picture,
     db.full_name,
     db.mobile_number,
+
     ST_X(da.coordinate) as latitude, 
     ST_Y(da.coordinate) as longitude
     
@@ -71,8 +73,13 @@ export class fetch_order_single extends BaseDao<IGetOrder[]> {
     FROM food_order as fo
     LEFT OUTER JOIN dboy as db
     ON db.row_uuid = fo.dboy_row_uuid
+
+    LEFT OUTER JOIN kitchen_location as kitl
+    ON kitl.row_uuid = fo.kitchen_location_row_uuid
+
     LEFT OUTER JOIN kitchen as kit
-    ON kit.row_uuid = fo.kitchen_row_uuid
+    ON kit.row_uuid = kitl.kitchen_row_uuid
+
     LEFT OUTER JOIN delivery_address as da
     ON da.row_uuid = fo.order_address_row_uuid
 
@@ -94,38 +101,52 @@ export class fetch_order_all extends BaseDao<IGetOrder[]> {
     }
 
     @Query(`
-        SELECT 
-        fo.row_id,
-        fo.user_row_uuid,
-        fo.partner_row_uuid,
-        fo.kitchen_row_uuid,
-        fo.dboy_row_uuid,
-        fo.delivery_status,
-        fo.pay_type,
-        fo.pay_status,
-        fo.otp,
-        fo.amount_paid,
-        fo.bzrcoin_used,
-        fo.delivery_charge,
-        fo.user_saved_amount,
-        fo.lifecycle,
-        fo.order_menu,
-        fo.order_address_row_uuid,
-        fo.date_created,
-        fo.date_updated,
-        fo.row_uuid,
-        db.profile_picture,
-        db.full_name,
-        db.mobile_number,
-        ST_X(da.coordinate) as latitude, 
-        ST_Y(da.coordinate) as longitude
+        SELECT
+    
+    kit.profile_picture as kitchen_profile_picture,
+    kit.kitchen_name as kitchen_name,
+    kit.owner_row_uuid as owner_row_uuid,
+    
+    fo.row_id,
+    fo.user_row_uuid,
+    fo.partner_row_uuid,
+    fo.kitchen_location_row_uuid,
+    fo.dboy_row_uuid,
+    fo.delivery_status,
+    fo.pay_type,
+    fo.pay_status,
+    fo.otp,
+    fo.amount_paid,
+    fo.bzrcoin_used,
+    fo.delivery_charge,
+    fo.user_saved_amount,
+    fo.lifecycle,
+    fo.order_menu,
+    fo.order_address_row_uuid,
+    fo.date_created,
+    fo.date_updated,
+    fo.row_uuid,
 
-        FROM food_order as fo
-        LEFT OUTER JOIN dboy as db
-        ON db.row_uuid = fo.dboy_row_uuid
-        LEFT OUTER JOIN delivery_address as da
-        ON da.row_uuid = fo.order_address_row_uuid
+    db.profile_picture,
+    db.full_name,
+    db.mobile_number,
+    
+    ST_X(da.coordinate) as latitude, 
+    ST_Y(da.coordinate) as longitude
+    
 
+    FROM food_order as fo
+    LEFT OUTER JOIN dboy as db
+    ON db.row_uuid = fo.dboy_row_uuid
+
+    LEFT OUTER JOIN kitchen_location as kitl
+    ON kitl.row_uuid = fo.kitchen_location_row_uuid
+
+    LEFT OUTER JOIN kitchen as kit
+    ON kit.row_uuid = kitl.kitchen_row_uuid
+
+    LEFT OUTER JOIN delivery_address as da
+    ON da.row_uuid = fo.order_address_row_uuid
     ;`)
     fetch() {
         return this.baseFetch(

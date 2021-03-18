@@ -3,6 +3,7 @@ import { delete_dboy } from './dao/delete/dboy.d.dao';
 import { delete_delivery_address } from './dao/delete/delivery_address.d.dao';
 import { delete_food_category } from './dao/delete/food_category.d.dao';
 import { delete_kitchen } from './dao/delete/kitchen.d.dao';
+import { delete_kitchen_location, delete_kitchen_location_partner_relation } from './dao/delete/kitchen_location.d.dao';
 import { delete_menu } from './dao/delete/menu.d.dao';
 import { delete_menu_picture } from './dao/delete/menu_picture.d.dao';
 import { delete_menu_review } from './dao/delete/menu_review.d.dao';
@@ -17,6 +18,7 @@ import { insert_dboy, insert_dboy_from_partner } from './dao/insert/dboy.i.dao';
 import { insert_delivery_address } from './dao/insert/delivery_address.i.dao';
 import { insert_food_category } from './dao/insert/food_category.i.dao';
 import { insert_kitchen } from './dao/insert/kitchen.i.dao';
+import { insert_kitchen_location } from './dao/insert/kitchen_location.i.dao';
 import { insert_menu } from './dao/insert/menu.i.dao';
 import { insert_multi_menu_picture, uplaod_image_to_cloud } from './dao/insert/menu_picture.i.dao';
 import { insert_menu_review } from './dao/insert/menu_review.i.dao';
@@ -29,7 +31,7 @@ import { insert_regional_food_category } from './dao/insert/regional_food_catego
 import { insert_user } from './dao/insert/user.i.dao';
 import { insert_user_cart } from './dao/insert/user_cart.i.dao';
 import { insert_user_fav_kitchen } from './dao/insert/user_fav_kitchen.i.dao';
-import { fetch_dboy_of_kitchen, fetch_dboy_single } from './dao/select/dboy.s.dao';
+import { fetch_dboy_of_kitchen, fetch_dboy_of_owner, fetch_dboy_single } from './dao/select/dboy.s.dao';
 import { fetch_delivery_address_of_user } from './dao/select/delivery_address.s.dao';
 import { fetch_food_category_of_partner } from './dao/select/food_category.s.dao';
 import {
@@ -37,12 +39,14 @@ import {
     fetch_kitchens_of_partner,
     fetch_kitchen_all,
     fetch_kitchen_for_new_partner,
+    fetch_kitchen_ghost_brands,
     fetch_kitchen_in_range,
     fetch_kitchen_password,
     fetch_kitchen_search,
     fetch_kitchen_single,
     fetch_kitchen_supported_menus,
 } from './dao/select/kitchen.s.dao';
+import { fetch_kitchen_location_of_kitchen } from './dao/select/kitchen_location.s.dao';
 import { fetch_menus_of_kitchen, fetch_menu_of_regional_food_cat, fetch_menu_search, fetch_menu_single, fetch_menu_trending } from './dao/select/menu.s.dao';
 import { fetch_menu_picture_of_menu } from './dao/select/menu_picture.s.dao';
 import { fetch_menu_reviews_of_menu } from './dao/select/menu_review.s.dao';
@@ -71,7 +75,8 @@ import { fetch_user_fav_kitchen, fetch_user_fav_kitchen_is_fav } from './dao/sel
 import { auth_dboy, update_dboy, update_dboy_mobile, update_dboy_resend_otp, update_dboy_verify, update_dboy_verify_otp } from './dao/update/dboy.u.dao';
 import { update_delivery_address } from './dao/update/delivery_address.u.dao';
 import { update_food_category } from './dao/update/food_category.u.dao';
-import { update_kitchen, update_kitchen_address, update_kitchen_login_detail, update_kitchen_offers, update_kitchen_partner_ref, update_kitchen_password } from './dao/update/kitchen.u.dao';
+import { update_kitchen, update_kitchen_login_detail, update_kitchen_offers, update_kitchen_password } from './dao/update/kitchen.u.dao';
+import { update_kitchen_location_address, update_kitchen_location_commission, update_kitchen_location_partner, update_kitchen_location_radius } from './dao/update/kitchen_location.u.dao';
 import { update_menu, update_menu_category, update_menu_offers } from './dao/update/menu.u.dao';
 import { update_menu_review } from './dao/update/menu_review.u.dao';
 import { update_menu_size_variant, update_menu_size_variant_offer } from './dao/update/menu_size_variant.u.dao';
@@ -116,6 +121,7 @@ import { dboy } from './entity/table/dboy.table';
 import { delivery_address } from './entity/table/delivery_address.table';
 import { food_category } from './entity/table/food_category.table';
 import { kitchen } from './entity/table/kitchen.table';
+import { kitchen_location } from './entity/table/kitchen_location.table';
 import { menu } from './entity/table/menu.table';
 import { menu_picture } from './entity/table/menu_picture.table';
 import { menu_review } from './entity/table/menu_review.table';
@@ -196,6 +202,10 @@ import { user_fav_kitchen } from './entity/table/user_fav_kitchen.table';
             entity: push_message,
             cache_fetch_condition: '',
         },
+        {
+            entity: kitchen_location,
+            cache_fetch_condition: '',
+        },
     ],
     Views: [],
     childDatabase: [],
@@ -251,13 +261,12 @@ export class FoodbzrDatasource {
     public update_kitchen_password = update_kitchen_password;
     public fetch_kitchen_all = fetch_kitchen_all;
     public update_kitchen_login_detail = update_kitchen_login_detail;
-    public update_kitchen_address = update_kitchen_address;
     public fetch_kitchen_in_range = fetch_kitchen_in_range;
     public fetch_kitchen_search = fetch_kitchen_search;
     public fetch_kitchen_supported_menus = fetch_kitchen_supported_menus;
     public fetch_kitchens_of_owner = fetch_kitchens_of_owner;
-    public update_kitchen_partner_ref = update_kitchen_partner_ref;
     public fetch_kitchen_for_new_partner = fetch_kitchen_for_new_partner;
+    public fetch_kitchen_ghost_brands = fetch_kitchen_ghost_brands;
 
     /** menu.table.ts */
     public delete_menu = delete_menu;
@@ -365,6 +374,7 @@ export class FoodbzrDatasource {
     public update_dboy_verify_otp = update_dboy_verify_otp;
     public update_dboy_mobile = update_dboy_mobile;
     public insert_dboy_from_partner = insert_dboy_from_partner;
+    public fetch_dboy_of_owner = fetch_dboy_of_owner;
 
     /** user_fav_kitchen */
     public delete_user_fav_kitchen = delete_user_fav_kitchen;
@@ -375,6 +385,16 @@ export class FoodbzrDatasource {
     /** push_message */
     public insert_push_message = insert_push_message;
     public fetch_push_message_fcm_tokens = fetch_push_message_fcm_tokens;
+
+    /** kitchen locations */
+    public delete_kitchen_location = delete_kitchen_location;
+    public insert_kitchen_location = insert_kitchen_location;
+    public fetch_kitchen_location_of_kitchen = fetch_kitchen_location_of_kitchen;
+    public update_kitchen_location_commission = update_kitchen_location_commission;
+    public update_kitchen_location_address = update_kitchen_location_address;
+    public update_kitchen_location_partner = update_kitchen_location_partner;
+    public update_kitchen_location_radius = update_kitchen_location_radius;
+    public delete_kitchen_location_partner_relation = delete_kitchen_location_partner_relation;
 
     constructor() {}
 

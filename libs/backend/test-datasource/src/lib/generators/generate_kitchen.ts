@@ -30,6 +30,7 @@ export function generate_kitchens(amount: number) {
         closing_time: string;
         open_week_list: string;
         city: string;
+        bio: string;
     }[] = [];
     for (let index = 0; index < +amount; index++) {
         /** create the kitchen data */
@@ -50,6 +51,8 @@ export function generate_kitchens(amount: number) {
         const opening_time = start_time.format('YYYY-MM-DD HH:mm:ss');
         const closing_time = start_time.add(8, 'hour').format('YYYY-MM-DD HH:mm:ss');
         const open_week_list = [1, 2, 3, 4, 5, 6, 7];
+        const bio = chance.sentence({ words: 5 });
+
         all_gen_kitchens.push({
             kitchen_name,
             kitchen_image,
@@ -67,6 +70,7 @@ export function generate_kitchens(amount: number) {
             opening_time,
             closing_time,
             city,
+            bio
         });
     }
 

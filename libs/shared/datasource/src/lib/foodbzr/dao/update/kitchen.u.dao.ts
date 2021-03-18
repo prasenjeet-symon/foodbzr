@@ -2,7 +2,7 @@
  * Update the kitchen information of single kitchen
  */
 
-import { IModificationDaoStatus, is_active } from '@foodbzr/shared/types';
+import { IModificationDaoStatus } from '@foodbzr/shared/types';
 import { BaseDao, IDaoConfig, Query, TBaseDao } from '@sculify/node-room';
 import { fetch_kitchen_password } from '../select/kitchen.s.dao';
 
@@ -17,12 +17,11 @@ export class update_kitchen extends BaseDao<IModificationDaoStatus> {
         kitchen_name = :kitchen_name:,
         opening_time  = :opening_time:,
         closing_time = :closing_time:,
-        radius = :radius:,
         open_week_list = :open_week_list:
 
         WHERE row_uuid = :kitchen_row_uuid:
     ;`)
-    fetch(kitchen_name: string, opening_time: string, closing_time: string, radius: number, open_week_list: string, kitchen_row_uuid: string) {
+    fetch(kitchen_name: string, opening_time: string, closing_time: string, open_week_list: string, kitchen_row_uuid: string) {
         return this.baseFetch(this.DBData);
     }
 }
@@ -120,8 +119,8 @@ export class update_kitchen_password extends TBaseDao<IModificationDaoStatus> {
     }
 }
 
-/** update the kitchen address */
-export class update_kitchen_address extends BaseDao<IModificationDaoStatus> {
+/** update the kitchen general information */
+export class update_kitchen_general_information extends BaseDao<IModificationDaoStatus> {
     constructor(config: IDaoConfig) {
         super(config);
     }
@@ -129,35 +128,13 @@ export class update_kitchen_address extends BaseDao<IModificationDaoStatus> {
     @Query(`
         UPDATE kitchen
         SET 
-        street = :street:,
-        pincode = :pincode:,
-        city = :city:,
-        state = :state:,
-        country = :country:,
-        coordinate = ST_GeomFromText('POINT(:latitude: :longitude:)', 4326)
+        kitchen_name = :kitchen_name:,
+        profile_picture = :profile_picture:,
+        bio = :bio:
 
         WHERE row_uuid = :kitchen_row_uuid:
     ;`)
-    fetch(street: string, pincode: string, city: string, state: string, country: string, latitude: number, longitude: number, kitchen_row_uuid: string) {
-        return this.baseFetch(this.DBData);
-    }
-}
-
-/** update the kitchen partner ref */
-export class update_kitchen_partner_ref extends BaseDao<IModificationDaoStatus> {
-    constructor(config: IDaoConfig) {
-        super(config);
-    }
-
-    @Query(`
-        UPDATE kitchen
-        SET
-        partner_row_uuid = :partner_row_uuid:,
-        can_edit_partner = :can_edit_partner:
-
-        WHERE row_uuid IN ( :kitchen_row_uuid: )
-    ;`)
-    fetch(partner_row_uuid: string, can_edit_partner: is_active, kitchen_row_uuid: string[]) {
+    fetch(kitchen_name: string, profile_picture: string, bio: string, kitchen_row_uuid: string) {
         return this.baseFetch(this.DBData);
     }
 }

@@ -20,6 +20,7 @@ export class insert_partner extends BaseDao<IModificationDaoStatus> {
             full_name,
             mobile_number,
             bio,
+            birth_date,
             date_created,
             row_uuid
         )
@@ -31,11 +32,12 @@ export class insert_partner extends BaseDao<IModificationDaoStatus> {
             :full_name:,
             :mobile_number:,
             :bio:,
+            :birth_date:,
             :date_created:,
             :row_uuid:
         )
     ;`)
-    fetch(owner_row_uuid: string, profile_picture: string, gender: gender, full_name: string, mobile_number: string, bio: string, date_created: string, row_uuid: string) {
+    fetch(owner_row_uuid: string, profile_picture: string, gender: gender, full_name: string, mobile_number: string, bio: string, birth_date: string, date_created: string, row_uuid: string) {
         return this.baseFetch(this.DBData);
     }
 }

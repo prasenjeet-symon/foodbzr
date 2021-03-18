@@ -1,0 +1,86 @@
+<ion-header>
+    <ion-toolbar>
+        <ion-title>Ghost Brand Locations</ion-title>
+    </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+    <!-- for ios only header  -->
+    <ion-header collapse="condense">
+        <ion-toolbar>
+            <ion-title size="large">Ghost Brand Locations</ion-title>
+        </ion-toolbar>
+    </ion-header>
+
+    <!-- floating add button -->
+    <ion-fab vertical="bottom" horizontal="end" slot="fixed">
+        <ion-fab-button>
+            <ion-icon name="add"></ion-icon>
+        </ion-fab-button>
+    </ion-fab>
+
+    <!-- status changer holder -->
+    <ion-item>
+        <ion-select [(ngModel)]="isActiveStatus" (ionChange)="activeStatusChange()" slot="end">
+            <ion-select-option value="yes">Active</ion-select-option>
+            <ion-select-option value="no">Inactive</ion-select-option>
+        </ion-select>
+    </ion-item>
+
+    <!-- list all the ghost kitchen's locations -->
+    <div class="ghost_location_kitchens">
+        <ion-item lines="full" [disabled]="kitchen.kitchen_location_is_active === 'yes' ? false : true" *ngFor="let kitchen of allGhostLocations; trackBy: tracker" lines="none">
+            <ion-card>
+                <img [src]="kitchen.kitchen_profile_picture" [alt]="kitchen.kitchen_name" />
+                <ion-card-header>
+                    <ion-card-subtitle>
+                        {{ kitchen.address }}
+                    </ion-card-subtitle>
+                    <ion-card-title> {{ kitchen.kitchen_name }} </ion-card-title>
+                </ion-card-header>
+                <ion-card-content>
+                    <!--  choosen partner for this location -->
+                    <div *ngIf="kitchen.partner_row_uuid" class="choosen_partner">
+                        <ion-item-sliding>
+                            <ion-item-options side="start">
+                                <ion-item-option color="danger" (click)="removeThePartner(kitchen.row_uuid)">
+                                    <ion-icon slot="icon-only" name="trash"></ion-icon>
+                                </ion-item-option>
+                            </ion-item-options>
+
+                            <ion-item [disabled]="kitchen.partner_is_active === 'yes' ? false : true">
+                                <ion-avatar slot="start">
+                                    <img [src]="kitchen.partner_profile_picture" [alt]="kitchen.partner_full_name" />
+                                </ion-avatar>
+                                <ion-label>
+                                    <h2>{{ kitchen.partner_full_name }}</h2>
+                                    <p>+91 {{ kitchen.partner_mobile_number }}</p>
+                                </ion-label>
+                                <ion-icon *ngIf="kitchen.partner_is_verified === 'yes'" color="success" slot="end" name="shield-checkmark"></ion-icon>
+                                <ion-icon *ngIf="kitchen.partner_is_verified === 'no'" color="danger" slot="end" name="shield-checkmark"></ion-icon>
+                            </ion-item>
+
+                            <ion-item-options side="end">
+                                <ion-item-option (click)="updateCommission(kitchen.row_uuid, kitchen.commission)" color="warning">
+                                    <ion-icon slot="icon-only" name="pricetags"></ion-icon>
+                                </ion-item-option>
+                            </ion-item-options>
+                        </ion-item-sliding>
+                    </div>
+
+                    <!-- choose the partner for the kitchen location -->
+                    <div *ngIf="!kitchen.partner_row_uuid" class="choose_partner_for_location">
+                        <ion-item (click)="chooseNewPartner(kitchen.row_uuid)" lines="full" button>
+                            <ion-avatar slot="start">
+                                <img src="../../../../assets/images/no_pic.png" alt="" />
+                            </ion-avatar>
+                            <ion-label>
+                                <h2>Click to choose partner</h2>
+                            </ion-label>
+                        </ion-item>
+                    </div>
+                </ion-card-content>
+            </ion-card>
+        </ion-item>
+    </div>
+</ion-content>

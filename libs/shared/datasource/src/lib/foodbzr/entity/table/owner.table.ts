@@ -6,9 +6,7 @@ export class owner {
     @Column({ dataType: MYSQL_DATATYPE.BIGINT(false) })
     private row_id: number;
 
-    @Column({ dataType: MYSQL_DATATYPE.VARCHAR(12) })
-    private mobile_number: number;
-
+    /** personal info */
     @Column({ dataType: MYSQL_DATATYPE.TEXT() })
     private full_name: string;
 
@@ -17,6 +15,9 @@ export class owner {
 
     @Column({ dataType: MYSQL_DATATYPE.ENUM(gender_values) })
     private gender: gender;
+
+    @Column({ dataType: MYSQL_DATATYPE.VARCHAR(12) })
+    private mobile_number: number;
 
     @Column({ dataType: MYSQL_DATATYPE.VARCHAR(5) })
     private last_otp: string;
@@ -27,6 +28,7 @@ export class owner {
     @Column({ dataType: MYSQL_DATATYPE.ENUM(is_active_values), defaultValue: e_is_active.yes })
     private is_active: is_active;
 
+    /** row info */
     @Column({ dataType: MYSQL_DATATYPE.DATETIME })
     private date_created: string;
 

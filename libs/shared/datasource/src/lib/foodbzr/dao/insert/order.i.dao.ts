@@ -20,7 +20,7 @@ export class insert_order extends BaseDao<IModificationDaoStatus> {
         (
             user_row_uuid,
             partner_row_uuid,
-            kitchen_row_uuid,
+            kitchen_location_row_uuid,
             pay_type,
             pay_status,
             amount_paid,
@@ -37,7 +37,7 @@ export class insert_order extends BaseDao<IModificationDaoStatus> {
         (
             :user_row_uuid:,
             :partner_row_uuid:,
-            :kitchen_row_uuid:,
+            :kitchen_location_row_uuid:,
             :pay_type:,
             :pay_status:,
             :amount_paid:,
@@ -54,7 +54,7 @@ export class insert_order extends BaseDao<IModificationDaoStatus> {
     fetch(
         user_row_uuid: string,
         partner_row_uuid: string,
-        kitchen_row_uuid: string,
+        kitchen_location_row_uuid: string,
         pay_type: pay_type,
         pay_status: pay_status,
         amount_paid: number,
@@ -78,7 +78,7 @@ export class insert_order_take_order extends TBaseDao<IGetOrder[]> {
     }
 
     @TQuery()
-    async fetch(user_row_uuid: string, kitchen_row_uuid: string, pay_type: 'COD', order_address_row_uuid: string) {
+    async fetch(user_row_uuid: string, kitchen_location_row_uuid: string, pay_type: 'COD', order_address_row_uuid: string) {
         await this.openTransaction();
 
         try {
@@ -89,7 +89,8 @@ export class insert_order_take_order extends TBaseDao<IGetOrder[]> {
             if (user_cart.length === 0) {
                 return;
             }
-            const user_cart_kitchen = user_cart.filter((p) => p.kitchen.kitchen_row_uuid === kitchen_row_uuid);
+            
+            const user_cart_kitchen = user_cart.filter((p) => p.kitchen.kitchen_location_row_uuid === kitchen_location_row_uuid);
             if (user_cart_kitchen.length === 0) {
                 return;
             }
@@ -123,7 +124,7 @@ export class insert_order_take_order extends TBaseDao<IGetOrder[]> {
                 .fetch(
                     user_row_uuid,
                     found_user_cart.kitchen.kitchen_partner_row_uuid,
-                    found_user_cart.kitchen.kitchen_row_uuid,
+                    found_user_cart.kitchen.kitchen_location_row_uuid,
                     pay_type,
                     pay_type === 'COD' ? 'pending' : 'paid',
                     found_user_cart.final_calculation.amount_payable,
@@ -155,7 +156,7 @@ export class insert_order_take_order extends TBaseDao<IGetOrder[]> {
                 const data = {
                     order_row_uuid: order_row_uuid,
                     type: PUSH_MESSAGE_TYPE.new_order,
-                    kitchen_row_uuid: kitchen_row_uuid,
+                    kitchen_location_row_uuid: kitchen_location_row_uuid,
                     user_row_uuid: user_row_uuid,
                 };
                 const image_uri = 'https://img.freepik.com/free-vector/people-ordering-food-cafe-online_74855-5913.jpg?size=626&ext=jpg';
@@ -169,7 +170,7 @@ export class insert_order_take_order extends TBaseDao<IGetOrder[]> {
                 const data = {
                     order_row_uuid: order_row_uuid,
                     type: PUSH_MESSAGE_TYPE.new_order,
-                    kitchen_row_uuid: kitchen_row_uuid,
+                    kitchen_location_row_uuid: kitchen_location_row_uuid,
                     user_row_uuid: user_row_uuid,
                 };
                 const image_uri = 'https://img.freepik.com/free-vector/people-ordering-food-cafe-online_74855-5913.jpg?size=626&ext=jpg';
@@ -183,7 +184,7 @@ export class insert_order_take_order extends TBaseDao<IGetOrder[]> {
                 const data = {
                     order_row_uuid: order_row_uuid,
                     type: PUSH_MESSAGE_TYPE.new_order,
-                    kitchen_row_uuid: kitchen_row_uuid,
+                    kitchen_location_row_uuid: kitchen_location_row_uuid,
                     user_row_uuid: user_row_uuid,
                 };
                 const image_uri = 'https://img.freepik.com/free-vector/people-ordering-food-cafe-online_74855-5913.jpg?size=626&ext=jpg';

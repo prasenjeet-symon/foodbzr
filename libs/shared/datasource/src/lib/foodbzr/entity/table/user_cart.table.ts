@@ -17,6 +17,9 @@ export class user_cart {
     @Column({ dataType: MYSQL_DATATYPE.TINYTEXT })
     private menu_size_variant_row_uuid: string;
 
+    @Column({ dataType: MYSQL_DATATYPE.TEXT() })
+    private kitchen_location_row_uuid: string;
+
     @Column({ dataType: MYSQL_DATATYPE.TINYINT(false) })
     private amount: number;
 

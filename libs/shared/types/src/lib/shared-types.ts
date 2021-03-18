@@ -56,31 +56,29 @@ export interface IGetPartner {
 export const week_name_values = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
 
 export interface IGetKitchen {
-    partner_row_uuid: string;
+    owner_row_uuid: string;
     is_active: is_active;
+    can_edit_partner: is_active;
+    kitchen_type: kitchen_type;
+
     kitchen_user_id: string;
     kitchen_password: string;
+
     kitchen_name: string;
     profile_picture: string;
-    radius: number;
-    latitude: number;
-    longitude: number;
+    bio: string;
+
     opening_time: string;
     closing_time: string;
-    open_week_list: string[];
+    open_week_list: number[];
+
     offer_percentage: number;
     offer_start_datetime: string;
     offer_end_datetime: string;
-    street: string;
-    pincode: string;
-    city: string;
-    state: string;
-    country: string;
+
     date_created: string;
     date_updated: string;
     row_uuid: string;
-    address: string;
-    can_edit_partner: is_active;
 }
 
 export interface IGetMenu {
@@ -543,6 +541,7 @@ export interface IGetUserCartForCheckout {
     user_cart_amount: number;
     user_cart_row_uuid: string;
     user_cart_instruction: string;
+    kitchen_location_row_uuid: string;
 
     regional_food_category_name: string;
     regional_food_category_is_active: is_active;
@@ -571,6 +570,7 @@ export interface IGetUserCartForCheckout {
     kitchen_city: string;
     kitchen_state: string;
     kitchen_country: string;
+    kitchen_location_is_active: is_active;
 
     menu_menu_name: string;
     menu_is_active: is_active;
@@ -596,7 +596,7 @@ export interface IGetUserCartForCheckout {
 }
 
 export interface IGetUserCartGroupedKitchen {
-    kitchen: { owner_row_uuid: string; kitchen_row_uuid: string; kitchen_partner_row_uuid: string; kitchen_name: string; profile_picture: string; address: string; can_take_order: boolean };
+    kitchen: { owner_row_uuid: string; kitchen_row_uuid: string; kitchen_location_row_uuid: string; kitchen_partner_row_uuid: string; kitchen_name: string; profile_picture: string; address: string; can_take_order: boolean };
     orders: {
         menu_name: string;
         menu_variant_name: string;
@@ -726,4 +726,52 @@ export interface IGetOrderStatusGroupedKitchen {
     kitchen_row_uuid: string;
     address: string;
     orders: IGetOrderStatus[];
+}
+
+export type kitchen_type = 'ghost_kitchen' | 'owner_brand';
+export const kitchen_type_values = ['ghost_kitchen', 'owner_brand'];
+
+export interface IGetKitchenLocation {
+    address: string;
+    
+    partner_row_uuid: string;
+    commission: number;
+    kitchen_location_is_active: is_active;
+    radius: number;
+    latitude: number;
+    longitude: number;
+    street: string;
+    pincode: string;
+    city: string;
+    state: string;
+    country: string;
+    date_created: string;
+    date_updated: string;
+    row_uuid: string;
+
+    owner_row_uuid: string;
+    partner_is_active: is_active;
+    partner_can_add_kitchen: is_active;
+    partner_is_verified: is_active;
+    partner_full_name: string;
+    partner_profile_picture: string;
+    partner_gender: gender;
+    partner_birth_date: string;
+    partner_mobile_number: string;
+    partner_bio: string;
+
+    kitchen_profile_picture: string;
+    kitchen_bio: string;
+    kitchen_opening_time: string;
+    kitchen_closing_time: string;
+    kitchen_open_week_list: number[];
+    kitchen_offer_percentage: number;
+    kitchen_offer_start_datetime: string;
+    kitchen_offer_end_datetime: string;
+    kitchen_is_active: is_active;
+    kitchen_can_edit_partner: is_active;
+    kitchen_kitchen_type: kitchen_type;
+    kitchen_user_id: string;
+    kitchen_password: string;
+    kitchen_name: string;
 }

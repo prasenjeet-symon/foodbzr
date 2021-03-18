@@ -61,6 +61,7 @@ async function generate_test_data(daoConfig: IDaoConfig, MYSQL_CONFIG: MYSQLConn
                         male_partner.full_name,
                         male_partner.mobile_number,
                         male_partner.bio,
+                        male_partner.birth_date,
                         male_partner.date_created,
                         male_partner.row_uuid
                     )
@@ -78,6 +79,7 @@ async function generate_test_data(daoConfig: IDaoConfig, MYSQL_CONFIG: MYSQLConn
                         female_partner.full_name,
                         female_partner.mobile_number,
                         female_partner.bio,
+                        female_partner.birth_date,
                         female_partner.date_created,
                         female_partner.row_uuid
                     )
@@ -107,36 +109,54 @@ async function generate_test_data(daoConfig: IDaoConfig, MYSQL_CONFIG: MYSQLConn
             const owner_partners = await new rootDatabase.fetch_partners_of_owner(daoConfig).fetch(owner.row_uuid, 'yes').asyncData();
 
             for (const partner of owner_partners) {
-                /** insert the 5 kitchen for single partner */
-                const gen_5_kitchens = generate_kitchens(2);
-                for (const kitchen of gen_5_kitchens) {
+                /** generate the 10 ghost kitchen  */
+                const ghost_kitchens = generate_kitchens(2);
+
+                for (const ghk of ghost_kitchens) {
                     /** insert the kitchen */
                     await new rootDatabase.insert_kitchen(daoConfig)
                         .fetch(
-                            partner.row_uuid,
                             owner.row_uuid,
-                            kitchen.kitchen_user_id,
-                            kitchen.kitchen_password,
-                            kitchen.kitchen_name,
-                            kitchen.kitchen_image,
-                            15,
-                            kitchen.latitude,
-                            kitchen.longitude,
-                            kitchen.opening_time,
-                            kitchen.closing_time,
-                            kitchen.open_week_list,
-                            kitchen.street,
-                            kitchen.pincode,
-                            kitchen.city,
-                            kitchen.state,
-                            kitchen.country,
-                            kitchen.date_created,
-                            kitchen.row_uuid
+                            'ghost_kitchen',
+                            '1234',
+                            '1234',
+                            ghk.kitchen_name,
+                            ghk.kitchen_image,
+                            ghk.bio,
+                            ghk.opening_time,
+                            ghk.closing_time,
+                            ghk.open_week_list,
+                            ghk.date_created,
+                            ghk.row_uuid
                         )
                         .asyncData();
                 }
+
+                /** geenrate the  brand kitchen */
+                const brand_kitchens = generate_kitchens(2);
+                for (const bkit of brand_kitchens) {
+                    /** insert the kitchen */
+                    await new rootDatabase.insert_kitchen(daoConfig)
+                        .fetch(
+                            owner.row_uuid,
+                            'owner_brand',
+                            '1234',
+                            '1234',
+                            bkit.kitchen_name,
+                            bkit.kitchen_image,
+                            bkit.bio,
+                            bkit.opening_time,
+                            bkit.closing_time,
+                            bkit.open_week_list,
+                            bkit.date_created,
+                            bkit.row_uuid
+                        )
+                        .asyncData();
+                }
+
                 /** delete the 2 random kitchen */
-                const kitchen_to_delete = chance.pickset(gen_5_kitchens, 1);
+                const kitchen_to_delete = [...chance.pickset(ghost_kitchens, 1), ...chance.pickset(brand_kitchens, 1)];
+
                 for (const kitchen_to_del of kitchen_to_delete) {
                     await new rootDatabase.delete_kitchen(daoConfig).fetch('no', kitchen_to_del.row_uuid).asyncData();
                 }
@@ -144,6 +164,76 @@ async function generate_test_data(daoConfig: IDaoConfig, MYSQL_CONFIG: MYSQLConn
         }
     })();
     console.log('gen ---> kitchens');
+
+    /***
+     *
+     *
+     *  Generate the kitchen location  for both the , type
+     *
+     */
+    await (async () => {
+        const all_owner = await new rootDatabase.fetch_owner_all(daoConfig).fetch().asyncData();
+        for (const owner of all_owner) {
+            const all_partners = await new rootDatabase.fetch_partner_for_owner(daoConfig).fetch(owner.row_uuid).asyncData();
+
+            const owner_kitchens = await new rootDatabase.fetch_kitchens_of_owner(daoConfig).fetch(owner.row_uuid, 'yes').asyncData();
+            const ghost_one = owner_kitchens.filter((p) => p.kitchen_type === 'ghost_kitchen');
+            const owner_brand = owner_kitchens.filter((p) => p.kitchen_type === 'owner_brand');
+
+            /** create the one location for every ghost one */
+            for (const ghost of ghost_one) {
+                /** generate the kit location  */
+                const choosen_partner = chance.pickone(all_partners);
+
+                const generated_ghost_locations = generate_kitchens(1);
+                const kitchen_loc = generated_ghost_locations[0];
+
+                await new rootDatabase.insert_kitchen_location(daoConfig)
+                    .fetch(
+                        choosen_partner.row_uuid,
+                        ghost.row_uuid,
+                        20,
+                        kitchen_loc.latitude,
+                        kitchen_loc.longitude,
+                        kitchen_loc.street,
+                        +kitchen_loc.pincode,
+                        kitchen_loc.city,
+                        kitchen_loc.state,
+                        kitchen_loc.country,
+                        kitchen_loc.date_created,
+                        kitchen_loc.row_uuid
+                    )
+                    .asyncData();
+            }
+
+            /** create the 2 kitchen location for the brand one */
+            for (const brand_kit of owner_brand) {
+                /** generate the kit location  */
+
+                const generated_ghost_locations = generate_kitchens(3);
+                for (const gen_kit of generated_ghost_locations) {
+                    const choosen_partner = chance.pickone(all_partners);
+                    await new rootDatabase.insert_kitchen_location(daoConfig)
+                        .fetch(
+                            choosen_partner.row_uuid,
+                            brand_kit.row_uuid,
+                            20,
+                            gen_kit.latitude,
+                            gen_kit.longitude,
+                            gen_kit.street,
+                            +gen_kit.pincode,
+                            gen_kit.city,
+                            gen_kit.state,
+                            gen_kit.country,
+                            gen_kit.date_created,
+                            gen_kit.row_uuid
+                        )
+                        .asyncData();
+                }
+            }
+        }
+    })();
+    console.log('gen --> kitchen locations');
     /**
      *
      *
@@ -163,7 +253,7 @@ async function generate_test_data(daoConfig: IDaoConfig, MYSQL_CONFIG: MYSQLConn
                     const gen_dboys = generate_dboys(2);
                     for (const dboy of gen_dboys) {
                         await new rootDatabase.insert_dboy(daoConfig)
-                            .fetch(kitchen.row_uuid, dboy.full_name, dboy.mobile_number, dboy.profile_picture, dboy.gender, dboy.birth_date, dboy.date_created, dboy.row_uuid)
+                            .fetch(null, dboy.full_name, dboy.mobile_number, dboy.profile_picture, dboy.gender, dboy.birth_date, dboy.date_created, dboy.row_uuid)
                             .asyncData();
                     }
                 }
@@ -244,31 +334,27 @@ async function generate_test_data(daoConfig: IDaoConfig, MYSQL_CONFIG: MYSQLConn
             /** fethc all the regional food cat and food cat */
             const all_regional_food_cats = await new rootDatabase.fetch_regional_food_category_of_partner(daoConfig).fetch(owner.row_uuid).asyncData();
             const all_food_cats = await new rootDatabase.fetch_food_category_of_partner(daoConfig).fetch(owner.row_uuid).asyncData();
-            const all_partners = await new rootDatabase.fetch_partners_of_owner(daoConfig).fetch(owner.row_uuid, 'yes').asyncData();
-            for (const partner of all_partners) {
-                /** fetch all kitchens */
-                const all_kitchens = await new rootDatabase.fetch_kitchens_of_partner(daoConfig).fetch(partner.row_uuid, 'yes').asyncData();
-                for (const kitchen of all_kitchens) {
-                    /** create the menus */
-                    const gen_menus = generate_menus(5);
-                    for (const menu of gen_menus) {
-                        /** insert the menu */
-                        await new rootDatabase.insert_menu(daoConfig)
-                            .fetch(
-                                menu.name,
-                                menu.profile_picture,
-                                menu.bio,
-                                kitchen.row_uuid,
-                                chance.pickone(all_regional_food_cats).row_uuid,
-                                chance.pickone(all_food_cats).row_uuid,
-                                menu.offer_percentage,
-                                menu.offer_start_datetime,
-                                menu.offer_end_datetime,
-                                menu.date_created,
-                                menu.row_uuid
-                            )
-                            .asyncData();
-                    }
+            const kitchens_of_owners = await new rootDatabase.fetch_kitchens_of_owner(daoConfig).fetch(owner.row_uuid, 'yes').asyncData();
+            for (const kitchen of kitchens_of_owners) {
+                /** create the menus */
+                const gen_menus = generate_menus(5);
+                for (const menu of gen_menus) {
+                    /** insert the menu */
+                    await new rootDatabase.insert_menu(daoConfig)
+                        .fetch(
+                            menu.name,
+                            menu.profile_picture,
+                            menu.bio,
+                            kitchen.row_uuid,
+                            chance.pickone(all_regional_food_cats).row_uuid,
+                            chance.pickone(all_food_cats).row_uuid,
+                            menu.offer_percentage,
+                            menu.offer_start_datetime,
+                            menu.offer_end_datetime,
+                            menu.date_created,
+                            menu.row_uuid
+                        )
+                        .asyncData();
                 }
             }
         }
@@ -282,11 +368,9 @@ async function generate_test_data(daoConfig: IDaoConfig, MYSQL_CONFIG: MYSQLConn
      */
     /** insert some menu size variant for the menus */
     await (async () => {
-        /** fetch all partners */
-        const all_partners = await new rootDatabase.fetch_partner_all(daoConfig).fetch().asyncData();
-        for (const partner of all_partners) {
-            /** fetch all active kitchens of partner*/
-            const all_kitchens = await new rootDatabase.fetch_kitchens_of_partner(daoConfig).fetch(partner.row_uuid, 'yes').asyncData();
+        const all_owners = await new rootDatabase.fetch_owner_all(daoConfig).fetch().asyncData();
+        for (const owner of all_owners) {
+            const all_kitchens = await new rootDatabase.fetch_kitchens_of_owner(daoConfig).fetch(owner.row_uuid, 'yes').asyncData();
             for (const kitchen of all_kitchens) {
                 /** fetch all menus of the kitchen */
                 const all_menus = await new rootDatabase.fetch_menus_of_kitchen(daoConfig).fetch(kitchen.row_uuid).asyncData();
@@ -312,10 +396,9 @@ async function generate_test_data(daoConfig: IDaoConfig, MYSQL_CONFIG: MYSQLConn
      */
     /** insert the menu pictures */
     await (async () => {
-        /** fetch all partners */
-        const all_partners = await new rootDatabase.fetch_partner_all(daoConfig).fetch().asyncData();
-        for (const partner of all_partners) {
-            const all_kitchens = await new rootDatabase.fetch_kitchens_of_partner(daoConfig).fetch(partner.row_uuid, 'yes').asyncData();
+        const all_owners = await new rootDatabase.fetch_owner_all(daoConfig).fetch().asyncData();
+        for (const owner of all_owners) {
+            const all_kitchens = await new rootDatabase.fetch_kitchens_of_owner(daoConfig).fetch(owner.row_uuid, 'yes').asyncData();
             for (const kitchen of all_kitchens) {
                 const all_menus = await new rootDatabase.fetch_menus_of_kitchen(daoConfig).fetch(kitchen.row_uuid).asyncData();
                 for (const menu of all_menus) {
@@ -423,9 +506,10 @@ async function generate_test_data(daoConfig: IDaoConfig, MYSQL_CONFIG: MYSQLConn
     /** insert the reviews for the menus */
     await (async () => {
         const all_users = await new rootDatabase.fetch_user_all(daoConfig).fetch().asyncData();
-        const all_partners = await new rootDatabase.fetch_partner_all(daoConfig).fetch().asyncData();
-        for (const partner of all_partners) {
-            const all_kitchens = await new rootDatabase.fetch_kitchens_of_partner(daoConfig).fetch(partner.row_uuid, 'yes').asyncData();
+        const all_owners = await new rootDatabase.fetch_owner_all(daoConfig).fetch().asyncData();
+
+        for (const owner of all_owners) {
+            const all_kitchens = await new rootDatabase.fetch_kitchens_of_owner(daoConfig).fetch(owner.row_uuid, 'yes').asyncData();
             for (const kitchen of all_kitchens) {
                 const all_menus = await new rootDatabase.fetch_menus_of_kitchen(daoConfig).fetch(kitchen.row_uuid).asyncData();
                 for (const menu of all_menus) {
@@ -465,109 +549,107 @@ async function generate_test_data(daoConfig: IDaoConfig, MYSQL_CONFIG: MYSQLConn
             const all_users = await new rootDatabase.fetch_user_all(daoConfig).fetch().asyncData();
 
             for (const owner of all_owners) {
-                const all_partners = await new rootDatabase.fetch_partners_of_owner(daoConfig).fetch(owner.row_uuid, 'yes').asyncData();
                 const all_food_cats = await new rootDatabase.fetch_food_category_of_partner(daoConfig).fetch(owner.row_uuid).asyncData();
                 const all_regional_food_cats = await new rootDatabase.fetch_regional_food_category_of_partner(daoConfig).fetch(owner.row_uuid).asyncData();
-                for (const partner of all_partners) {
-                    /** fetch all food category */
+                const all_kitchens = await new rootDatabase.fetch_kitchens_of_owner(daoConfig).fetch(owner.row_uuid, 'yes').asyncData();
 
-                    const all_kitchens = await new rootDatabase.fetch_kitchens_of_partner(daoConfig).fetch(partner.row_uuid, 'yes').asyncData();
+                for (const kitchen of all_kitchens) {
+                    const all_menus = await new rootDatabase.fetch_menus_of_kitchen(daoConfig).fetch(kitchen.row_uuid).asyncData();
+                    const ghost_kitchens = await new rootDatabase.fetch_kitchen_location_of_kitchen(daoConfig).fetch(kitchen.row_uuid).asyncData();
+                    const choosen_ghost_kitchen = chance.pickone(ghost_kitchens);
 
-                    for (const kitchen of all_kitchens) {
-                        const all_menus = await new rootDatabase.fetch_menus_of_kitchen(daoConfig).fetch(kitchen.row_uuid).asyncData();
-                        /** fetch the delivery boy */
-                        const menu_to_order = chance.pickset(all_menus, Math.floor(all_menus.length / 2));
-                        const menu_orders: OrderMenu[] = [];
+                    /** fetch the delivery boy */
+                    const menu_to_order = chance.pickset(all_menus, Math.floor(all_menus.length / 2));
+                    const menu_orders: OrderMenu[] = [];
 
-                        for (const menu of menu_to_order) {
-                            const all_menu_variants = await new rootDatabase.fetch_menu_size_variant_of_menu(daoConfig).fetch(menu.row_uuid).asyncData();
-                            const menu_variant_to_oder = chance.pickone(all_menu_variants);
-                            const amount_to_order = chance.natural({ min: 3, max: 10 });
+                    for (const menu of menu_to_order) {
+                        const all_menu_variants = await new rootDatabase.fetch_menu_size_variant_of_menu(daoConfig).fetch(menu.row_uuid).asyncData();
+                        const menu_variant_to_oder = chance.pickone(all_menu_variants);
+                        const amount_to_order = chance.natural({ min: 3, max: 10 });
 
-                            let offer_percentage: number = 0;
-                            const food_cat = all_food_cats.filter((p) => p.row_uuid === menu.food_category_row_uuid)[0];
-                            const regional_food_cat = all_regional_food_cats.filter((p) => p.row_uuid === menu.regional_food_category_row_uuid)[0];
+                        let offer_percentage: number = 0;
+                        const food_cat = all_food_cats.filter((p) => p.row_uuid === menu.food_category_row_uuid)[0];
+                        const regional_food_cat = all_regional_food_cats.filter((p) => p.row_uuid === menu.regional_food_category_row_uuid)[0];
 
-                            /** extract the offers */
-                            if (
-                                menu_variant_to_oder.offer_percentage !== 0 &&
-                                menu_variant_to_oder.is_active === 'yes' &&
-                                can_apply_offer(menu_variant_to_oder.offer_start_datetime, current_date, menu_variant_to_oder.offer_end_datetime)
-                            ) {
-                                offer_percentage = +menu_variant_to_oder.offer_percentage;
-                            } else if (menu.offer_percentage !== 0 && menu.is_active === 'yes' && can_apply_offer(menu.offer_start_datetime, current_date, menu.offer_end_datetime)) {
-                                offer_percentage = +menu.offer_percentage;
-                            } else if (kitchen.offer_percentage !== 0 && kitchen.is_active === 'yes' && can_apply_offer(kitchen.offer_start_datetime, current_date, kitchen.offer_end_datetime)) {
-                                offer_percentage = +kitchen.offer_percentage;
-                            } else if (
-                                regional_food_cat.offer_percentage !== 0 &&
-                                regional_food_cat.is_active === 'yes' &&
-                                can_apply_offer(regional_food_cat.offer_start_datetime, current_date, regional_food_cat.offer_end_datetime)
-                            ) {
-                                offer_percentage = +regional_food_cat.offer_percentage;
-                            } else if (food_cat.offer_percentage !== 0 && food_cat.is_active === 'yes' && can_apply_offer(food_cat.offer_start_datetime, current_date, food_cat.offer_end_datetime)) {
-                                offer_percentage = +food_cat.offer_percentage;
-                            } else {
-                                offer_percentage = 0;
-                            }
-
-                            const after_offer_price = menu_variant_to_oder.price_per_unit - (menu_variant_to_oder.price_per_unit * offer_percentage) / 100;
-
-                            const order_menu_item: OrderMenu = {
-                                menu_size_variant_row_uuid: menu_variant_to_oder.row_uuid,
-                                menu_size_variant_name: menu_variant_to_oder.name,
-                                menu_row_uuid: menu.row_uuid,
-                                menu_row_name: menu.menu_name,
-                                amount: amount_to_order,
-
-                                cooking_instruction: chance.sentence({ words: 12 }),
-                                original_price: +menu_variant_to_oder.price_per_unit,
-                                after_offer_price: +after_offer_price.toFixed(2),
-                                money_saved: +menu_variant_to_oder.price_per_unit - +after_offer_price.toFixed(2),
-                                row_uuid: uuid(),
-                                date_created: current_date,
-                            };
-
-                            menu_orders.push(order_menu_item);
+                        /** extract the offers */
+                        if (
+                            menu_variant_to_oder.offer_percentage !== 0 &&
+                            menu_variant_to_oder.is_active === 'yes' &&
+                            can_apply_offer(menu_variant_to_oder.offer_start_datetime, current_date, menu_variant_to_oder.offer_end_datetime)
+                        ) {
+                            offer_percentage = +menu_variant_to_oder.offer_percentage;
+                        } else if (menu.offer_percentage !== 0 && menu.is_active === 'yes' && can_apply_offer(menu.offer_start_datetime, current_date, menu.offer_end_datetime)) {
+                            offer_percentage = +menu.offer_percentage;
+                        } else if (kitchen.offer_percentage !== 0 && kitchen.is_active === 'yes' && can_apply_offer(kitchen.offer_start_datetime, current_date, kitchen.offer_end_datetime)) {
+                            offer_percentage = +kitchen.offer_percentage;
+                        } else if (
+                            regional_food_cat.offer_percentage !== 0 &&
+                            regional_food_cat.is_active === 'yes' &&
+                            can_apply_offer(regional_food_cat.offer_start_datetime, current_date, regional_food_cat.offer_end_datetime)
+                        ) {
+                            offer_percentage = +regional_food_cat.offer_percentage;
+                        } else if (food_cat.offer_percentage !== 0 && food_cat.is_active === 'yes' && can_apply_offer(food_cat.offer_start_datetime, current_date, food_cat.offer_end_datetime)) {
+                            offer_percentage = +food_cat.offer_percentage;
+                        } else {
+                            offer_percentage = 0;
                         }
 
-                        /** calculate the payable amount */
-                        const maped_price = menu_orders.map((p) => {
-                            return { total_payable_amount: p.after_offer_price * +p.amount, total_amount_saved: p.money_saved * +p.amount };
-                        });
+                        const after_offer_price = menu_variant_to_oder.price_per_unit - (menu_variant_to_oder.price_per_unit * offer_percentage) / 100;
 
-                        const final_maped_price = maped_price.reduce((prev, current) => {
-                            return { total_payable_amount: prev.total_payable_amount + current.total_payable_amount, total_amount_saved: prev.total_amount_saved + current.total_amount_saved };
-                        });
+                        const order_menu_item: OrderMenu = {
+                            menu_size_variant_row_uuid: menu_variant_to_oder.row_uuid,
+                            menu_size_variant_name: menu_variant_to_oder.name,
+                            menu_row_uuid: menu.row_uuid,
+                            menu_row_name: menu.menu_name,
+                            amount: amount_to_order,
 
-                        const delivery_charge = 0.0;
-                        const tax = 0.0;
-                        const user_ordering = chance.pickset(all_users, 1);
+                            cooking_instruction: chance.sentence({ words: 12 }),
+                            original_price: +menu_variant_to_oder.price_per_unit,
+                            after_offer_price: +after_offer_price.toFixed(2),
+                            money_saved: +menu_variant_to_oder.price_per_unit - +after_offer_price.toFixed(2),
+                            row_uuid: uuid(),
+                            date_created: current_date,
+                        };
 
-                        for (const user_order of user_ordering) {
-                            const user_address = await new rootDatabase.fetch_delivery_address_of_user(daoConfig).fetch(user_order.row_uuid).asyncData();
+                        menu_orders.push(order_menu_item);
+                    }
 
-                            /** insert the order */
-                            const order_row_uuid = uuid();
-                            await new rootDatabase.insert_order(daoConfig)
-                                .fetch(
-                                    user_order.row_uuid,
-                                    partner.row_uuid,
-                                    kitchen.row_uuid,
-                                    'COD',
-                                    'pending',
-                                    +final_maped_price.total_payable_amount.toFixed(2),
-                                    0,
-                                    delivery_charge,
-                                    +final_maped_price.total_amount_saved.toFixed(2),
-                                    JSON.stringify(get_initial_order_lifecycle()),
-                                    JSON.stringify(menu_orders),
-                                    user_address[0].row_uuid,
-                                    current_date,
-                                    order_row_uuid
-                                )
-                                .asyncData();
-                        }
+                    /** calculate the payable amount */
+                    const maped_price = menu_orders.map((p) => {
+                        return { total_payable_amount: p.after_offer_price * +p.amount, total_amount_saved: p.money_saved * +p.amount };
+                    });
+
+                    const final_maped_price = maped_price.reduce((prev, current) => {
+                        return { total_payable_amount: prev.total_payable_amount + current.total_payable_amount, total_amount_saved: prev.total_amount_saved + current.total_amount_saved };
+                    });
+
+                    const delivery_charge = 0.0;
+                    const tax = 0.0;
+                    const user_ordering = chance.pickset(all_users, 1);
+
+                    for (const user_order of user_ordering) {
+                        const user_address = await new rootDatabase.fetch_delivery_address_of_user(daoConfig).fetch(user_order.row_uuid).asyncData();
+
+                        /** insert the order */
+                        const order_row_uuid = uuid();
+                        await new rootDatabase.insert_order(daoConfig)
+                            .fetch(
+                                user_order.row_uuid,
+                                choosen_ghost_kitchen.partner_row_uuid,
+                                choosen_ghost_kitchen.row_uuid,
+                                'COD',
+                                'pending',
+                                +final_maped_price.total_payable_amount.toFixed(2),
+                                0,
+                                delivery_charge,
+                                +final_maped_price.total_amount_saved.toFixed(2),
+                                JSON.stringify(get_initial_order_lifecycle()),
+                                JSON.stringify(menu_orders),
+                                user_address[0].row_uuid,
+                                current_date,
+                                order_row_uuid
+                            )
+                            .asyncData();
                     }
                 }
             }
@@ -586,7 +668,7 @@ async function generate_test_data(daoConfig: IDaoConfig, MYSQL_CONFIG: MYSQLConn
         console.log(order_to_update.length, order_to_delivered.length, order_to_cancel.length);
 
         for (const order of order_to_delivered) {
-            const all_dboys = await new rootDatabase.fetch_dboy_of_kitchen(daoConfig).fetch(order.kitchen_row_uuid).asyncData();
+            const all_dboys = await new rootDatabase.fetch_dboy_of_owner(daoConfig).fetch().asyncData();
             const dboy_to_delievr = chance.pickone(all_dboys);
             await new rootDatabase.update_order_assign_dboy(daoConfig).fetch(dboy_to_delievr.row_uuid, order.row_uuid).asyncData();
 
@@ -596,7 +678,7 @@ async function generate_test_data(daoConfig: IDaoConfig, MYSQL_CONFIG: MYSQLConn
         }
 
         for (const order of order_to_cancel) {
-            const all_dboys = await new rootDatabase.fetch_dboy_of_kitchen(daoConfig).fetch(order.kitchen_row_uuid).asyncData();
+            const all_dboys = await new rootDatabase.fetch_dboy_of_owner(daoConfig).fetch().asyncData();
             const dboy_to_delievr = chance.pickone(all_dboys);
             await new rootDatabase.update_order_assign_dboy(daoConfig).fetch(dboy_to_delievr.row_uuid, order.row_uuid).asyncData();
 
@@ -605,9 +687,16 @@ async function generate_test_data(daoConfig: IDaoConfig, MYSQL_CONFIG: MYSQLConn
             await (await new rootDatabase.update_t_order_lifecycle(daoConfig).fetch('canceled', order.row_uuid)).asyncData();
         }
     })();
-
+    console.log('order status updated');
     /** order status updated */
-
+    /***
+     *
+     *
+     *
+     *
+     *
+     *
+     */
     /** change the mobile number */
     await (async () => {
         const all_owner = await new rootDatabase.fetch_owner_all(daoConfig).fetch().asyncData();
@@ -625,8 +714,8 @@ async function generate_test_data(daoConfig: IDaoConfig, MYSQL_CONFIG: MYSQLConn
         const partner_1_kitchen = await new rootDatabase.fetch_kitchens_of_partner(daoConfig).fetch(all_partners[0].row_uuid, 'yes').asyncData();
         const partner_2_kitchen = await new rootDatabase.fetch_kitchens_of_partner(daoConfig).fetch(all_partners[1].row_uuid, 'yes').asyncData();
 
-        const one_dboy = await new rootDatabase.fetch_dboy_of_kitchen(daoConfig).fetch(partner_1_kitchen[0].row_uuid).asyncData();
-        const one_dboy_1 = await new rootDatabase.fetch_dboy_of_kitchen(daoConfig).fetch(partner_2_kitchen[0].row_uuid).asyncData();
+        const one_dboy = await new rootDatabase.fetch_dboy_of_owner(daoConfig).fetch().asyncData();
+        const one_dboy_1 = await new rootDatabase.fetch_dboy_of_owner(daoConfig).fetch().asyncData();
 
         await new rootDatabase.update_dboy_mobile(daoConfig).fetch(one_dboy[0].row_uuid, '9661173222').asyncData();
         await new rootDatabase.update_dboy_mobile(daoConfig).fetch(one_dboy_1[0].row_uuid, '9122229276').asyncData();

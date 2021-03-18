@@ -4,7 +4,7 @@
  * This table has a foregin key callled as partner_row_uuid
  */
 
-import { IModificationDaoStatus } from '@foodbzr/shared/types';
+import { IModificationDaoStatus, kitchen_type } from '@foodbzr/shared/types';
 import { BaseDao, IDaoConfig, Query } from '@sculify/node-room';
 
 export class insert_kitchen extends BaseDao<IModificationDaoStatus> {
@@ -15,65 +15,46 @@ export class insert_kitchen extends BaseDao<IModificationDaoStatus> {
     @Query(`
         INSERT INTO kitchen
         (
-            partner_row_uuid,
             owner_row_uuid,
+            kitchen_type,
             kitchen_user_id,
             kitchen_password,
             kitchen_name,
             profile_picture,
-            radius,
-            coordinate,
+            bio,
             opening_time,
             closing_time,
             open_week_list,
-            street,
-            pincode,
-            city,
-            state,
-            country,
             date_created,
             row_uuid
         )
         VALUES
         (
-            :partner_row_uuid:,
             :owner_row_uuid:,
+            :kitchen_type:,
             :kitchen_user_id:,
             :kitchen_password:,
             :kitchen_name:,
             :profile_picture:,
-            :radius:,
-            ST_GeomFromText('POINT(:latitude: :longitude:)', 4326),
+            :bio:,
             :opening_time:,
             :closing_time:,
             :open_week_list:,
-            :street:,
-            :pincode:,
-            :city:,
-            :state:,
-            :country:,
             :date_created:,
             :row_uuid:
         )
     ;`)
     fetch(
-        partner_row_uuid: string,
         owner_row_uuid: string,
+        kitchen_type: kitchen_type,
         kitchen_user_id: string,
         kitchen_password: string,
         kitchen_name: string,
         profile_picture: string,
-        radius: number,
-        latitude: number,
-        longitude: number,
+        bio: string,
         opening_time: string,
         closing_time: string,
         open_week_list: string,
-        street: string,
-        pincode: string,
-        city: string,
-        state: string,
-        country: string,
         date_created: string,
         row_uuid: string
     ) {

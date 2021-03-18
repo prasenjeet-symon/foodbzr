@@ -24,6 +24,7 @@ export function generate_partner(amount: number, gender: gender) {
         bio: string;
         date_created: string;
         row_uuid: string;
+        birth_date: string;
     }[] = [];
 
     for (let index = 0; index < +amount; index++) {
@@ -31,6 +32,7 @@ export function generate_partner(amount: number, gender: gender) {
         const mobile_number = chance.phone({ country: 'uk', mobile: true });
         const profile_picture = generate_profile_picture(gender, 'adult');
         const bio: string = chance.sentence({ words: 12 });
+        const birth_date: string = moment(chance.birthday()).format('YYYY-MM-DD');
 
         all_partners.push({
             full_name: full_name,
@@ -40,6 +42,7 @@ export function generate_partner(amount: number, gender: gender) {
             date_created: date_created,
             row_uuid: uuid(),
             gender: gender,
+            birth_date: birth_date,
         });
     }
 

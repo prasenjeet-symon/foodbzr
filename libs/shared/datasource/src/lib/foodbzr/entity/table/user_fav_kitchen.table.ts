@@ -9,7 +9,7 @@ export class user_fav_kitchen {
     private user_row_uuid: string;
 
     @Column({ dataType: MYSQL_DATATYPE.TINYTEXT })
-    private kitchen_row_uuid: string;
+    private kitchen_location_row_uuid: string;
 
     @Column({ dataType: MYSQL_DATATYPE.DATETIME })
     private date_created: string;

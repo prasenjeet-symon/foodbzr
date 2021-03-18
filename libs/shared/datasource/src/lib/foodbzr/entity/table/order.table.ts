@@ -5,9 +5,8 @@
  * This table is child of the delivery_address.table.ts
  */
 
+import { delivery_status, delivery_status_values, pay_status, pay_status_values, pay_type, pay_type_values } from '@foodbzr/shared/types';
 import { Column, MYSQL_DATATYPE, Table } from '@sculify/node-room';
-import { delivery_status, pay_type, pay_status, delivery_status_values, pay_type_values, pay_status_values } from '@foodbzr/shared/types';
-import { get_initial_order_lifecycle } from '@foodbzr/shared/util';
 
 @Table({ tableName: 'food_order', primaryKey: 'row_id' })
 export class food_order {
@@ -36,7 +35,7 @@ export class food_order {
      * With reference id -> kitchen_row_uuid
      */
     @Column({ dataType: MYSQL_DATATYPE.TINYTEXT })
-    private kitchen_row_uuid: string;
+    private kitchen_location_row_uuid: string;
 
     /**
      * This order is delivered by some d_boy
@@ -117,7 +116,7 @@ export class food_order {
     /**
      * list of all the ordered foods
      */
-    @Column({dataType: MYSQL_DATATYPE.TEXT()})
+    @Column({ dataType: MYSQL_DATATYPE.TEXT() })
     private order_menu: string;
 
     /** Every order rich some location

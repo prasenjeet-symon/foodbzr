@@ -102,6 +102,7 @@ export class fetch_user_cart_for_checkout extends BaseDao<IGetUserCartGroupedKit
         uc.amount as user_cart_amount,
         uc.row_uuid as user_cart_row_uuid,
         uc.instruction as user_cart_instruction,
+        uc.kitchen_location_row_uuid as kitchen_location_row_uuid,
 
         rfc.name as regional_food_category_name,
         rfc.is_active as regional_food_category_is_active,
@@ -123,14 +124,15 @@ export class fetch_user_cart_for_checkout extends BaseDao<IGetUserCartGroupedKit
         kit.offer_percentage as kitchen_offer_percentage,
         kit.offer_start_datetime as kitchen_offer_start_datetime,
         kit.offer_end_datetime as kitchen_offer_end_datetime, 
-        kit.partner_row_uuid as kitchen_partner_row_uuid,
         kit.owner_row_uuid as owner_row_uuid,
 
-        kit.street as kitchen_street,
-        kit.pincode as kitchen_pincode,
-        kit.city as kitchen_city,
-        kit.state as kitchen_state,
-        kit.country as kitchen_country,
+        kitl.partner_row_uuid as kitchen_partner_row_uuid,
+        kitl.street as kitchen_street,
+        kitl.pincode as kitchen_pincode,
+        kitl.city as kitchen_city,
+        kitl.state as kitchen_state,
+        kitl.country as kitchen_country,
+        kitl.is_active as kitchen_location_is_active,
 
         men.menu_name as menu_menu_name,
         men.is_active as menu_is_active,
@@ -153,9 +155,12 @@ export class fetch_user_cart_for_checkout extends BaseDao<IGetUserCartGroupedKit
         msv.min_order_amount as menu_variant_min_order_amount
 
         FROM user_cart as uc
+        LEFT OUTER JOIN kitchen_location as kitl
+        ON uc.kitchen_location_row_uuid = kitl.row_uuid
+
         LEFT OUTER JOIN menu_size_variant as msv
         ON msv.row_uuid = uc.menu_size_variant_row_uuid
-        
+
         LEFT OUTER JOIN menu as men
         ON men.row_uuid = msv.menu_row_uuid
 
@@ -172,7 +177,9 @@ export class fetch_user_cart_for_checkout extends BaseDao<IGetUserCartGroupedKit
     ;`)
     fetch(user_row_uuid: string) {
         const current_date = moment(new Date()).format('YYYY-MM-DD HH:mm:ss');
-        const filtered_arr: IGetUserCartForCheckout[] = (this.DBData as any).filter((p) => p.menu_variant_is_active === 'yes' && p.menu_is_active === 'yes' && p.kitchen_is_active === 'yes');
+        const filtered_arr: IGetUserCartForCheckout[] = (this.DBData as any).filter(
+            (p: any) => p.menu_variant_is_active === 'yes' && p.menu_is_active === 'yes' && p.kitchen_is_active === 'yes' && p.kitchen_location_is_active === 'yes'
+        );
 
         /** extract the proper offer and calculate the final price */
         const final_arr = filtered_arr.map((p) => {
@@ -242,13 +249,14 @@ export class fetch_user_cart_for_checkout extends BaseDao<IGetUserCartGroupedKit
                 // add the kitchen first
                 grouped_items.push({
                     kitchen: {
+                        kitchen_location_row_uuid: p.kitchen_location_row_uuid,
                         kitchen_partner_row_uuid: p.kitchen_partner_row_uuid,
                         kitchen_name: p.kitchen_kitchen_name,
                         profile_picture: p.kitchen_profile_picture,
                         kitchen_row_uuid: p.kitchen_row_uuid,
                         address: `${p.kitchen_street}, ${p.kitchen_city}, ${p.kitchen_pincode}, ${p.kitchen_state}, ${p.kitchen_country}`,
                         can_take_order: can_apply_offer(p.kitchen_opening_time, current_date, p.kitchen_closing_time),
-                        owner_row_uuid: p.owner_row_uuid
+                        owner_row_uuid: p.owner_row_uuid,
                     },
                     orders: [
                         {

@@ -1,0 +1,31 @@
+<ion-header [translucent]="true">
+    <ion-toolbar>
+        <ion-title>Choose partners</ion-title>
+        <ion-buttons slot="end">
+            <ion-button (click)="closeModal(null)"> <ion-icon name="close-outline"></ion-icon> </ion-button>
+        </ion-buttons>
+    </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+    <!-- for ios only header  -->
+    <ion-header collapse="condense">
+        <ion-toolbar>
+            <ion-title size="large">Choose partners</ion-title>
+        </ion-toolbar>
+    </ion-header>
+
+    <!-- list all the partners -->
+    <ion-list>
+        <ion-item (click)="choosePartner(item)" [disabled]="item.is_active === 'yes' ? false : true" *ngFor="let item of allPartners; trackBy: tracker">
+            <ion-avatar slot="start">
+                <img [src]="item.profile_picture" alt="" srcset="" />
+            </ion-avatar>
+            <ion-label>
+                <h2>{{ item.full_name }}</h2>
+                <p>{{ item.mobile_number }}</p>
+            </ion-label>
+            <ion-checkbox slot="end"></ion-checkbox>
+        </ion-item>
+    </ion-list>
+</ion-content>

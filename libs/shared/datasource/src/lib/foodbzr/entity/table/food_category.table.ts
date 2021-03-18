@@ -36,6 +36,7 @@ export class food_category {
     @Column({ dataType: MYSQL_DATATYPE.DATETIME })
     private offer_end_datetime: string;
 
+    /** row info */
     @Column({ dataType: MYSQL_DATATYPE.DATETIME })
     private date_created: string;
 

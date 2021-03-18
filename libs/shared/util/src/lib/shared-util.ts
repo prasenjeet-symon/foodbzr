@@ -357,6 +357,8 @@ export function addressFromForAddres(formatted_address: string, lat: number, lng
 export async function sendSMS(to: string, sms: string) {
     const client = NodeJsModules.getInstance().getModule('Twilio')(process.env.accountSid, process.env.authToken);
 
+    return
+
     const data = await client.messages.create({
         body: sms,
         from: '+19283774074',

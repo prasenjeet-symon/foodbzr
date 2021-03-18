@@ -1,0 +1,44 @@
+<ion-header [translucent]="true">
+    <ion-toolbar>
+        <ion-title>Ghost Brands</ion-title>
+    </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+    <!-- for ios only header  -->
+    <ion-header collapse="condense">
+        <ion-toolbar>
+            <ion-title size="large">Ghost Brands</ion-title>
+        </ion-toolbar>
+    </ion-header>
+
+    <!-- floating add button -->
+    <ion-fab vertical="bottom" horizontal="end" slot="fixed">
+        <ion-fab-button>
+            <ion-icon name="add"></ion-icon>
+        </ion-fab-button>
+    </ion-fab>
+
+    <!-- list all the ghost brands -->
+    <div class="ghost_brands_list">
+        <ion-list lines="none">
+            <ion-item [disabled]="kitchen.is_active === 'yes' ? false : true" *ngFor="let kitchen of allGhostBrands; trackBy: tracker" lines="none">
+                <ion-card (click)="nav_ghost_brand_location(kitchen)">
+                    <img [src]="kitchen.profile_picture" />
+                    <ion-card-header>
+                        <ion-card-subtitle>{{ kitchen.bio }}</ion-card-subtitle>
+                        <ion-card-title> {{ kitchen.kitchen_name }} </ion-card-title>
+                    </ion-card-header>
+                    <ion-card-content>
+                        <ion-item-group>
+                            <ion-chip outline color="secondary" *ngFor="let week_name of kitchen.open_week_list">
+                                <ion-icon name="calendar-outline"></ion-icon>
+                                <ion-label>{{ week_name | weekMaker }}</ion-label>
+                            </ion-chip>
+                        </ion-item-group>
+                    </ion-card-content>
+                </ion-card>
+            </ion-item>
+        </ion-list>
+    </div>
+</ion-content>

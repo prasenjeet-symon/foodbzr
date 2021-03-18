@@ -79,3 +79,36 @@ export class fetch_dboy_of_kitchen extends BaseDao<IGetDBoy[]> {
         return this.baseFetch(this.DBData);
     }
 }
+
+/**
+ * Fetch the dboy of owner
+ */
+export class fetch_dboy_of_owner extends BaseDao<IGetDBoy[]> {
+    constructor(config: IDaoConfig) {
+        super(config);
+    }
+
+    @Query(`
+        SELECT
+
+        kitchen_row_uuid,
+        full_name,
+        mobile_number,
+        profile_picture,
+        gender,
+        bio,
+        is_active,
+        is_mobile_verified,
+        last_otp,
+        birth_date,
+        is_verified,
+        date_created,
+        date_updated,
+        row_uuid
+
+        FROM dboy
+    ;`)
+    fetch() {
+        return this.baseFetch(this.DBData);
+    }
+}

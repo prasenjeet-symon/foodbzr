@@ -54,8 +54,9 @@ export {
     fetch_kitchen_supported_menus,
     fetch_kitchens_of_owner,
     fetch_kitchen_for_new_partner,
+    fetch_kitchen_ghost_brands
 } from './foodbzr/dao/select/kitchen.s.dao';
-export { update_kitchen, update_kitchen_password, update_kitchen_offers, update_kitchen_login_detail, update_kitchen_address, update_kitchen_partner_ref } from './foodbzr/dao/update/kitchen.u.dao';
+export { update_kitchen, update_kitchen_password, update_kitchen_offers, update_kitchen_login_detail } from './foodbzr/dao/update/kitchen.u.dao';
 
 /** menu.table.ts */
 export { delete_menu } from './foodbzr/dao/delete/menu.d.dao';
@@ -140,7 +141,7 @@ export { update_delivery_address } from './foodbzr/dao/update/delivery_address.u
 /** dboy.table.ts */
 export { delete_dboy } from './foodbzr/dao/delete/dboy.d.dao';
 export { insert_dboy, insert_dboy_from_partner } from './foodbzr/dao/insert/dboy.i.dao';
-export { fetch_dboy_single, fetch_dboy_of_kitchen } from './foodbzr/dao/select/dboy.s.dao';
+export { fetch_dboy_single, fetch_dboy_of_kitchen, fetch_dboy_of_owner } from './foodbzr/dao/select/dboy.s.dao';
 export { update_dboy, update_dboy_verify, auth_dboy, update_dboy_resend_otp, update_dboy_verify_otp, update_dboy_mobile } from './foodbzr/dao/update/dboy.u.dao';
 
 /** user_fav_kitchen */
@@ -151,3 +152,9 @@ export { fetch_user_fav_kitchen, fetch_user_fav_kitchen_is_fav } from './foodbzr
 /** push_message */
 export { insert_push_message } from './foodbzr/dao/insert/push_message.i.dao';
 export { fetch_push_message_fcm_tokens } from './foodbzr/dao/select/push_message.s.dao';
+
+/** kitchen locations */
+export { delete_kitchen_location , delete_kitchen_location_partner_relation} from './foodbzr/dao/delete/kitchen_location.d.dao';
+export { insert_kitchen_location } from './foodbzr/dao/insert/kitchen_location.i.dao';
+export { fetch_kitchen_location_of_kitchen } from './foodbzr/dao/select/kitchen_location.s.dao';
+export { update_kitchen_location_address, update_kitchen_location_commission, update_kitchen_location_partner, update_kitchen_location_radius } from './foodbzr/dao/update/kitchen_location.u.dao';

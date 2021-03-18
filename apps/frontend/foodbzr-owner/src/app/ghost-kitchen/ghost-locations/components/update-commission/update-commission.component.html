@@ -1,0 +1,13 @@
+<div class="add_commission">
+    <ion-item>
+        <ion-label position="floating">Commission</ion-label>
+        <ion-input [value]="commission" #commissionValue inputmode="number" type="number"></ion-input>
+    </ion-item>
+</div>
+
+<div class="actions">
+    <div></div>
+    <div>
+        <ion-button (click)="updateCommission(commissionValue.value)"> Save </ion-button>
+    </div>
+</div>

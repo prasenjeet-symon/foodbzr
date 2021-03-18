@@ -134,7 +134,6 @@ export class fetch_partner_for_owner extends BaseDao<IGetPartner[]> {
         SELECT
 
         row_id,
-        commission,
         owner_row_uuid,
         last_otp,
         is_active,

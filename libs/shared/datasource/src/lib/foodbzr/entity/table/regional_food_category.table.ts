@@ -35,9 +35,6 @@ export class regional_food_category {
     @Column({ dataType: MYSQL_DATATYPE.DATETIME })
     private offer_end_datetime: string;
 
-    /**
-     *
-     */
     @Column({ dataType: MYSQL_DATATYPE.DATETIME })
     private date_created: string;
 
